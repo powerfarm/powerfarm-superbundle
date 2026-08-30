@@ -1,0 +1,8 @@
+{
+  "format": "powerfarm.engine-pin/v1",
+  "engine": "google-adk",
+  "version": "2.8.0",
+  "setting": "process/continuum-adk",
+  "constraints": "process/continuum-adk/constraints/tested-py312.txt",
+  "policy": "replaceable engine; no PowerFarm identity or authority is encoded in ADK"
+}
