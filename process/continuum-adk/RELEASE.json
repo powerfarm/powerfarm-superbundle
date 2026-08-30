@@ -1,5 +1,5 @@
 {
-  "built_at": "2026-08-30T08:42:00Z",
+  "built_at": "2026-08-30T08:57:00Z",
   "features": [
     "atomic-tool-admission",
     "stateless-run-recovery",
@@ -10,7 +10,8 @@
     "strict-production-defaults",
     "execution-slice-required",
     "registry-backed-production-identity",
-    "no-runtime-governance-bootstrap"
+    "no-runtime-governance-bootstrap",
+    "process-owned-execution-slice-reexport"
   ],
   "format": "powerfarm.release/v1",
   "github_modified": false,

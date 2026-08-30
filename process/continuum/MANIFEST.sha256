@@ -2,7 +2,7 @@
 b7a25ac7d5dddd08a1900144345d1e7594c5e30effe6ea3e20ca8b75add1b0ff  ./CHANGELOG.md
 943d23e4800f292c9ffe37a9bc540460cccbb9c5462153e1f19ee0dd9b1bf869  ./HARDENING.md
 11daa07c34e0b77c7b7e86c6bef3ed503dbcc6c813af7611860fec9b997e997a  ./README.md
-0b29502386b3b132b526960a31630856193ee546afeaf30664bb7c7d944652b8  ./RELEASE.json
+e948884ac526c29bb7027603340142abcf21467660da3a3c82a64627c1a68a4f  ./RELEASE.json
 9452ccfe815d5505e9e69a595a02c476a73342306e03ca542c85dffcc00d3355  ./SECURITY.md
 679745fbc29249914a191a7d74e01e9fca4d8c8c5f4d107fed782cd318c81ea3  ./docs/ARCHITECTURE.md
 34f1b1d3fd041454ee5c01b12abbafae894ca0ede4106c8d2883aebf6e16270b  ./docs/INVARIANTS.md
@@ -49,6 +49,7 @@ d23eebc5fde2924bd2fab937a1ca4d7110e1d0da022f4ba21e3abb3da1c40073  ./powerfarm/cr
 8f43d62f6b9e7b7e695dd2fea0fb668bca2aa72b25ceec27329ed9a5fdd4afda  ./powerfarm/crypto/p256.py
 aa72e3f535dc4a5f424aa5e0fd1d34daaf4338fd3de413c294a2649a77f97069  ./powerfarm/crypto/witness.py
 90a341af63010e087d31edf9edc589ac73fa53929e54633930ebbb943e013b4b  ./powerfarm/db.py
+cec536ff27e809829403db64d9e721f410a53702d32c3d6df4d59ae337901d35  ./powerfarm/execution_slice.py
 5ffbf0d6a013801411ad658fcccc7b569a5ee75ebba48d692a17bf31acde4f9a  ./powerfarm/institution/__init__.py
 08f5978c9e849ba5ce7c41087d0534221f03d8b4bebfbf53607576e4a4b0b7a8  ./powerfarm/institution/lineage.py
 131e972d8fe14c6d3ea0dd2933588175e145e3bdd276891b87dd4c2c00e18590  ./powerfarm/institution/support.py

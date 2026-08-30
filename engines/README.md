@@ -11,6 +11,7 @@ not own PowerFarm identity, authority, consequence, or circulation.
 
 - `ai-sdk/` contains the exact vendored Vercel AI SDK source accepted by this bundle.
 - Google ADK is pinned by `process/continuum-adk/constraints/tested-py312.txt` and enters Process only through `process/continuum-adk/`.
+- Microsoft Agent Framework is pinned by `engines/microsoft-agent-framework/PIN.json` and enters Process only through `process/continuum-maf/`. Its AgentSession, ContextProvider and memory facilities remain engine-local execution state.
 
 The permanent rule is **ORGAN ours, SETTING ours, ENGINE theirs**.
 

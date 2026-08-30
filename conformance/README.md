@@ -14,7 +14,7 @@ Document 2 currently contains **30 capability-learning controls**. **30 learning
 
 The repository carries 162 deterministic tests for Heartime, canonical Cards, roster, attention circulation, capability learning, private settings, and vertical seams. A control is listed only when a test names it explicitly.
 
-The Heartime migrations pass 80 structural checks without touching a database. The First Seam contract passes 42 source/contract checks. The Capability Learning contract passes 58. The canonical Card contract passes 27. The Epistemic Continuity contract passes 21. The Energy + Cost contract passes 28. Production Circulation passes 27. Legacy Removal passes 32.
+The Heartime migrations pass 80 structural checks without touching a database. The First Seam contract passes 42 source/contract checks. The Capability Learning contract passes 58. The canonical Card contract passes 27. The Epistemic Continuity contract passes 21. The Energy + Cost contract passes 30. Production Circulation passes 27. Legacy Removal passes 32.
 
 Document 1 executable controls: `1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 30, 31, 56`.
 

@@ -1,0 +1,22 @@
+{
+  "format": "powerfarm.engine-pin/v1",
+  "engine": "microsoft-agent-framework",
+  "distribution": "agent-framework-core",
+  "version": "1.16.0",
+  "released": "2026-08-28",
+  "license": "MIT",
+  "source_repository": "https://github.com/microsoft/agent-framework",
+  "semantic_kernel_lineage": "Microsoft Agent Framework is the production successor to Semantic Kernel",
+  "artifacts": {
+    "sdist": {
+      "filename": "agent_framework_core-1.16.0.tar.gz",
+      "sha256": "47ee37b4f6201add7a8a8f9cc39ffe43438c24360b53b116f61ba075e6962d94"
+    },
+    "wheel": {
+      "filename": "agent_framework_core-1.16.0-py3-none-any.whl",
+      "sha256": "382a6a0332cdc3144ffcf14b07a9a38c3ef42afc06dde8230226b850fe4cc76e"
+    }
+  },
+  "powerfarm_setting": "process/continuum-maf",
+  "engine_local_memory_is_authoritative": false
+}

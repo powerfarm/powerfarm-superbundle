@@ -12,6 +12,8 @@ The GitHub-ready archive intentionally omits binary font assets from that upstre
 
 `continuum-adk` integrates with Google ADK as an external Python dependency. Installing dependencies may bring additional third-party packages governed by their respective licenses.
 
+`continuum-maf` integrates with Microsoft Agent Framework as an external Python dependency pinned to `agent-framework-core==1.16.0`. Microsoft Agent Framework is distributed under the MIT License; installing it may bring additional third-party packages governed by their respective licenses. Semantic Kernel is historical lineage, not a separately vendored PowerFarm engine.
+
 ---
 
 Copyright © 2026 PowerFarm. All rights reserved.

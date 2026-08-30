@@ -10,6 +10,11 @@
     "vercel-ai-sdk": {
       "setting": "process/continuum-ai-sdk",
       "pin": "engines/ai-sdk/PIN.json"
+    },
+    "microsoft-agent-framework": {
+      "setting": "process/continuum-maf",
+      "pin": "engines/microsoft-agent-framework/PIN.json",
+      "tested_pin": "agent-framework-core==1.16.0"
     }
   },
   "invariants": [
@@ -23,7 +28,9 @@
     "all engine Settings consume the same sealed engine-neutral ExecutionSlice derived from a Card",
     "institutional run identity is independent of engine-local invocation identifiers and occupant identity",
     "all engine Settings emit the same Process RuntimeReceipt semantics while preserving runtime as evidence",
-    "Heartime re-emission changes beat identity without changing the institutional run identity of the same attempt"
+    "Heartime re-emission changes beat identity without changing the institutional run identity of the same attempt",
+    "Microsoft Agent Framework AgentSession, ContextProvider state, workflows, and memory are engine-local execution facilities, never the PowerFarm MEMORY organ",
+    "engine-local memory may consume a read-only projection from PowerFarm MEMORY but never writes institutional epistemic state implicitly"
   ],
   "execution_contracts": {
     "slice": "contracts/execution-slice.v3.json",

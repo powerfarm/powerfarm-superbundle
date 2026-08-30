@@ -1,17 +1,27 @@
 {
   "format": "powerfarm.github-package/v1",
   "repository": "powerfarm-superbundle",
-  "version": "0.12.0",
-  "prepared_from": "Cards + Heartime Milestone 7 / Legacy Removal",
+  "version": "0.13.0",
+  "prepared_from": "Cards + Heartime Milestone 7 + Microsoft Agent Framework first-class Setting",
   "paired_repository": "powerfarm-registry",
   "registry_profile": "Milestone 6 / Production Directory",
   "institutional_rule": "No sealed Card and ExecutionSlice means no institutional execution.",
-  "engine_pin": {
-    "name": "vercel-ai-sdk",
-    "version": "7.0.84",
-    "source_manifest_sha256": "0748ce97dcc5650203f0aef91d446748c40e6b16996490cb9bfa981ca3a5c47a",
-    "github_distribution_binary_omissions": 2
-  },
   "ci": ".github/workflows/verify.yml",
-  "copyright": "Copyright © 2026 PowerFarm. All rights reserved."
+  "copyright": "Copyright \u00a9 2026 PowerFarm. All rights reserved.",
+  "engine_pins": {
+    "vercel-ai-sdk": {
+      "version": "7.0.84",
+      "source_manifest_sha256": "0748ce97dcc5650203f0aef91d446748c40e6b16996490cb9bfa981ca3a5c47a",
+      "github_distribution_binary_omissions": 2
+    },
+    "google-adk": {
+      "version": "2.8.0",
+      "constraint": "process/continuum-adk/constraints/tested-py312.txt"
+    },
+    "microsoft-agent-framework": {
+      "version": "1.16.0",
+      "distribution": "agent-framework-core",
+      "pin": "engines/microsoft-agent-framework/PIN.json"
+    }
+  }
 }
