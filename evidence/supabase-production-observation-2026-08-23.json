@@ -1,0 +1,28 @@
+{
+  "kind": "powerfarm.deployment-observation.v1",
+  "source": "connected Supabase management surface, read-only",
+  "project": {
+    "name": "powerfarm",
+    "ref": "wmsrqefgdgcijupeogfa",
+    "region": "eu-west-2",
+    "status": "ACTIVE_HEALTHY",
+    "postgres_version": "17.6.1.155"
+  },
+  "development_branches": 0,
+  "recorded_migrations": [
+    "0001 identity",
+    "0002 manifest",
+    "0003 autoridade",
+    "0004 adk_runtime",
+    "0005 adk_runtime_advisors",
+    "20260820192536 gadget_lineage"
+  ],
+  "heartime_schema_tables": 0,
+  "conclusion": {
+    "heartime_migrations": "NOT RUN",
+    "first_seam_database_state": "NOT DEPLOYED"
+  },
+  "secrets_recorded": false,
+  "observation_date": "2026-08-23",
+  "recorded_at": "2026-08-23T14:13:06Z"
+}

@@ -1,0 +1,75 @@
+{
+  "contract_version": "powerfarm.execution-slice.v3",
+  "card_ref": "pf.card.engine-equivalence-golden",
+  "execution_slice_sha256": "sha256:ebc84a8f474f9e096146fefc84f82cbd1d13ee35ad87edfb742bfb190ff9851a",
+  "run_ref": "pfx-6d9e239027fe4d418f6bf726b9f4510c",
+  "request_ids": {
+    "intent": "pfx2-6d9e239027fe4d418f6bf726b9f4510c7e4786f1a9cbc3cc9341a24ba977bfd7-intent",
+    "run": "pfx2-6d9e239027fe4d418f6bf726b9f4510c7e4786f1a9cbc3cc9341a24ba977bfd7-run",
+    "outcome": "pfx2-6d9e239027fe4d418f6bf726b9f4510c7e4786f1a9cbc3cc9341a24ba977bfd7-outcome"
+  },
+  "institutional_events": [
+    {
+      "kind": "tool.invoke.search",
+      "subject": "tool:search",
+      "actor": "agent-1",
+      "office": "operations",
+      "request_id": "pfx2-6d9e239027fe4d418f6bf726b9f4510c7e4786f1a9cbc3cc9341a24ba977bfd7-intent",
+      "run_ref": null,
+      "card_ref": "pf.card.engine-equivalence-golden",
+      "beat_ref": "pf.beat.engine-equivalence-golden",
+      "attempt_ref": "pf.attempt.engine-equivalence-golden",
+      "direction_ref": "pf.direction.engine-equivalence",
+      "ecs": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "execution_slice_sha256": "sha256:ebc84a8f474f9e096146fefc84f82cbd1d13ee35ad87edfb742bfb190ff9851a",
+      "status": null,
+      "capability_ref": null
+    },
+    {
+      "kind": "run.start",
+      "subject": "run:pfx-6d9e239027fe4d418f6bf726b9f4510c",
+      "actor": "agent-1",
+      "office": "operations",
+      "request_id": "pfx2-6d9e239027fe4d418f6bf726b9f4510c7e4786f1a9cbc3cc9341a24ba977bfd7-run",
+      "run_ref": "pfx-6d9e239027fe4d418f6bf726b9f4510c",
+      "card_ref": "pf.card.engine-equivalence-golden",
+      "beat_ref": "pf.beat.engine-equivalence-golden",
+      "attempt_ref": "pf.attempt.engine-equivalence-golden",
+      "direction_ref": "pf.direction.engine-equivalence",
+      "ecs": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "execution_slice_sha256": "sha256:ebc84a8f474f9e096146fefc84f82cbd1d13ee35ad87edfb742bfb190ff9851a",
+      "status": null,
+      "capability_ref": null
+    },
+    {
+      "kind": "run.finish",
+      "subject": "run:pfx-6d9e239027fe4d418f6bf726b9f4510c",
+      "actor": "agent-1",
+      "office": "operations",
+      "request_id": "pfx2-6d9e239027fe4d418f6bf726b9f4510c7e4786f1a9cbc3cc9341a24ba977bfd7-outcome",
+      "run_ref": "pfx-6d9e239027fe4d418f6bf726b9f4510c",
+      "card_ref": "pf.card.engine-equivalence-golden",
+      "beat_ref": "pf.beat.engine-equivalence-golden",
+      "attempt_ref": "pf.attempt.engine-equivalence-golden",
+      "direction_ref": "pf.direction.engine-equivalence",
+      "ecs": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "execution_slice_sha256": "sha256:ebc84a8f474f9e096146fefc84f82cbd1d13ee35ad87edfb742bfb190ff9851a",
+      "status": "completed",
+      "capability_ref": "tool:search"
+    }
+  ],
+  "engines": {
+    "vercel-ai-sdk": {
+      "revision_ref": "engine:vercel-ai-sdk/ai@7.0.84#sha256:0748ce97dcc5650203f0aef91d446748c40e6b16996490cb9bfa981ca3a5c47a",
+      "effects": 1,
+      "replay_code": "POWERFARM_ALREADY_COMPLETED"
+    },
+    "google-adk": {
+      "revision_ref": "google-adk==2.8.0",
+      "effects": 1,
+      "replay_code": "POWERFARM_ALREADY_COMPLETED"
+    }
+  },
+  "raw_values_absent": true,
+  "audits_ok": true
+}

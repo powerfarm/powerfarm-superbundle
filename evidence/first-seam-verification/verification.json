@@ -1,0 +1,188 @@
+{
+  "kind": "powerfarm.first-seam.verification.v1",
+  "started_at": "2026-08-23T14:18:40.141Z",
+  "finished_at": "2026-08-23T14:18:42.461Z",
+  "source_tree_sha256": "cbc5aaa53208aae488d0fd1ed1d960239749206987ce46218bc6a2378104fbb7",
+  "source_manifest_sha256": "cbc5aaa53208aae488d0fd1ed1d960239749206987ce46218bc6a2378104fbb7",
+  "source_file_count": 71,
+  "status": "BUILT AND VERIFIED",
+  "scope": "local deterministic source, contract and migration-structure verification; no deployment claim",
+  "commands": [
+    {
+      "id": "derive-check",
+      "command": [
+        "npm",
+        "run",
+        "derive:check"
+      ],
+      "exit_code": 0,
+      "signal": null,
+      "duration_ms": 198,
+      "stdout_sha256": "f12a04c340b024dcac275788c1f951a41e4409c78d124de709e0370fba3a1437",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tap_passes": 0,
+      "tap_failures": 0
+    },
+    {
+      "id": "contract-check",
+      "command": [
+        "npm",
+        "run",
+        "contract:check"
+      ],
+      "exit_code": 0,
+      "signal": null,
+      "duration_ms": 104,
+      "stdout_sha256": "3ea0a7f4b5c58c8ed15abcd7ea5e89b30d6f536b89c32260e5cfc740d6fbb5b3",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tap_passes": 0,
+      "tap_failures": 0
+    },
+    {
+      "id": "source-check",
+      "command": [
+        "npm",
+        "run",
+        "source:check"
+      ],
+      "exit_code": 0,
+      "signal": null,
+      "duration_ms": 635,
+      "stdout_sha256": "4c431b334387fb93e99155fe781767d1dc4794436da3182ca3d39ba270afd7fb",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tap_passes": 0,
+      "tap_failures": 0
+    },
+    {
+      "id": "permanent-check",
+      "command": [
+        "npm",
+        "run",
+        "check:permanent"
+      ],
+      "exit_code": 0,
+      "signal": null,
+      "duration_ms": 105,
+      "stdout_sha256": "46069f789884979e2dc6a34643157c50a1ca96ba83d9272262655b1cd43ee5a0",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tap_passes": 0,
+      "tap_failures": 0
+    },
+    {
+      "id": "roster-tests",
+      "command": [
+        "npm",
+        "run",
+        "test:roster"
+      ],
+      "exit_code": 0,
+      "signal": null,
+      "duration_ms": 166,
+      "stdout_sha256": "9d99abea1f9197ecd66dbce299bd270b650f0ad5ee2c662ceef0cb128fa792f3",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tap_passes": 4,
+      "tap_failures": 0
+    },
+    {
+      "id": "first-seam-tests",
+      "command": [
+        "npm",
+        "run",
+        "test:first-seam"
+      ],
+      "exit_code": 0,
+      "signal": null,
+      "duration_ms": 175,
+      "stdout_sha256": "559a40ab0986b9a7c20e62a9edac246d9b50cb729e41347753e29c6f807f6b0a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tap_passes": 14,
+      "tap_failures": 0
+    },
+    {
+      "id": "attention-setting-tests",
+      "command": [
+        "npm",
+        "run",
+        "test:attention-worker"
+      ],
+      "exit_code": 0,
+      "signal": null,
+      "duration_ms": 162,
+      "stdout_sha256": "467da54b9f5c9e6d490a85942aabc0aa6d59cebbfff9b540493b81e425acc7c5",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tap_passes": 5,
+      "tap_failures": 0
+    },
+    {
+      "id": "first-seam-integration",
+      "command": [
+        "npm",
+        "run",
+        "test:first-seam-integration"
+      ],
+      "exit_code": 0,
+      "signal": null,
+      "duration_ms": 161,
+      "stdout_sha256": "7e54277321ad92c854650ebf3d406af2d3344dba0103761ceea284886b71e08c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tap_passes": 1,
+      "tap_failures": 0
+    },
+    {
+      "id": "heartime-setting-tests",
+      "command": [
+        "npm",
+        "run",
+        "test:heartime-worker"
+      ],
+      "exit_code": 0,
+      "signal": null,
+      "duration_ms": 221,
+      "stdout_sha256": "eda9ccf72aeb9046545886d512dd435ae4f6daff8213e01baa2b207920f8b000",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tap_passes": 29,
+      "tap_failures": 0
+    },
+    {
+      "id": "heartime-verify",
+      "command": [
+        "npm",
+        "--prefix",
+        "heartime",
+        "run",
+        "verify"
+      ],
+      "exit_code": 0,
+      "signal": null,
+      "duration_ms": 367,
+      "stdout_sha256": "c12417b7a8eb270f507b554350ab47ed7aa45b6e0e531334ed93bc3d49df0331",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tap_passes": 13,
+      "tap_failures": 0
+    },
+    {
+      "id": "database-policy",
+      "command": [
+        "/opt/nvm/versions/node/v22.16.0/bin/node",
+        "scripts/db-policy.mjs"
+      ],
+      "exit_code": 0,
+      "signal": null,
+      "duration_ms": 25,
+      "stdout_sha256": "e334cb5ced214f978c49706ae3c8447a616da2911a10a9f64b76c802ab6faf5c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tap_passes": 0,
+      "tap_failures": 0
+    }
+  ],
+  "deployment": {
+    "heartime_postgres_migration": "NOT RUN",
+    "heartime_cloudflare_setting": "NOT DEPLOYED",
+    "first_seam_target_organ_ports": "NOT DEPLOYED",
+    "whole_system_test": "NOT RUN",
+    "production_observation": {
+      "file": "evidence/supabase-production-observation-2026-08-23.json",
+      "sha256": "f010fdfdba57d66e01124ae9ec6052b245803ec9b48e320ef49ada706fd5c77e"
+    }
+  }
+}

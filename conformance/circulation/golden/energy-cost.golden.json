@@ -1,0 +1,34 @@
+{
+  "contract_version": "powerfarm.energy-cost-golden.v1",
+  "card_ref": "pf.card.energy-cost-golden",
+  "run_ref": "pfx-db7df1623c364447137b06384dc8625e",
+  "execution_slice": "powerfarm.execution-slice.v3",
+  "budget_seen_by_engine": {
+    "energy_remaining": {
+      "beats": 1,
+      "model_tokens": 2000,
+      "tool_calls": 2,
+      "network_calls": 2,
+      "compute_ms": 1000,
+      "sandbox_ms": 1000,
+      "wall_ms": 2000,
+      "human_attention_ms": 0
+    },
+    "cost": {
+      "currency": "USD",
+      "remaining_micros": 5000
+    }
+  },
+  "consumption": {
+    "beats": 1,
+    "model_tokens": 1500,
+    "tool_calls": 1,
+    "cost_micros": 5000
+  },
+  "pressure": "EXHAUSTED",
+  "circulatory_debt": false,
+  "next_decision": "BLOCK",
+  "next_reason": "cost_exhausted",
+  "effects": 1,
+  "audit_ok": true
+}

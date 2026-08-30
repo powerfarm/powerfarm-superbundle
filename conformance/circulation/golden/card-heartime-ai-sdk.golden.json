@@ -1,0 +1,36 @@
+{
+  "card": {
+    "contract_version": "powerfarm.card.v1",
+    "ref": "pf.card.card-heartime-golden",
+    "generation": 1,
+    "revision": 9,
+    "state": "settled",
+    "next_expected": null,
+    "transition_count": 5,
+    "evidence_count": 1,
+    "energy_beats": 1,
+    "energy_tool_calls": 1,
+    "cost_spent_micros": 3000,
+    "content_addressed": true
+  },
+  "process": {
+    "kinds": [
+      "system.genesis",
+      "authority.grant",
+      "authority.grant",
+      "tool.invoke.search",
+      "run.start",
+      "run.finish"
+    ],
+    "card_ref": "pf.card.card-heartime-golden",
+    "beat_ref": "pf.beat.card-heartime-1",
+    "attempt_ref": "pf.attempt.card-heartime-1",
+    "raw_values_absent": true,
+    "audit_ok": true
+  },
+  "engine": {
+    "runtime": "vercel-ai-sdk",
+    "revision_ref": "engine:vercel-ai-sdk/ai@7.0.84#sha256:0748ce97dcc5650203f0aef91d446748c40e6b16996490cb9bfa981ca3a5c47a",
+    "effects": 1
+  }
+}
