@@ -1,0 +1,31 @@
+name = "powerfarm-sedimentation-reconciler"
+main = "src/index.js"
+compatibility_date = "2026-08-24"
+
+[observability]
+enabled = true
+
+[vars]
+RECONCILER_IDENTITY_REF = "pf.runtime.sedimentation-reconciler"
+EXPECTED_HEARTIME_IDENTITY_REF = "pf.runtime.heartime"
+EXPECTED_HEARTIME_COMPONENT_REF = "pf.runtime.heartime"
+
+[[services]]
+binding = "REGISTRY"
+service = "REPLACE_WITH_REGISTRY_WORKER"
+entrypoint = "CapabilityLearningPort"
+
+[[services]]
+binding = "EVIDENCE_STORE"
+service = "REPLACE_WITH_EVIDENCE_WORKER"
+entrypoint = "CapabilityLearningEvidencePort"
+
+[[services]]
+binding = "IMAGINEERING"
+service = "REPLACE_WITH_IMAGINEERING_WORKER"
+entrypoint = "CapabilityConstructionPort"
+
+[[services]]
+binding = "PROCESS"
+service = "REPLACE_WITH_PROCESS_WORKER"
+entrypoint = "CapabilitySuccessionPort"

@@ -1,0 +1,11 @@
+{
+  "name": "powerfarm-heartime",
+  "version": "0.8.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "migration:check": "node scripts/validate-heartime.mjs && node scripts/validate-first-seam.mjs && node scripts/validate-capability-learning.mjs",
+    "verify": "npm test && npm run migration:check"
+  }
+}

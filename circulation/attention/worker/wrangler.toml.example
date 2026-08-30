@@ -1,0 +1,39 @@
+name = "powerfarm-first-seam-attention"
+main = "src/index.js"
+compatibility_date = "2026-08-23"
+
+[observability]
+enabled = true
+
+[vars]
+RECONCILER_IDENTITY_REF = "pf.runtime.attention-reconciler"
+EXPECTED_HEARTIME_IDENTITY_REF = "pf.runtime.heartime"
+EXPECTED_HEARTIME_COMPONENT_REF = "pf.runtime.heartime"
+EXPECTED_HEARTIME_IDENTITY_REF = "pf.runtime.heartime"
+
+# Deploy each target Worker first. These names are provider-local bindings,
+# never institutional identity.
+[[services]]
+binding = "CARDS"
+service = "REPLACE_WITH_CARDS_WORKER"
+entrypoint = "CardsAttentionPort"
+
+[[services]]
+binding = "REGISTRY"
+service = "REPLACE_WITH_REGISTRY_WORKER"
+entrypoint = "RegistryOccupancyPort"
+
+[[services]]
+binding = "PROCESS"
+service = "REPLACE_WITH_PROCESS_WORKER"
+entrypoint = "ProcessAuthorityPort"
+
+[[services]]
+binding = "PLATFORM"
+service = "REPLACE_WITH_PLATFORM_WORKER"
+entrypoint = "PlatformAttentionRunsPort"
+
+[[services]]
+binding = "EVIDENCE_STORE"
+service = "REPLACE_WITH_EVIDENCE_WORKER"
+entrypoint = "EvidenceRecordingPort"

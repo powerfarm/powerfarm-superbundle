@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 2,
+  "note": "Desired state. freshness_minutes is the maximum intended silence/freshness contract, not a fixed polling cadence. Heartime derives actual wake times.",
+  "organs": [
+    { "id": "pf.organ.registry",    "kind": "service", "title": "Registry — identity and provenance",     "freshness_minutes": 15 },
+    { "id": "pf.organ.process",     "kind": "service", "title": "Process — responsibility and commit",    "freshness_minutes": 15 },
+    { "id": "pf.organ.platform",    "kind": "service", "title": "Platform — executable capability",       "freshness_minutes": 15 },
+    { "id": "pf.organ.memory",      "kind": "service", "title": "Memory — institutional knowledge",       "freshness_minutes": 60 },
+    { "id": "pf.organ.ack",         "kind": "service", "title": "ACK — signal, belief, uncertainty",      "freshness_minutes": 15 },
+    { "id": "pf.organ.homeostasis", "kind": "service", "title": "Homeostasis — desired vs observed",      "freshness_minutes": 5 },
+    { "id": "pf.channel.signals",   "kind": "channel", "title": "External signal ingress",                "freshness_minutes": 60 }
+  ]
+}

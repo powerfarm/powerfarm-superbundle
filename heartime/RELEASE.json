@@ -1,0 +1,125 @@
+{
+  "name": "powerfarm-heartime",
+  "version": "0.8.0",
+  "date": "2026-08-30",
+  "generated_by": "scripts/derive-repository.mjs",
+  "implements": "Document 1 Heartime plus canonical Card v1 circulation, recovery, epistemic sampling, energy/cost enforcement, attention, and capability-learning reconciliation settings",
+  "contracts": {
+    "first_seam": "pf.contract.first-seam.v1",
+    "capability_learning": "pf.contract.capability-learning.v1",
+    "card": "pf.contract.card.v1",
+    "card_wire": "powerfarm.card.v1",
+    "epistemic_continuity": "pf.contract.epistemic-continuity.v1",
+    "epistemic_record_wire": "powerfarm.epistemic-record.v1",
+    "energy_cost": "pf.contract.energy-cost.v1",
+    "production_circulation": "pf.contract.production-circulation.v1",
+    "operational_trace": "powerfarm.operational-trace.v1",
+    "legacy_removal": "pf.contract.legacy-removal.v1",
+    "execution_slice": "powerfarm.execution-slice.v3",
+    "cycle": "powerfarm.heartime.cycle.v1",
+    "attention_reconciler": "powerfarm.first-seam.reconciler.v1",
+    "sedimentation_reconciler": "powerfarm.sedimentation.reconciler.v1"
+  },
+  "source": {
+    "migrations": [
+      "20260823000000_heartime_genesis.sql",
+      "20260823190000_heartime_first_seam.sql",
+      "20260824120000_heartime_capability_learning.sql",
+      "20260830012500_heartime_writer_hardening.sql",
+      "20260830074000_heartime_operational_projections.sql"
+    ],
+    "contract_sha256": {
+      "first_seam": "6e9b0fe7b4218cc340899b5040007730ed4115c0eca410e1179553842dcbc3d0",
+      "capability_learning": "bcdc29505873113f052a99f588f94c50c4c3c76244a1acfff92a69053fcee54b",
+      "card": "32f555db873bb1f8d0ff76decf8f1233364692292c30a8d3123fea07e43b75fb",
+      "epistemic_continuity": "dd4e9f30c9a1deadd7e8e91a8d4358dd06017f6d98bf9b4ea6a79a334cc1fc54",
+      "energy_cost": "f986486ecacd35fc7122dad104f0dafd01f5ceca24f68b5b2f2c2ba0b4c5a36a",
+      "production_circulation": "a658ec29a3c16d5e953abe2904caae16e1ccfb96741629bc34c13025a496c0bb",
+      "legacy_removal": "d61ae60aa154e16a0cd5f61874300037889e1fc3b0968a7d25bac02130b471db"
+    }
+  },
+  "checks": {
+    "deterministic_logic_tests": {
+      "status": "pass",
+      "passed": 15,
+      "failed": 0
+    },
+    "physical_and_state_setting_tests": {
+      "status": "pass",
+      "passed": 33,
+      "failed": 0
+    },
+    "migration_structure": {
+      "status": "pass",
+      "checks": 80,
+      "derived_by": [
+        "heartime/scripts/validate-heartime.mjs",
+        "heartime/scripts/validate-first-seam.mjs",
+        "heartime/scripts/validate-capability-learning.mjs"
+      ]
+    },
+    "contracts": {
+      "first_seam": {
+        "status": "pass",
+        "checks": 42
+      },
+      "capability_learning": {
+        "status": "pass",
+        "checks": 58
+      },
+      "card": {
+        "status": "pass",
+        "checks": 27
+      },
+      "epistemic_continuity": {
+        "status": "pass",
+        "checks": 21
+      },
+      "energy_cost": {
+        "status": "pass",
+        "checks": 28
+      },
+      "production_circulation": {
+        "status": "pass",
+        "checks": 27
+      },
+      "legacy_removal": {
+        "status": "pass",
+        "checks": 32
+      }
+    },
+    "migrations_applied": {
+      "status": "not_run",
+      "reason": "production authorization and a staging database were not supplied"
+    },
+    "workers_deployed": {
+      "status": "not_run",
+      "reason": "provider account bindings and deployment identities remain explicit placeholders"
+    },
+    "live_organ_bindings": {
+      "status": "not_run",
+      "reason": "target organ ports for both permanent seams were not supplied"
+    },
+    "whole_system_test": {
+      "status": "not_run"
+    }
+  },
+  "negative_controls_made_executable": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    30,
+    31,
+    56
+  ]
+}
