@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://powerfarm.app/contracts/continuum/event-signature-v1.schema.json",
+  "title": "Powerfarm Event Signature",
+  "type": "object",
+  "required": ["format","event_id","key_id","signer","office","algorithm","jwk","statement_digest","signature","signed_at"],
+  "properties": {
+    "format": {"const":"powerfarm.event-signature/v1"},
+    "event_id": {"type":"string","pattern":"^evt_[0-9a-f]{32}$"},
+    "key_id": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "signer": {"type":"string","minLength":1},
+    "office": {"type":"string","minLength":1},
+    "algorithm": {"const":"ES256"},
+    "jwk": {"type":"object"},
+    "statement_digest": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "signature": {"type":"string","minLength":1},
+    "signed_at": {"type":"string","format":"date-time"}
+  },
+  "additionalProperties": false
+}

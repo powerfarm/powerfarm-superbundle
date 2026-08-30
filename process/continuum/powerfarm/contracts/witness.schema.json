@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://powerfarm.app/contracts/continuum/witness-v1.schema.json",
+  "title": "Powerfarm Witness Receipt",
+  "type": "object",
+  "required": ["format","witness","key_id","jwk","statement","statement_digest","signature","signed_at"],
+  "properties": {
+    "format": {"const":"powerfarm.witness/v1"},
+    "witness": {"type":"string","minLength":1,"maxLength":256},
+    "key_id": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "jwk": {"type":"object"},
+    "statement": {"type":"object"},
+    "statement_digest": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "signature": {"type":"string","minLength":1},
+    "signed_at": {"type":"string","format":"date-time"}
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "continuum-adk"
+version = "0.3.0"
+description = "Institutional admission control for Google ADK agents, backed by a Powerfarm Continuum ledger."
+readme = "README.md"
+requires-python = ">=3.11"
+
+# Abstract dependencies: ranges, not pins. A library must not pin, or it
+# becomes uninstallable alongside anything else. Concrete, reproducible
+# versions live in constraints/ and are applied at install time with -c.
+dependencies = [
+  "google-adk>=2.8,<3",
+  "powerfarm-continuum>=0.4.0,<0.5",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8", "pytest-asyncio>=0.24"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+continuum_adk = ["py.typed"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

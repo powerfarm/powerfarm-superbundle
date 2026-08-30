@@ -1,0 +1,23 @@
+{
+  "built_at": "2026-08-30T08:42:00Z",
+  "features": [
+    "atomic-tool-admission",
+    "stateless-run-recovery",
+    "digest-only-evidence",
+    "allowlisted-disclosure",
+    "qualified-idempotency",
+    "collision-resistant-subjects",
+    "strict-production-defaults",
+    "execution-slice-required",
+    "registry-backed-production-identity",
+    "no-runtime-governance-bootstrap"
+  ],
+  "format": "powerfarm.release/v1",
+  "github_modified": false,
+  "name": "continuum-adk",
+  "requires_continuum": ">=0.4.0,<0.5",
+  "tests_local_passed": 28,
+  "tests_real_adk_skipped_offline": 1,
+  "tracked_files": 24,
+  "version": "0.3.0"
+}

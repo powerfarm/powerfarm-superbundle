@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "powerfarm-continuum"
+version = "0.4.0"
+description = "A sealed, bitemporal institutional kernel with causal proofs, witness quorum, and portable evidence bundles."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "cryptography>=46.0.0",
+]
+
+[project.scripts]
+powerfarm = "powerfarm.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["powerfarm*"]
+
+[tool.setuptools.package-data]
+powerfarm = [
+  "ui/*.html",
+  "ui/*.css",
+  "ui/*.js",
+  "contracts/*.json",
+  "contracts/*.yaml",
+  "supabase/*.md",
+  "supabase/migrations/*.sql",
+]

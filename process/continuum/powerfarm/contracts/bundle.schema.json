@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://powerfarm.app/contracts/continuum/bundle-v1.schema.json",
+  "title": "Powerfarm Portable Evidence Bundle",
+  "type": "object",
+  "required": ["format","institution_id","created_at","metadata","branches","events","merkle_roots","signatures","checkpoint","digest"],
+  "properties": {
+    "format": {"const":"powerfarm.bundle/v1"},
+    "institution_id": {"type":"string","pattern":"^inst_[0-9a-f]{32}$"},
+    "created_at": {"type":"string","format":"date-time"},
+    "metadata": {"type":"object"},
+    "branches": {"type":"array"},
+    "events": {"type":"array"},
+    "merkle_roots": {"type":"object","additionalProperties":{"type":"string","pattern":"^[0-9a-f]{64}$"}},
+    "signatures": {"type":"array"},
+    "checkpoint": {"type":"object"},
+    "digest": {"type":"string","pattern":"^[0-9a-f]{64}$"}
+  },
+  "additionalProperties": false
+}

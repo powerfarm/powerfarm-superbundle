@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://powerfarm.app/contracts/continuum/event-v1.schema.json",
+  "title": "Powerfarm Continuum Event",
+  "type": "object",
+  "required": ["branch_index","id","branch_id","recorded_at","effective_at","actor","office","kind","subject","payload","causes","authority_ref","intent_hash","prev_hash","hash","seal"],
+  "properties": {
+    "seq": {"type":"integer","minimum":1},
+    "branch_index": {"type":"integer","minimum":1},
+    "id": {"type":"string","pattern":"^evt_[0-9a-f]{32}$"},
+    "branch_id": {"type":"string","minLength":1,"maxLength":128},
+    "request_id": {"type":["string","null"],"maxLength":200},
+    "recorded_at": {"type":"string","format":"date-time"},
+    "effective_at": {"type":"string","format":"date-time"},
+    "actor": {"type":"string","minLength":1,"maxLength":256},
+    "office": {"type":"string","minLength":1,"maxLength":128},
+    "kind": {"type":"string","minLength":1,"maxLength":128},
+    "subject": {"type":"string","minLength":1,"maxLength":1024},
+    "payload": {"type":"object"},
+    "causes": {"type":"array","items":{"type":"string","pattern":"^evt_[0-9a-f]{32}$"},"uniqueItems":true},
+    "authority_ref": {"type":"string","minLength":1},
+    "intent_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "prev_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "seal": {"type":"string","pattern":"^[0-9a-f]{64}$"}
+  },
+  "additionalProperties": false
+}
