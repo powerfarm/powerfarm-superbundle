@@ -1,0 +1,17 @@
+{
+  "format": "powerfarm.github-distribution/v1",
+  "engine": "vercel-ai-sdk",
+  "policy": "The GitHub-ready PowerFarm package preserves the original upstream source manifest and pin while intentionally omitting binary font assets from the redistributed archive.",
+  "omitted_files": [
+    {
+      "path": "./apps/docs/app/[lang]/og/[...slug]/geist-sans-regular.ttf",
+      "sha256": "5443f0c7e853354f2c8ce3a7a33678fb8b35958695267b930af961380240db9e",
+      "reason": "binary font asset omitted from redistributed package"
+    },
+    {
+      "path": "./apps/docs/app/[lang]/og/[...slug]/geist-sans-semibold.ttf",
+      "sha256": "4e462ed71ed2609356fb590d8810a46e851989bae94d200f018e39009b8d2ee3",
+      "reason": "binary font asset omitted from redistributed package"
+    }
+  ]
+}

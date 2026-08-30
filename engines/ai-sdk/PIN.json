@@ -1,0 +1,30 @@
+{
+  "format": "powerfarm.engine-pin/v1",
+  "engine": "vercel-ai-sdk",
+  "upstream_repository": "https://github.com/vercel/ai",
+  "source_archive_name": "ai-sdk-repo-main.tar.gz",
+  "source_archive_sha256": "2d3eabbf385fc40e6ab739778c9d6ef377dc26d296960202e7f168ec57d3b94e",
+  "source_manifest_sha256": "0748ce97dcc5650203f0aef91d446748c40e6b16996490cb9bfa981ca3a5c47a",
+  "pnpm_lock_sha256": "cdc7376a3ea0dbffff5a1221d5234a492418bf350d9adfce24d299999766376e",
+  "node_engine": "^22.13.0 || ^24.0.0 || ^26.0.0",
+  "package_manager": "pnpm@11.23.0",
+  "packages": {
+    "ai": "7.0.84",
+    "@ai-sdk/provider": "4.0.8",
+    "@ai-sdk/workflow": "2.0.14",
+    "@ai-sdk/harness": "1.0.93",
+    "@ai-sdk/policy-opa": "1.0.84",
+    "@ai-sdk/mcp": "2.0.40",
+    "@ai-sdk/provider-utils": "5.0.33",
+    "@ai-sdk/gateway": "4.0.68",
+    "@ai-sdk/otel": "1.0.84",
+    "@ai-sdk/sandbox-vercel": "1.0.93",
+    "@ai-sdk/sandbox-just-bash": "1.0.93",
+    "@ai-sdk/workflow-harness": "1.0.93",
+    "@ai-sdk/harness-codex": "1.0.95",
+    "@ai-sdk/harness-claude-code": "1.0.97"
+  },
+  "institutional_boundary": "process/continuum-ai-sdk",
+  "policy": "upstream source is vendored as an engine and MUST NOT be patched to encode PowerFarm identity, authority, consequence, or ontology",
+  "github_distribution": "Binary font omissions are declared separately in GITHUB-DISTRIBUTION.json; all present upstream files remain pinned to the original source manifest."
+}

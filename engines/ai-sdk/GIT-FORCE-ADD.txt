@@ -1,0 +1,13 @@
+engines/ai-sdk/upstream/examples/ai-e2e-next/.env.local.example
+engines/ai-sdk/upstream/examples/ai-functions/.env.example
+engines/ai-sdk/upstream/examples/next-agent/.env.local.example
+engines/ai-sdk/upstream/examples/next-fastapi/.env.local.example
+engines/ai-sdk/upstream/examples/next-google-vertex/.env.local.example
+engines/ai-sdk/upstream/examples/next-langchain/.env.local.example
+engines/ai-sdk/upstream/examples/next-openai-kasada-bot-protection/.env.local.example
+engines/ai-sdk/upstream/examples/next-openai-pages/.env.local.example
+engines/ai-sdk/upstream/examples/next-openai-telemetry-sentry/.env.local.example
+engines/ai-sdk/upstream/examples/next-openai-telemetry/.env.local.example
+engines/ai-sdk/upstream/examples/next-openai-upstash-rate-limits/.env.local.example
+engines/ai-sdk/upstream/examples/next-workflow/.env.local.example
+engines/ai-sdk/upstream/examples/next/.env.local.example
