@@ -1,0 +1,28 @@
+{
+  "contract_id": "pf.contract.production-circulation.v1",
+  "registry_directory": "powerfarm.registry.directory.v1",
+  "registry_runtime_token": "powerfarm.registry.runtime-token.v1",
+  "process_admission_port": "powerfarm.process.admission-port.v1",
+  "process_admission_write": "powerfarm.process.admission-write.v2",
+  "operational_trace": "powerfarm.operational-trace.v1",
+  "heartime_runtime_ref": "pf.runtime.heartime",
+  "process_writer_runtime_ref": "pf.runtime.process-writer",
+  "transport": {
+    "registry_directory": "PostgREST read-only RPC",
+    "runtime_credentials": "private Registry Service Binding",
+    "process_persistence": "private Process Service Binding to Card-bound transactional PostgREST RPC",
+    "circulation": "private Heartime Service Bindings plus durable Postgres state"
+  },
+  "invariants": [
+    "Registry runtime credentials do not create institutional Authority",
+    "Process writer persists only already-admitted Continuum acts",
+    "no production writer uses a service-role key",
+    "canonical pf.* refs survive provider UUID replacement",
+    "Heartime operational traces carry correlation refs but never Card bodies or Authority",
+    "trace persistence failure cannot suppress Heartime liveness",
+    "Office and Occupancy truth is resolved from Registry at the observation instant",
+    "production adapters fail closed on TLS, contract, identity, and stale-head drift",
+    "deployment remains distinct from local production-boundary verification",
+    "authenticated Process persistence is Card-bound and the legacy v1 RPC is internal only"
+  ]
+}

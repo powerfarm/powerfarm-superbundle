@@ -1,0 +1,24 @@
+{
+  "contract_id": "pf.contract.legacy-removal.v1",
+  "card_contract": "powerfarm.card.v1",
+  "execution_slice": "powerfarm.execution-slice.v3",
+  "process_admission_write": "powerfarm.process.admission-write.v2",
+  "continuum_identity_modes": {
+    "production": "registry",
+    "tests_only": "embedded-test",
+    "read_only": "read-only"
+  },
+  "invariants": [
+    "writable Continuum cannot start without Registry unless embedded-test is explicitly requested",
+    "AI SDK institutional execution requires a sealed ExecutionSlice",
+    "ADK institutional execution requires an ExecutionSlice resolver",
+    "engine-local invocation, session and tool-call identifiers cannot create institutional run identity",
+    "public ADK runtime exports cannot create Office, Occupancy or Authority",
+    "Cards.listCurrent returns only sealed powerfarm.card.v1 carriers",
+    "WakePack projections remain bound to the exact source Card content digest",
+    "authenticated Process persistence requires card_ref, beat_ref, attempt_ref and execution_slice_sha256",
+    "the legacy admit_batch_v1 RPC is internal and not executable by authenticated callers",
+    "the Card-bound admit_card_batch_v2 RPC is the authenticated persistence boundary",
+    "Card v1 remains byte-semantically stable while legacy paths are removed"
+  ]
+}

@@ -1,0 +1,154 @@
+{
+  "$id": "pf.contract.first-seam.v1",
+  "version": 1,
+  "status": "permanent-boundary-contract",
+  "reconciler_ref": "pf.reconciler.attention",
+  "wake_hint": {
+    "allowed": [
+      "beat_ref",
+      "reconciler_ref",
+      "reason",
+      "resource_hint",
+      "trace_ref"
+    ],
+    "forbidden": [
+      "card",
+      "cards",
+      "card_body",
+      "payload",
+      "prompt",
+      "wake_pack",
+      "workflow_state"
+    ]
+  },
+  "heartime_result": {
+    "allowed_classes": [
+      "institutional_refs",
+      "counts",
+      "state",
+      "reason",
+      "timestamps"
+    ],
+    "forbidden": [
+      "card",
+      "cards",
+      "card_body",
+      "payload",
+      "prompt",
+      "wake_pack",
+      "response",
+      "responses",
+      "workflow_state"
+    ]
+  },
+  "ports": {
+    "cards": {
+      "contract_version": "powerfarm.cards.attention.v1",
+      "methods": [
+        "listCurrentAttention",
+        "compileWakePack",
+        "recordAttentionResponse"
+      ]
+    },
+    "registry": {
+      "contract_version": "powerfarm.registry.occupancy.v1",
+      "methods": [
+        "resolveCurrentOccupancy"
+      ]
+    },
+    "runtime_token": {
+      "contract_version": "powerfarm.registry.runtime-token.v1",
+      "methods": [
+        "issueRuntimeToken"
+      ]
+    },
+    "authority": {
+      "contract_version": "powerfarm.process.authority-projection.v1",
+      "methods": [
+        "projectCardAffordances"
+      ]
+    },
+    "runs": {
+      "contract_version": "powerfarm.platform.attention-runs.v1",
+      "methods": [
+        "listCompletedAttentionAttempts",
+        "markAttentionAttemptRecorded",
+        "ensureAttentionAttempt",
+        "observeAttentionAttempt"
+      ]
+    },
+    "evidence": {
+      "contract_version": "powerfarm.evidence.recording.v1",
+      "methods": [
+        "recordEvidence"
+      ]
+    },
+    "heartime_state": {
+      "contract_version": "powerfarm.heartime.state.v1",
+      "methods": [
+        "nextWake",
+        "prepareCycle",
+        "finishCycle",
+        "deferFailure"
+      ]
+    },
+    "heartime_control": {
+      "contract_version": "powerfarm.heartime.control.v1",
+      "methods": [
+        "arm"
+      ]
+    },
+    "reconciler": {
+      "contract_version": "powerfarm.first-seam.reconciler.v1",
+      "methods": [
+        "reconcile"
+      ]
+    }
+  },
+  "heartime_cycle": {
+    "contract_version": "powerfarm.heartime.cycle.v1",
+    "prepare_result": [
+      "contract_version",
+      "beats",
+      "next_wake"
+    ],
+    "finish_result": [
+      "contract_version",
+      "next_wake"
+    ],
+    "failure_result": [
+      "contract_version",
+      "next_wake"
+    ],
+    "scope_key": "reconciler_ref",
+    "open_beat_recovery": true,
+    "provider_alarm_is_canonical": false,
+    "provider_alarm_minimum_delay_ms": 1000,
+    "provider_fallback_contains_institutional_payload": false
+  },
+  "summary_contract": {
+    "max_bytes": 65536,
+    "recursive_forbidden_keys": [
+      "card",
+      "cards",
+      "card_body",
+      "payload",
+      "prompt",
+      "wake_pack",
+      "response",
+      "responses",
+      "workflow_state"
+    ]
+  },
+  "reconciler_result_states": [
+    "reconciled",
+    "blocked"
+  ],
+  "heartime_observation_states": [
+    "reconciled",
+    "blocked",
+    "failed",
+    "unknown",
+    "superseded"
+  ]
+}

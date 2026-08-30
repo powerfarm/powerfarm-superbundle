@@ -1,0 +1,34 @@
+{
+  "contract_id": "pf.contract.execution-slice.v1",
+  "contract_version": "powerfarm.execution-slice.v1",
+  "owner": "Cards + Process boundary",
+  "role": "engine-neutral executable projection of one circulating Card attempt",
+  "derived_from": "powerfarm.card.v1",
+  "engine_fields_forbidden": [
+    "runtime",
+    "provider",
+    "model",
+    "engine_revision_ref",
+    "invocation_id",
+    "tool_call_id",
+    "session_id"
+  ],
+  "identity": {
+    "run_ref": "sha256(card_ref + semantic_generation + beat_ref + attempt_ref + tool_name + kind + subject)",
+    "engine_neutral": true,
+    "occupancy_independent": true
+  },
+  "required_provenance": [
+    "card_ref",
+    "beat_ref",
+    "attempt_ref",
+    "execution_slice_sha256"
+  ],
+  "invariants": [
+    "the same Card attempt and capability mapping yields the same institutional run identity on every engine",
+    "runtime-local invocation identifiers are provenance only",
+    "the execution slice contains no raw tool input or output",
+    "the adapter must validate the slice seal and exact capability mapping before execution",
+    "a completed institutional run cannot produce a second external effect"
+  ]
+}

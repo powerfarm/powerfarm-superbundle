@@ -1,0 +1,84 @@
+{
+  "name": "powerfarm-doc-02",
+  "title": "PowerFarm: Capability Learning and Sedimentation",
+  "document": 2,
+  "status": "canon-candidate",
+  "date": "2026-08-24",
+  "generated_by": "scripts/derive-repository.mjs",
+  "document_metrics": {
+    "lines": 463,
+    "bytes": 15754,
+    "sha256": "71269b2cdc643a436ab4a384378e2c96b8572ffd599f79668176be49f7dce242",
+    "h1_headings": 1,
+    "sections": 15,
+    "subsections": 4,
+    "negative_controls": 30
+  },
+  "contract": {
+    "id": "pf.contract.capability-learning.v1",
+    "file": "contracts/capability-learning.v1.json",
+    "structural_checks": 58,
+    "sha256": "bcdc29505873113f052a99f588f94c50c4c3c76244a1acfff92a69053fcee54b"
+  },
+  "executable_evidence": {
+    "total_deterministic_tests": 52,
+    "test_suites": {
+      "capability_learning_core": {
+        "files": 1,
+        "tests": 46
+      },
+      "capability_learning_setting": {
+        "files": 1,
+        "tests": 5
+      },
+      "capability_learning_integration": {
+        "files": 1,
+        "tests": 1
+      }
+    },
+    "structural_contract_checks": 58,
+    "heartime_migration_checks": 14,
+    "negative_controls_made_executable": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30
+    ]
+  },
+  "deployment_evidence": {
+    "heartime_postgres_migration": "not_run",
+    "sedimentation_worker": "not_deployed",
+    "registry_port": "not_deployed",
+    "evidence_port": "not_deployed",
+    "imagineering_port": "not_deployed",
+    "process_port": "not_deployed",
+    "admitted_learning_scope": "not_run",
+    "whole_system_test": "not_run"
+  }
+}

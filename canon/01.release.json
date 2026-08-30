@@ -1,0 +1,136 @@
+{
+  "name": "powerfarm-doc-01",
+  "title": "PowerFarm: Organism and Organization",
+  "document": 1,
+  "status": "canon-candidate",
+  "date": "2026-08-24",
+  "generated_by": "scripts/derive-repository.mjs",
+  "document_metrics": {
+    "lines": 1888,
+    "bytes": 81908,
+    "sha256": "ed43383a1eb9c7337ac6f920e4141bb94cca3c2d51c5f1f86563b994e2dd8ad5",
+    "h1_headings": 6,
+    "sections": 23,
+    "subsections": 53,
+    "negative_controls": 68
+  },
+  "contracts": {
+    "first_seam": {
+      "id": "pf.contract.first-seam.v1",
+      "file": "contracts/first-seam.v1.json",
+      "structural_checks": 42,
+      "sha256": "6e9b0fe7b4218cc340899b5040007730ed4115c0eca410e1179553842dcbc3d0"
+    },
+    "capability_learning": {
+      "id": "pf.contract.capability-learning.v1",
+      "file": "contracts/capability-learning.v1.json",
+      "structural_checks": 58,
+      "sha256": "bcdc29505873113f052a99f588f94c50c4c3c76244a1acfff92a69053fcee54b"
+    },
+    "card": {
+      "id": "pf.contract.card.v1",
+      "file": "contracts/card.v1.json",
+      "structural_checks": 27,
+      "sha256": "32f555db873bb1f8d0ff76decf8f1233364692292c30a8d3123fea07e43b75fb"
+    },
+    "epistemic_continuity": {
+      "id": "pf.contract.epistemic-continuity.v1",
+      "file": "contracts/epistemic-continuity.v1.json",
+      "structural_checks": 21,
+      "sha256": "dd4e9f30c9a1deadd7e8e91a8d4358dd06017f6d98bf9b4ea6a79a334cc1fc54"
+    },
+    "energy_cost": {
+      "id": "pf.contract.energy-cost.v1",
+      "file": "contracts/energy-cost.v1.json",
+      "structural_checks": 28,
+      "sha256": "f986486ecacd35fc7122dad104f0dafd01f5ceca24f68b5b2f2c2ba0b4c5a36a"
+    },
+    "production_circulation": {
+      "id": "pf.contract.production-circulation.v1",
+      "file": "contracts/production-circulation.v1.json",
+      "structural_checks": 27,
+      "sha256": "a658ec29a3c16d5e953abe2904caae16e1ccfb96741629bc34c13025a496c0bb"
+    },
+    "legacy_removal": {
+      "id": "pf.contract.legacy-removal.v1",
+      "file": "contracts/legacy-removal.v1.json",
+      "structural_checks": 32,
+      "sha256": "d61ae60aa154e16a0cd5f61874300037889e1fc3b0968a7d25bac02130b471db"
+    }
+  },
+  "executable_evidence": {
+    "total_deterministic_tests": 162,
+    "test_suites": {
+      "heartime_logic": {
+        "files": 2,
+        "tests": 15
+      },
+      "heartime_setting": {
+        "files": 5,
+        "tests": 33
+      },
+      "roster": {
+        "files": 1,
+        "tests": 4
+      },
+      "first_seam_core": {
+        "files": 1,
+        "tests": 16
+      },
+      "first_seam_setting": {
+        "files": 1,
+        "tests": 5
+      },
+      "first_seam_integration": {
+        "files": 1,
+        "tests": 1
+      },
+      "capability_learning_core": {
+        "files": 1,
+        "tests": 46
+      },
+      "capability_learning_setting": {
+        "files": 1,
+        "tests": 5
+      },
+      "capability_learning_integration": {
+        "files": 1,
+        "tests": 1
+      },
+      "cards_core": {
+        "files": 4,
+        "tests": 30
+      },
+      "card_circulation_integration": {
+        "files": 6,
+        "tests": 6
+      }
+    },
+    "heartime_migration_checks": 80,
+    "negative_controls_made_executable": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      30,
+      31,
+      56
+    ]
+  },
+  "deployment_evidence": {
+    "heartime_postgres_migrations": "not_run",
+    "heartime_cloudflare_settings": "not_deployed",
+    "first_seam_organ_bindings": "not_deployed",
+    "capability_learning_organ_bindings": "not_deployed",
+    "whole_system_test": "not_run"
+  }
+}

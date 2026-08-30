@@ -1,0 +1,38 @@
+{
+  "contract_id": "pf.contract.card-recovery.v1",
+  "contract_version": "powerfarm.card-recovery.v1",
+  "owners": [
+    "Heartime",
+    "Registry",
+    "Process"
+  ],
+  "carrier": "powerfarm.card.v1",
+  "execution_slice": "powerfarm.execution-slice.v3",
+  "states": [
+    "orphaned",
+    "reconciling",
+    "emitted",
+    "acknowledged",
+    "executing"
+  ],
+  "sequence": [
+    "Heartime detects stale or interrupted custody and marks Card orphaned",
+    "Heartime begins reconciliation without rewriting institutional ownership",
+    "Process admits run.takeover when the Registry current occupant changed",
+    "Registry refreshes identity_ref and occupancy_ref on the Card",
+    "Heartime reissues a new beat while preserving attempt_ref",
+    "Process admits run.resume for the new beat",
+    "the engine executes with the same run_ref and external idempotency key"
+  ],
+  "invariants": [
+    "Office identity and run identity survive occupancy replacement",
+    "the old occupant cannot resume or close after Registry replacement",
+    "run.takeover and run.resume inherit authority only from the exact already-admitted run",
+    "takeover never moves work between Offices",
+    "Heartime reissue changes beat_ref but preserves attempt_ref",
+    "same beat duplicate delivery fails closed",
+    "new beat re-entry requires Process run.resume",
+    "no takeover creates or widens Authority",
+    "external idempotency key remains the institutional run_ref across recovery"
+  ]
+}

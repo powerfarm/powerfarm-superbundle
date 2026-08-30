@@ -1,0 +1,327 @@
+{
+  "$id": "pf.contract.capability-learning.v1",
+  "version": 1,
+  "status": "permanent",
+  "name": "Capability Learning and Sedimentation",
+  "reconciler_ref": "pf.reconciler.sedimentation",
+  "purpose": "Evidence-governed succession of digital implementations beneath a durable capability without changing capability semantics, authority, work-class scope, or evidence obligations.",
+  "scope": {
+    "identity": "CapabilityRef + capability revision + WorkClassRef",
+    "resource_hint": "CapabilityLearningScopeRef",
+    "one_active_occupancy": true,
+    "occupancy_is_replaceable": true
+  },
+  "substrates": [
+    "inference",
+    "configuration",
+    "fixed"
+  ],
+  "substrate_meaning": {
+    "inference": "Meaning is reconstructed by model inference on each execution.",
+    "configuration": "A reprogrammable digital structure performs stable portions and routes residual uncertainty to an admitted fallback.",
+    "fixed": "A deterministic digital artifact performs its admitted input domain; semantic change requires a new artifact or capability revision."
+  },
+  "transition_directions": [
+    "harden",
+    "soften"
+  ],
+  "ports": {
+    "registry": {
+      "contract_version": "powerfarm.registry.capability-learning.v1",
+      "methods": [
+        "resolveCapabilityLearningScope",
+        "findCapabilityImplementationCandidate"
+      ]
+    },
+    "evidence": {
+      "contract_version": "powerfarm.evidence.capability-learning.v1",
+      "methods": [
+        "profileCapabilityWorkClass",
+        "assessCapabilityImplementation",
+        "recordCapabilityLearningEvidence"
+      ]
+    },
+    "imagineering": {
+      "contract_version": "powerfarm.imagineering.capability-construction.v1",
+      "methods": [
+        "ensureCapabilityConstruction",
+        "ensureCapabilityEvaluation"
+      ]
+    },
+    "process": {
+      "contract_version": "powerfarm.process.capability-succession.v1",
+      "methods": [
+        "ensureCapabilityTransitionProposal"
+      ]
+    },
+    "reconciler": {
+      "contract_version": "powerfarm.sedimentation.reconciler.v1",
+      "methods": [
+        "reconcile"
+      ]
+    },
+    "heartime_state": {
+      "contract_version": "powerfarm.heartime.state.v1",
+      "methods": [
+        "nextWake",
+        "prepareCycle",
+        "finishCycle",
+        "deferFailure"
+      ]
+    },
+    "heartime_control": {
+      "contract_version": "powerfarm.heartime.control.v1",
+      "methods": [
+        "arm"
+      ]
+    }
+  },
+  "objects": {
+    "learning_scope": [
+      "ref",
+      "capability_ref",
+      "capability_revision",
+      "work_class_ref",
+      "semantic_contract_ref",
+      "authority_contract_ref",
+      "evidence_contract_ref",
+      "active_occupancy",
+      "learning_policy_ref",
+      "learning_policy_revision",
+      "learning_policy"
+    ],
+    "occupancy": [
+      "ref",
+      "implementation_ref",
+      "implementation_revision",
+      "substrate",
+      "status",
+      "fallback_implementation_ref",
+      "fallback_implementation_revision",
+      "fallback_substrate",
+      "cognition_fraction",
+      "activated_at"
+    ],
+    "work_profile": [
+      "ref",
+      "scope_ref",
+      "work_class_ref",
+      "capability_revision",
+      "capability_ref",
+      "occupancy_ref",
+      "implementation_ref",
+      "window_started_at",
+      "window_ended_at",
+      "observed_runs",
+      "stable_runs",
+      "exception_count",
+      "contradiction_count",
+      "workaround_count",
+      "exception_rate",
+      "residual_uncertainty",
+      "quality_score",
+      "baseline_quality_score",
+      "cost_per_run",
+      "latency_ms",
+      "epistemic_state",
+      "distribution_ref",
+      "evidence_refs"
+    ],
+    "candidate": [
+      "ref",
+      "scope_ref",
+      "capability_ref",
+      "capability_revision",
+      "work_class_ref",
+      "implementation_revision",
+      "target_substrate",
+      "status",
+      "semantic_contract_ref",
+      "authority_contract_ref",
+      "evidence_contract_ref",
+      "equivalence_contract_ref",
+      "fallback_implementation_ref",
+      "fallback_implementation_revision",
+      "fallback_substrate",
+      "residual_uncertainty",
+      "expected_cognition_fraction",
+      "expected_cost_per_run",
+      "expected_latency_ms",
+      "expected_quality_score",
+      "artifact_ref",
+      "authored_by",
+      "created_at"
+    ],
+    "equivalence_assessment": [
+      "ref",
+      "scope_ref",
+      "capability_ref",
+      "capability_revision",
+      "work_class_ref",
+      "candidate_ref",
+      "candidate_revision",
+      "profile_ref",
+      "equivalence_contract_ref",
+      "state",
+      "independent",
+      "evaluated_by",
+      "observed_runs",
+      "exception_count",
+      "contradiction_count",
+      "quality_regression",
+      "residual_uncertainty",
+      "observed_cognition_fraction",
+      "observed_cost_per_run",
+      "observed_latency_ms",
+      "observed_quality_score",
+      "evidence_refs",
+      "evaluated_at"
+    ],
+    "learning_policy": [
+      "minimum_observed_runs",
+      "minimum_stable_runs",
+      "minimum_assessment_runs",
+      "minimum_window_seconds",
+      "profile_stale_after_seconds",
+      "maximum_exception_rate",
+      "maximum_contradictions",
+      "maximum_workarounds",
+      "maximum_residual_uncertainty",
+      "minimum_savings_ratio",
+      "minimum_cognition_reduction",
+      "maximum_quality_regression",
+      "maximum_latency_regression",
+      "soften_exception_rate",
+      "soften_contradictions",
+      "soften_workarounds",
+      "soften_residual_uncertainty",
+      "allowed_substrates"
+    ],
+    "transition_proposal": [
+      "ref",
+      "created",
+      "state",
+      "direction",
+      "capability_ref",
+      "capability_revision",
+      "work_class_ref",
+      "learning_policy_ref",
+      "learning_policy_revision",
+      "from_occupancy_ref",
+      "from_implementation_ref",
+      "from_implementation_revision",
+      "from_substrate",
+      "to_implementation_ref",
+      "to_implementation_revision",
+      "to_substrate",
+      "to_cognition_fraction",
+      "semantic_contract_ref",
+      "authority_contract_ref",
+      "evidence_contract_ref",
+      "equivalence_contract_ref",
+      "profile_ref",
+      "assessment_ref",
+      "fallback_implementation_ref",
+      "fallback_implementation_revision",
+      "fallback_substrate"
+    ]
+  },
+  "laws": [
+    "Capability identity survives implementation succession.",
+    "Substrate succession cannot change capability semantics, authority, work-class scope, or evidence obligations.",
+    "The reconciler observes and proposes; it never promotes or activates.",
+    "Hardening proceeds one admitted substrate rung at a time.",
+    "A non-inference occupancy retains an admitted inference-capable fallback.",
+    "Residual uncertainty is routed upward, never hidden inside a deterministic claim.",
+    "Candidate equivalence requires evidence authored independently of the candidate author.",
+    "Institutional obligations are idempotent across changing evidence windows; each observed decision may still produce distinct evidence.",
+    "Contradiction, drift, workaround, or excess uncertainty may propose softening.",
+    "A profile from a stale occupancy or implementation cannot drive succession.",
+    "Promotion economics are decided from independently observed cost, quality, latency, cognition fraction, and evidence; candidate forecasts are not admission evidence.",
+    "A transition proposal names the exact source occupancy and exact target implementation strategy.",
+    "A work profile from the future, without a distribution identity, or without evidence references cannot drive hardening.",
+    "All substrates are digital; hardware terminology is analogy only.",
+    "Learning policy identity and revision are bound to every construction, evaluation, and transition obligation.",
+    "Work profiles bind the exact capability revision, work class, occupancy, and implementation they measured.",
+    "Equivalence assessments bind the exact candidate revision, work profile, and equivalence contract they evaluated.",
+    "Fixed substrate means zero runtime cognition inside the admitted work-class contract.",
+    "Candidate lifecycle, occupancy status, substrate, and epistemic state are independent dimensions.",
+    "The learning policy substrate list is a contiguous prefix of inference, configuration, fixed.",
+    "Inference occupancy has cognition fraction 1; configuration reduces it; fixed has cognition fraction 0.",
+    "Assessment cannot predate either the candidate or the work profile it evaluates.",
+    "A zero-cost baseline cannot produce a positive savings ratio.",
+    "A changed learning-policy revision creates a new institutional obligation."
+  ],
+  "heartime_summary": {
+    "max_bytes": 65536,
+    "body_free": true,
+    "states": [
+      "reconciled",
+      "blocked"
+    ],
+    "decisions": [
+      "no_change",
+      "insufficient_evidence",
+      "construction_requested",
+      "evaluation_requested",
+      "proposal_created",
+      "proposal_open",
+      "softening_proposed",
+      "already_fixed",
+      "blocked"
+    ]
+  },
+  "state_machines": {
+    "capability_revision": [
+      "draft",
+      "admitted",
+      "superseded",
+      "withdrawn"
+    ],
+    "implementation_candidate": [
+      "draft",
+      "candidate",
+      "shadow",
+      "verified",
+      "rejected",
+      "invalidated"
+    ],
+    "occupancy_status": [
+      "active",
+      "degraded"
+    ],
+    "epistemic_state": [
+      "unknown",
+      "observed",
+      "inferred",
+      "hypothesis",
+      "evidenced",
+      "verified",
+      "contradicted"
+    ],
+    "substrate_succession": [
+      "inference",
+      "configuration",
+      "fixed"
+    ]
+  },
+  "idempotency": {
+    "obligation_key": [
+      "contract",
+      "learning_scope",
+      "capability_revision",
+      "learning_policy_ref",
+      "learning_policy_revision",
+      "current_occupancy",
+      "decision",
+      "target_substrate",
+      "candidate_ref",
+      "candidate_revision"
+    ],
+    "decision_evidence_key": [
+      "obligation_key",
+      "work_profile_ref",
+      "assessment_ref"
+    ]
+  }
+}

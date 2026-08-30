@@ -1,0 +1,32 @@
+{
+  "format": "powerfarm.runtime-engine-boundary/v1",
+  "owner": "Process",
+  "institutional_kernel": "Continuum",
+  "engines": {
+    "google-adk": {
+      "setting": "process/continuum-adk",
+      "tested_pin": "google-adk==2.8.0"
+    },
+    "vercel-ai-sdk": {
+      "setting": "process/continuum-ai-sdk",
+      "pin": "engines/ai-sdk/PIN.json"
+    }
+  },
+  "invariants": [
+    "engines spend authority; they never mint institutional authority",
+    "tool execution is impossible before institutional admission",
+    "runtime completion is evidence; Continuum admits consequence",
+    "Registry remains source of Office and Occupancy",
+    "raw tool inputs and outputs are digest-only evidence by default",
+    "engine source and adapter contract are independently pinned",
+    "provider-executed tools that bypass the PowerFarm execution wrapper fail closed",
+    "all engine Settings consume the same sealed engine-neutral ExecutionSlice derived from a Card",
+    "institutional run identity is independent of engine-local invocation identifiers and occupant identity",
+    "all engine Settings emit the same Process RuntimeReceipt semantics while preserving runtime as evidence",
+    "Heartime re-emission changes beat identity without changing the institutional run identity of the same attempt"
+  ],
+  "execution_contracts": {
+    "slice": "contracts/execution-slice.v3.json",
+    "receipt": "contracts/execution-receipt.v1.json"
+  }
+}

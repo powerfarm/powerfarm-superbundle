@@ -1,0 +1,40 @@
+{
+  "contract_id": "pf.contract.epistemic-continuity.v1",
+  "record_version": "powerfarm.epistemic-record.v1",
+  "wake_context_version": "powerfarm.epistemic-wake-context.v1",
+  "role": "durable world-state continuity between transient occupants",
+  "classifications": [
+    "OBSERVED",
+    "INFERRED",
+    "ASSUMED",
+    "REPORTED",
+    "UNKNOWN",
+    "CONTRADICTED"
+  ],
+  "ownership": {
+    "memory": [
+      "epistemic.observations",
+      "epistemic.claims",
+      "epistemic.uncertainties",
+      "epistemic.conflicts",
+      "epistemic.freshness",
+      "epistemic.evidence_refs",
+      "evidence"
+    ],
+    "heartime": [
+      "epistemic.next_sample"
+    ]
+  },
+  "invariants": [
+    "OBSERVED records require a named source and durable evidence",
+    "INFERRED records cite supporting epistemic records and never become OBSERVED implicitly",
+    "REPORTED records retain source attribution and evidence",
+    "UNKNOWN remains durable until a later claim explicitly resolves its reference",
+    "CONTRADICTED records preserve the conflict instead of rewriting history",
+    "epistemic record refs are content-addressed",
+    "Heartime wakes Cards when next_sample is due or observations become stale",
+    "a deferred Card with unresolved uncertainty carries next_sample",
+    "wake context is reconstructible from durable Card state without private occupant memory",
+    "raw prompts, hidden chain-of-thought, chat transcripts, and private model state are not Card epistemic fields"
+  ]
+}

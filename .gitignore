@@ -1,0 +1,15 @@
+node_modules/
+.env
+.env.*
+!.env.example
+.venv/
+*.egg-info/
+.pytest_cache/
+__pycache__/
+*.py[cod]
+*.tsbuildinfo
+.next/
+coverage/
+dist/
+*.log
+.DS_Store

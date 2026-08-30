@@ -1,0 +1,11 @@
+{
+  "contract_id": "pf.contract.operational-trace.v1",
+  "contract_version": "powerfarm.operational-trace.v1",
+  "status": "production-boundary-contract",
+  "purpose": "correlate Card, Heartime, Process and engine activity without owning institutional meaning",
+  "card_trace": "deterministic trace_ref derived from stable CardRef without changing the Card v1 wire contract",
+  "beat_trace": "deterministic trace_ref derived from BeatRef",
+  "transport": ["Service Binding caller.trace_ref", "W3C traceparent", "x-powerfarm-trace-ref"],
+  "forbidden_as_authority": true,
+  "raw_prompt_or_chain_of_thought": false
+}

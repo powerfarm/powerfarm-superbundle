@@ -1,0 +1,29 @@
+{
+  "contract_id": "pf.contract.execution-receipt.v1",
+  "wire_type": "powerfarm.runtime.RuntimeReceipt",
+  "owner": "Process",
+  "role": "common consequence evidence emitted by every engine Setting",
+  "required_semantics": [
+    "runtime",
+    "run_ref",
+    "status",
+    "capability_ref",
+    "revision_ref",
+    "authority_ref",
+    "started_at",
+    "finished_at",
+    "provenance"
+  ],
+  "card_provenance": [
+    "card_ref",
+    "beat_ref",
+    "attempt_ref",
+    "execution_slice_sha256"
+  ],
+  "invariants": [
+    "engine-specific runtime and revision remain evidence, not institutional identity",
+    "run_ref is identical across Settings for the same ExecutionSlice",
+    "raw inputs and outputs are digest-only by default",
+    "Process admits the receipt as run.finish or run.fail"
+  ]
+}

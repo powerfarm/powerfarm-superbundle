@@ -1,0 +1,79 @@
+{
+  "contract_id": "pf.contract.card.v1",
+  "contract_version": "powerfarm.card.v1",
+  "schema_version": 1,
+  "role": "canonical circulating institutional carrier",
+  "identity": {
+    "stable": "ref",
+    "semantic_generation": "generation",
+    "snapshot_revision": "revision",
+    "content_address": "content_sha256"
+  },
+  "circulation_states": [
+    "prepared",
+    "emitted",
+    "acknowledged",
+    "executing",
+    "evidence_pending",
+    "settled",
+    "deferred",
+    "challenged",
+    "blocked",
+    "orphaned",
+    "reconciling",
+    "failed",
+    "terminal"
+  ],
+  "organs": {
+    "registry": [
+      "institutional.identity_ref",
+      "institutional.office_ref",
+      "institutional.occupancy_ref"
+    ],
+    "process": [
+      "institutional.direction_ref",
+      "institutional.responsibility_ref",
+      "institutional.authority_ref",
+      "institutional.run_ref",
+      "institutional.run_grant_ref",
+      "institutional.ecs_sha256",
+      "energy.authorization",
+      "cost.authorization"
+    ],
+    "platform": [
+      "execution"
+    ],
+    "memory": [
+      "evidence",
+      "epistemic.observations",
+      "epistemic.claims",
+      "epistemic.uncertainties",
+      "epistemic.conflicts",
+      "epistemic.freshness",
+      "epistemic.evidence_refs"
+    ],
+    "heartime": [
+      "circulation",
+      "epistemic.next_sample",
+      "energy.consumption",
+      "cost.consumption",
+      "lineage.transition_refs"
+    ],
+    "homeostasis": [
+      "health"
+    ]
+  },
+  "invariants": [
+    "generation changes only with semantic Card generation, not circulation",
+    "revision advances for every admitted CardPatch",
+    "every live Card carries next_expected unless explicitly blocked",
+    "terminal Cards do not circulate",
+    "organs fail closed when patching fields they do not own",
+    "Card snapshots are content-addressed",
+    "circulation transitions are append-only lineage references",
+    "live circulation requires explicit Process energy and cost authorization",
+    "every Heartime emission debits one content-addressed beat",
+    "resource observations are replay-idempotent and cannot hide overdraw"
+  ],
+  "resource_contract": "pf.contract.energy-cost.v1"
+}

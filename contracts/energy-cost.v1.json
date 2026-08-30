@@ -1,0 +1,40 @@
+{
+  "contract_id": "pf.contract.energy-cost.v1",
+  "carrier": "powerfarm.card.v1",
+  "execution_slice": "powerfarm.execution-slice.v3",
+  "authorization_owner": "Process",
+  "consumption_owner": "Heartime",
+  "measurement_sources": ["Platform", "Heartime"],
+  "health_owner": "Homeostasis",
+  "energy_authorization_version": "powerfarm.energy-authorization.v1",
+  "cost_authorization_version": "powerfarm.cost-authorization.v1",
+  "resource_observation_version": "powerfarm.resource-observation.v1",
+  "resource_health_version": "powerfarm.resource-health.v1",
+  "energy_meters": [
+    "beats",
+    "model_tokens",
+    "tool_calls",
+    "network_calls",
+    "compute_ms",
+    "sandbox_ms",
+    "wall_ms",
+    "human_attention_ms"
+  ],
+  "cost_accounting": {
+    "representation": "integer micros",
+    "currency": "three-letter uppercase code",
+    "modes": ["capped", "zero-cost"]
+  },
+  "invariants": [
+    "no live Card circulates without explicit Process energy and cost authorization",
+    "energy is a vector of non-interchangeable meters rather than one synthetic scalar",
+    "every Heartime emission consumes exactly one beat",
+    "Platform resource observations require attempt_ref, beat_ref, and durable metering evidence",
+    "Platform cannot meter Heartime beats",
+    "Heartime resource observations may meter beats only",
+    "resource observations are content-addressed and replay-idempotent",
+    "observed overdraw is recorded truthfully and blocks subsequent executable circulation",
+    "remaining budget is sealed into ExecutionSlice but excluded from institutional run identity",
+    "Homeostasis projects pressure and circulatory debt but cannot rewrite authorization or consumption"
+  ]
+}

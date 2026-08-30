@@ -1,0 +1,41 @@
+{
+  "format": "powerfarm.superbundle-release/v1",
+  "name": "powerfarm-superbundle",
+  "version": "0.12.0",
+  "built_at": "2026-08-30T08:42:00Z",
+  "deployment_claim": "BUILT_AND_VERIFIED_LOCALLY_NOT_DEPLOYED",
+  "pairing": "standalone PowerFarm Registry",
+  "process": {
+    "kernel": "Continuum 0.4.0",
+    "settings": {
+      "continuum-adk": "0.3.0 / google-adk==2.8.0",
+      "continuum-ai-sdk": "0.2.0 / ai==7.0.84"
+    }
+  },
+  "organism": "permanent organism + Heartime + roster + circulation + sedimentation",
+  "ai_sdk_pin": {
+    "source_manifest_sha256": "0748ce97dcc5650203f0aef91d446748c40e6b16996490cb9bfa981ca3a5c47a",
+    "source_archive_sha256": "2d3eabbf385fc40e6ab739778c9d6ef377dc26d296960202e7f168ec57d3b94e",
+    "source_files": 8391
+  },
+  "verification": {
+    "full_verify": "passed",
+    "continuum_tests": "59 passed",
+    "continuum_adk_tests": "28 passed, 1 skipped",
+    "continuum_ai_sdk_tests": "9 passed",
+    "ai_sdk_source_pin": "passed",
+    "engine_boundary_guards": "passed"
+  },
+  "golden_properties": [
+    "institutional admission precedes AI SDK tool execution",
+    "raw AI SDK tool inputs/results are digest-only evidence by default",
+    "completed run replay is refused before external effect re-execution",
+    "Registry occupancy replacement immediately invalidates the old actor",
+    "provider-executed tools without a local admission boundary fail closed",
+    "AI SDK upstream source drift breaks verification",
+    "sealed ExecutionSlice is mandatory for institutional engine execution",
+    "writable Continuum requires Registry except explicit embedded-test profile",
+    "authenticated Process persistence is Card-bound and cannot call legacy writer directly",
+    "First Seam current-state circulation accepts only sealed canonical Card v1 carriers"
+  ]
+}
