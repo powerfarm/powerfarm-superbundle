@@ -1,0 +1,46 @@
+{
+    "contract_version": "powerfarm.epistemic-continuity-golden.v1",
+    "card_ref": "pf.card.epistemic-golden",
+    "generation_preserved": true,
+    "process_boundary": {
+        "occupant_a_pid_shared": false,
+        "occupant_b_input": "durable_card_only"
+    },
+    "after_a": {
+        "revision": 4,
+        "circulation_state": "deferred",
+        "next_sample": "2026-08-30T06:04:00.000Z",
+        "classes": [
+            "OBSERVED",
+            "INFERRED",
+            "UNKNOWN"
+        ],
+        "observation_statement": "Supplier API reports shipment IN_TRANSIT",
+        "claim_statement": "Shipment will remain in transit until noon",
+        "uncertainty_question": "Has customs clearance completed?"
+    },
+    "wake_b": {
+        "decision": "CIRCULATE",
+        "reason": "epistemic_sample_due",
+        "inherited_observation_freshness": "STALE",
+        "inherited_claim_classification": "INFERRED",
+        "inherited_uncertainty_status": "UNRESOLVED"
+    },
+    "after_b": {
+        "revision": 6,
+        "observation_count": 2,
+        "claim_count": 2,
+        "uncertainty_count": 1,
+        "conflict_count": 1,
+        "unresolved_uncertainty_count": 0,
+        "uncertainty_status": "RESOLVED",
+        "next_sample": "2026-08-30T09:00:00.000Z",
+        "original_observation_retained": true,
+        "original_claim_retained": true,
+        "original_unknown_retained": true,
+        "evidence_refs": [
+            "pf.evidence.shipment-status-001",
+            "pf.evidence.shipment-status-002"
+        ]
+    }
+}

@@ -1,0 +1,44 @@
+{
+  "execution_contract": "powerfarm.execution-slice.v3",
+  "card_ref": "pf.card.recovery-golden",
+  "run_ref": "pfx-4cbfa7518eeeb966204795d93da43390",
+  "attempt_ref": "pf.attempt.recovery-golden",
+  "beats": [
+    "pf.beat.recovery-golden-1",
+    "pf.beat.recovery-golden-2"
+  ],
+  "retry_count": 1,
+  "reconciliation_ref": "pf.reconciliation.f247479ebea39fb4c6882ca07a668f48",
+  "duplicate_delivery": "POWERFARM_ALREADY_IN_FLIGHT",
+  "physical_effects": 1,
+  "run_events": [
+    {
+      "kind": "run.start",
+      "actor": "agent-old",
+      "office": "operations",
+      "subject": "run:pfx-4cbfa7518eeeb966204795d93da43390"
+    },
+    {
+      "kind": "run.takeover",
+      "actor": "agent-new",
+      "office": "operations",
+      "subject": "run:pfx-4cbfa7518eeeb966204795d93da43390"
+    },
+    {
+      "kind": "run.resume",
+      "actor": "agent-new",
+      "office": "operations",
+      "subject": "run:pfx-4cbfa7518eeeb966204795d93da43390"
+    },
+    {
+      "kind": "run.finish",
+      "actor": "agent-new",
+      "office": "operations",
+      "subject": "run:pfx-4cbfa7518eeeb966204795d93da43390"
+    }
+  ],
+  "final_card_state": "settled",
+  "final_identity_ref": "pf.identity.agent-new",
+  "final_occupancy_ref": "pf.occupancy.agent-new",
+  "audit_ok": true
+}

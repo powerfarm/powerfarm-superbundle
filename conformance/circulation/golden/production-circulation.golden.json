@@ -1,0 +1,22 @@
+{
+  "contract_version": "powerfarm.production-circulation-golden.v1",
+  "card_ref": "pf.card.production-circulation",
+  "trace_ref": "pf.trace.card.production-circulation",
+  "occupancy_ref": "pf.occupancy.production",
+  "occupant_ref": "pf.agent.production",
+  "runtime_subject": "pf.runtime.process-writer",
+  "runtime_audience": "powerfarm.supabase.postgrest",
+  "process_rpc": "/rest/v1/rpc/admit_card_batch_v2",
+  "process_profile": "continuum",
+  "propagated_refs": {
+    "trace_ref": "pf.trace.card.production-circulation",
+    "card_ref": "pf.card.production-circulation",
+    "beat_ref": "pf.beat.production-circulation",
+    "attempt_ref": "pf.attempt.production-circulation"
+  },
+  "registry_calls": [
+    "registry.occupancy",
+    "registry.runtime-token"
+  ],
+  "authority_created_by_runtime_token": false
+}

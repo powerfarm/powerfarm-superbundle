@@ -1,0 +1,193 @@
+{
+  "captured_at": "2026-08-23",
+  "project": "wmsrqefgdgcijupeogfa",
+  "note": "Snapshot. Envelhece. A verdade e a base, nao este ficheiro -- mas sem ele nao ha com que comparar.",
+  "migrations_recorded": [
+    {
+      "version": "0001",
+      "name": "identity",
+      "file_in_repo": "registry@codex/powerfarm-v0.1:supabase/migrations/0001_identity.sql"
+    },
+    {
+      "version": "0002",
+      "name": "manifest",
+      "file_in_repo": "registry@codex/powerfarm-v0.1:supabase/migrations/0002_manifest.sql"
+    },
+    {
+      "version": "0003",
+      "name": "autoridade",
+      "file_in_repo": "registry@codex/powerfarm-v0.1:supabase/migrations/0003_autoridade.sql"
+    },
+    {
+      "version": "0004",
+      "name": "adk_runtime",
+      "file_in_repo": "registry@codex/powerfarm-v0.1:supabase/migrations/0004_adk_runtime.sql"
+    },
+    {
+      "version": "0005",
+      "name": "adk_runtime_advisors",
+      "file_in_repo": "registry@codex/powerfarm-v0.1:supabase/migrations/0005_adk_runtime_advisors.sql"
+    },
+    {
+      "version": "20260820192536",
+      "name": "gadget_lineage",
+      "file_in_repo": "registry@codex/powerfarm-v0.1:supabase/migrations/20260820192536_gadget_lineage.sql"
+    }
+  ],
+  "applied_but_unrecorded": [],
+  "written_but_unapplied": [
+    {
+      "file": "registry:0004_admit_brand_v03.sql",
+      "evidence": "as 4 artifact_versions sao todas @0.2, semeadas pela 0002. A marca 0.3 nunca entrou.",
+      "correction": "uma versao anterior deste ficheiro dizia 'aplicada, nao registada'. Estava errado: inferido de 'os artefactos existem' em vez de olhar o numero da versao."
+    },
+    {
+      "file": "cards:0010_attention_cards.sql",
+      "evidence": "zero tabelas attention* na base"
+    },
+    {
+      "file_at_observation": "organism:20260823_heartime_genesis.sql",
+      "current_repo_name": "organism:20260823000000_heartime_genesis.sql",
+      "evidence": "zero tabelas no schema heartime"
+    }
+  ],
+  "schemas": [
+    "adk",
+    "auth",
+    "extensions",
+    "graphql",
+    "graphql_public",
+    "pgbouncer",
+    "public",
+    "realtime",
+    "storage",
+    "supabase_migrations",
+    "vault"
+  ],
+  "public": {
+    "tables": 19,
+    "policies": 42,
+    "subsystems_mixed": {
+      "identity": [
+        "identities",
+        "identity_keys",
+        "identity_links",
+        "occupancies"
+      ],
+      "manifest": [
+        "artifacts",
+        "artifact_versions",
+        "artifact_relations"
+      ],
+      "authority": [
+        "grants",
+        "runs",
+        "run_artifacts",
+        "approvals",
+        "run_grants"
+      ],
+      "platform": [
+        "gadgets",
+        "gadget_drafts",
+        "gadget_draft_operations",
+        "gadget_revisions",
+        "gadget_installations",
+        "workspaces",
+        "workspace_members"
+      ]
+    }
+  },
+  "numbering_schemes_in_use": 2,
+  "resolved_2026_08_23": {
+    "nothing_was_lost": "Os seis ficheiros existem, no branch codex/powerfarm-v0.1 do powerfarm-registry, empurrado para o GitHub.",
+    "why_they_seemed_missing": "main tem 3 migrations. O branch tem 7. A base corresponde ao branch, nao ao main.",
+    "the_collision": {
+      "0004_adk_runtime.sql": {
+        "bytes": 20263,
+        "written": "2026-08-19",
+        "recorded_in_db": true
+      },
+      "0004_admit_brand_v03.sql": {
+        "bytes": 4137,
+        "written": "2026-08-20",
+        "recorded_in_db": false,
+        "applied": "nao — verificado pelas versoes dos artefactos"
+      },
+      "cause": "Dois ficheiros com o mesmo numero no disco. Na base nunca houve colisao, porque um deles nunca correu."
+    },
+    "stuck_merge": {
+      "found": "MERGE_HEAD de 2026-08-20 21:32, parado 3 dias",
+      "conflict": ".gitignore — HEAD queria *.tsbuildinfo, main queria .DS_Store",
+      "blocked": [
+        "0004_admit_brand_v03.sql",
+        "app/oauth/consent",
+        "app/api/oauth/decision",
+        "middleware.ts",
+        "app/login"
+      ],
+      "resolved": "merge 9e4bd48, ficaram as duas linhas. Local, sem push."
+    },
+    "still_open": [
+      "As duas 0004 continuam a partilhar numero.",
+      "main do registry esta 4 migrations atras da base."
+    ]
+  },
+  "migrations_recorded_with_file": 6,
+  "rows": {
+    "total": 28,
+    "runs": 5,
+    "artifact_versions": 4,
+    "artifacts": 4,
+    "gadget_revisions": 2,
+    "identities": 2,
+    "run_grants": 2,
+    "artifact_relations": 1,
+    "gadget_drafts": 1,
+    "gadget_draft_operations": 1,
+    "gadget_installations": 1,
+    "gadgets": 1,
+    "identity_links": 1,
+    "workspace_members": 1,
+    "workspaces": 1,
+    "empty": [
+      "approvals",
+      "grants",
+      "identity_keys",
+      "occupancies",
+      "run_artifacts"
+    ]
+  },
+  "survives_any_public_decision": {
+    "schema": "auth",
+    "users": 1,
+    "oauth_clients": 1,
+    "oauth_authorizations": 10,
+    "sessions": 4,
+    "refresh_tokens": 14,
+    "note": "A conta, o cliente OAuth e as sessoes nao estao em public."
+  },
+  "decision": "public fecha e nao cresce. As 19 tabelas nao se movem: quatro dos cinco subsistemas sao inicios correctos do que declararam ser. O buraco e occupancy_id e grants estarem vazios, nao a arrumacao.",
+  "intent_vs_reality": {
+    "method": "olhar o que existe, depois o que se propos a ser, depois se e inicio do objectivo ou esta errado",
+    "manifest": {
+      "declarou": "declara sem armazenar: source_repo + source_commit + source_path + sha256",
+      "mede": "4 de 4 versoes com proveniencia completa",
+      "veredicto": "inicio correcto, a funcionar"
+    },
+    "lineage": {
+      "declarou": "Registry resolves immutable truth",
+      "mede": "2 de 2 revisoes com definition_hash",
+      "veredicto": "inicio correcto, a funcionar"
+    },
+    "identity": {
+      "declarou": "e a cola: ADK, Cloudflare OS e LABs apontam ao mesmo id",
+      "mede": "18 chaves estrangeiras apontam a identities; identity_keys 0; occupancies 0",
+      "veredicto": "inicio correcto, metade por usar"
+    },
+    "autoridade": {
+      "declarou": "grants: o mandato do cargo. Sem ele a assinatura nao atesta nada.",
+      "mede": "grants 0 · approvals 0 · runs com grant 2 de 5 · runs com ocupante 0 de 5 · runs com cargo 5 de 5",
+      "veredicto": "ERRADO — pela definicao da propria migration, nada do que aconteceu atesta nada. E o run grava quem assinou e nunca quem executou: metade exacta da distincao cargo/ocupante."
+    }
+  }
+}

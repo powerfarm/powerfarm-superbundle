@@ -1,0 +1,8 @@
+{
+  "full_verify": "passed",
+  "continuum_tests": "50 passed",
+  "continuum_adk_tests": "26 passed, 1 skipped",
+  "continuum_ai_sdk_tests": "9 passed",
+  "ai_sdk_source_pin": "passed",
+  "engine_boundary_guards": "passed"
+}
