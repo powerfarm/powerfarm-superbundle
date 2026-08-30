@@ -1,0 +1,47 @@
+name = "powerfarm-heartime"
+main = "src/index.js"
+compatibility_date = "2026-08-24"
+
+[observability]
+enabled = true
+
+[[durable_objects.bindings]]
+name = "HEARTIME_CLOCK"
+class_name = "HeartimeClock"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["HeartimeClock"]
+
+# Deploy this unchanged Worker once per admitted ReconcilerRef. The provider
+# setting is replaceable; the canonical contract remains in PostgreSQL.
+[vars]
+SUPABASE_URL = "https://REPLACE.supabase.co"
+SUPABASE_PUBLISHABLE_KEY = "REPLACE_WITH_PUBLISHABLE_KEY"
+HEARTIME_CLOCK_KEY = "attention"
+HEARTIME_RECONCILER_REF = "pf.reconciler.attention"
+HEARTIME_IDENTITY_REF = "pf.runtime.heartime"
+EXPECTED_CONTROL_IDENTITY_REF = "pf.runtime.organism-control"
+HEARTIME_POSTGREST_TIMEOUT_MS = "10000"
+HEARTIME_TOKEN_AUDIENCE = "powerfarm.supabase.postgrest"
+HEARTIME_TOKEN_MIN_TTL_SECONDS = "60"
+
+# For the capability-learning deployment, change only:
+#   name = "powerfarm-heartime-sedimentation"
+#   HEARTIME_CLOCK_KEY = "sedimentation"
+#   HEARTIME_RECONCILER_REF = "pf.reconciler.sedimentation"
+
+[[services]]
+binding = "REGISTRY_IDENTITY"
+service = "REPLACE_WITH_REGISTRY_WORKER"
+entrypoint = "RegistryRuntimeTokenPort"
+
+[[services]]
+binding = "ATTENTION_RECONCILER"
+service = "REPLACE_WITH_ATTENTION_RECONCILER_WORKER"
+entrypoint = "AttentionReconciler"
+
+[[services]]
+binding = "SEDIMENTATION_RECONCILER"
+service = "REPLACE_WITH_SEDIMENTATION_RECONCILER_WORKER"
+entrypoint = "SedimentationReconciler"
