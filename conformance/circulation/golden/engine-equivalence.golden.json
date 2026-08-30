@@ -68,6 +68,11 @@
       "revision_ref": "google-adk==2.8.0",
       "effects": 1,
       "replay_code": "POWERFARM_ALREADY_COMPLETED"
+    },
+    "microsoft-agent-framework": {
+      "revision_ref": "microsoft-agent-framework==1.16.0",
+      "effects": 1,
+      "replay_code": "POWERFARM_ALREADY_COMPLETED"
     }
   },
   "raw_values_absent": true,

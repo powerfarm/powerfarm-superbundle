@@ -1,15 +1,16 @@
 {
   "format": "powerfarm.superbundle-release/v1",
   "name": "powerfarm-superbundle",
-  "version": "0.12.0",
-  "built_at": "2026-08-30T08:42:00Z",
+  "version": "0.13.0",
+  "built_at": "2026-08-30T08:57:00Z",
   "deployment_claim": "BUILT_AND_VERIFIED_LOCALLY_NOT_DEPLOYED",
   "pairing": "standalone PowerFarm Registry",
   "process": {
     "kernel": "Continuum 0.4.0",
     "settings": {
       "continuum-adk": "0.3.0 / google-adk==2.8.0",
-      "continuum-ai-sdk": "0.2.0 / ai==7.0.84"
+      "continuum-ai-sdk": "0.2.0 / ai==7.0.84",
+      "continuum-maf": "0.1.0 / agent-framework-core==1.16.0"
     }
   },
   "organism": "permanent organism + Heartime + roster + circulation + sedimentation",
@@ -24,7 +25,9 @@
     "continuum_adk_tests": "28 passed, 1 skipped",
     "continuum_ai_sdk_tests": "9 passed",
     "ai_sdk_source_pin": "passed",
-    "engine_boundary_guards": "passed"
+    "engine_boundary_guards": "passed",
+    "continuum_maf_tests": "8 passed, 1 skipped locally when Agent Framework dependency is unavailable; real runtime test enabled in GitHub CI",
+    "microsoft_agent_framework_pin": "passed"
   },
   "golden_properties": [
     "institutional admission precedes AI SDK tool execution",
@@ -36,6 +39,14 @@
     "sealed ExecutionSlice is mandatory for institutional engine execution",
     "writable Continuum requires Registry except explicit embedded-test profile",
     "authenticated Process persistence is Card-bound and cannot call legacy writer directly",
-    "First Seam current-state circulation accepts only sealed canonical Card v1 carriers"
-  ]
+    "First Seam current-state circulation accepts only sealed canonical Card v1 carriers",
+    "ADK, AI SDK and Microsoft Agent Framework produce the same normalized institutional consequence for one sealed ExecutionSlice",
+    "Microsoft Agent Framework memory/session facilities consume only a read-only PowerFarm MEMORY projection and never write institutional epistemic state implicitly"
+  ],
+  "microsoft_agent_framework_pin": {
+    "distribution": "agent-framework-core",
+    "version": "1.16.0",
+    "pin": "engines/microsoft-agent-framework/PIN.json",
+    "wheel_sha256": "382a6a0332cdc3144ffcf14b07a9a38c3ef42afc06dde8230226b850fe4cc76e"
+  }
 }

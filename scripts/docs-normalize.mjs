@@ -52,6 +52,7 @@ function mapPath(rel) {
     if (p[1] === 'continuum') return ['Super Bundle','Process','Continuum', ...p.slice(2,-1)].join(' / ');
     if (p[1] === 'continuum-adk') return ['Super Bundle','Process','ADK Setting', ...p.slice(2,-1)].join(' / ');
     if (p[1] === 'continuum-ai-sdk') return ['Super Bundle','Process','AI SDK Setting', ...p.slice(2,-1)].join(' / ');
+    if (p[1] === 'continuum-maf') return ['Super Bundle','Process','Microsoft Agent Framework Setting', ...p.slice(2,-1)].join(' / ');
     return 'Super Bundle / Process';
   }
   if (p[0] === 'heartime') return ['Super Bundle','Organism','Heartime', ...p.slice(1,-1)].join(' / ');
@@ -71,6 +72,7 @@ function mapPath(rel) {
 function localHome(rel) {
   if (rel.startsWith('process/continuum-adk/')) return 'process/continuum-adk/README.md';
   if (rel.startsWith('process/continuum-ai-sdk/')) return 'process/continuum-ai-sdk/README.md';
+  if (rel.startsWith('process/continuum-maf/')) return 'process/continuum-maf/README.md';
   if (rel.startsWith('process/continuum/')) return 'process/continuum/README.md';
   if (rel.startsWith('process/')) return 'process/README.md';
   if (rel.startsWith('heartime/')) return 'heartime/README.md';

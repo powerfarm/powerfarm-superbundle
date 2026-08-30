@@ -1,0 +1,23 @@
+{
+  "format": "powerfarm.release/v1",
+  "name": "continuum-maf",
+  "version": "0.1.0",
+  "built_at": "2026-08-30T08:57:00Z",
+  "requires_continuum": ">=0.4.0,<0.5",
+  "engine_pin": "agent-framework-core==1.16.0",
+  "features": [
+    "execution-slice-required",
+    "function-middleware-admission",
+    "digest-only-evidence",
+    "qualified-idempotency",
+    "run-replay-guard",
+    "run-resume-and-takeover",
+    "read-only-powerfarm-memory-projection",
+    "no-engine-memory-writeback",
+    "no-runtime-governance-bootstrap"
+  ],
+  "tests_local_passed": 8,
+  "tests_real_maf_skipped_offline": 1,
+  "github_modified": false,
+  "tracked_files": 21
+}

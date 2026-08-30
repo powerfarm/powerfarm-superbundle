@@ -1,5 +1,5 @@
 {
-  "built_at": "2026-08-30T08:42:00Z",
+  "built_at": "2026-08-30T08:57:00Z",
   "database_schema_version": 3,
   "features": [
     "bitemporal-ledger",
@@ -15,12 +15,13 @@
     "atomic-admission-batch",
     "run-continuation-authority",
     "registry-required-production-identity",
-    "card-bound-postgres-admission"
+    "card-bound-postgres-admission",
+    "process-owned-engine-neutral-execution-slice"
   ],
   "format": "powerfarm.release/v1",
   "github_modified": false,
   "name": "powerfarm-continuum",
   "tests": 59,
-  "tracked_files": 102,
+  "tracked_files": 103,
   "version": "0.4.0"
 }

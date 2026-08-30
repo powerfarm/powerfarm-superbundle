@@ -22,7 +22,9 @@ const gateSource = read('circulation/cards/lib/gate.mjs');
 const recoverySource = read('circulation/cards/lib/recovery.mjs');
 const sliceSource = read('circulation/cards/lib/execution-slice.mjs');
 const aiWrapper = read('process/continuum-ai-sdk/src/wrap-tools.mjs');
+const processSlice = read('process/continuum/powerfarm/execution_slice.py');
 const adkSlice = read('process/continuum-adk/src/continuum_adk/execution_slice.py');
+const mafController = read('process/continuum-maf/src/continuum_maf/controller.py');
 const checks = [];
 const check = (label, condition) => { assert.equal(Boolean(condition), true, label); checks.push(label); };
 
@@ -51,7 +53,9 @@ check('Homeostasis projects circulatory debt', /circulatoryDebt/.test(resourceSo
 check('ExecutionSlice v3 is the current boundary', EXECUTION_SLICE_CONTRACT_VERSION === 'powerfarm.execution-slice.v3' && manifest.execution_slice === EXECUTION_SLICE_CONTRACT_VERSION);
 check('ExecutionSlice seals remaining resources', /resources: executionResourceBudget/.test(sliceSource));
 check('AI SDK passes resource budget to local tool context', /resourceBudget: identity\.executionSlice\?\.resources/.test(aiWrapper));
-check('ADK validates the same resource budget shape', /ExecutionSlice\.resources\.energy_remaining/.test(adkSlice) && /remaining_micros/.test(adkSlice));
+check('Process validates the shared resource budget shape', /ExecutionSlice\.resources\.energy_remaining/.test(processSlice) && /remaining_micros/.test(processSlice));
+check('ADK consumes Process-owned ExecutionSlice validation', /from powerfarm\.execution_slice import \*/.test(adkSlice));
+check('MAF consumes Process-owned ExecutionSlice validation', /from powerfarm\.execution_slice import/.test(mafController));
 check('energy/cost golden exists', fs.existsSync(path.join(root, 'conformance/circulation/energy-cost.integration.test.mjs')));
 check('energy/cost fixture is pinned', fs.existsSync(path.join(root, 'conformance/circulation/golden/energy-cost.golden.json')));
 

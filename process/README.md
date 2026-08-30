@@ -16,6 +16,7 @@ Brand / Store / Gadgets             -->   Authority / admission / consequence / 
 exact artifact lineage                    |
                                            +-- continuum-adk      -> Google ADK
                                            +-- continuum-ai-sdk   -> Vercel AI SDK
+                                           +-- continuum-maf      -> Microsoft Agent Framework
 ```
 
 ## Ownership
@@ -30,8 +31,11 @@ activity into Continuum admission and evidence:
 - `continuum-adk` pins and constrains Google ADK execution.
 - `continuum-ai-sdk` pins the vendored AI SDK source and wraps executable tools
   so institutional admission occurs before `execute()`.
+- `continuum-maf` pins Microsoft Agent Framework and uses function middleware so
+  Continuum admission occurs before the function body. AgentSession and ContextProvider
+  state are engine-local and never become the PowerFarm MEMORY organ.
 
-Neither engine creates PowerFarm authority. Both are replaceable mechanisms.
+No engine creates PowerFarm authority. All three are replaceable mechanisms.
 
 ## Common execution boundary
 
@@ -41,7 +45,7 @@ Both Settings consume the same `powerfarm.execution-slice.v3` rather than constr
 Card → ExecutionSlice → Process admission → engine-local execution → RuntimeReceipt
 ```
 
-`continuum-adk` and `continuum-ai-sdk` validate the slice seal and exact tool mapping before an external effect. The same institutional attempt yields the same `run_ref` on both Settings. A Heartime reissue changes `beat_ref` and `resume_request_id` but preserves `attempt_ref` and `run_ref`. An open run accepts a new beat only through `run.resume`; a successor Occupancy must first be admitted through `run.takeover`. Runtime and revision pin remain receipt provenance, never run identity.
+`continuum-adk`, `continuum-ai-sdk`, and `continuum-maf` validate the slice seal and exact tool mapping before an external effect. The same institutional attempt yields the same `run_ref` on both Settings. A Heartime reissue changes `beat_ref` and `resume_request_id` but preserves `attempt_ref` and `run_ref`. An open run accepts a new beat only through `run.resume`; a successor Occupancy must first be admitted through `run.takeover`. Runtime and revision pin remain receipt provenance, never run identity.
 
 ## Production identity contract
 
@@ -51,7 +55,7 @@ The included `StaticRegistryDirectory` exists only for deterministic tests and l
 
 ## Resource authorization boundary
 
-Process owns `energy.authorization` and `cost.authorization` on the Card. ExecutionSlice v3 projects the remaining budget to ADK and AI SDK, but engines cannot enlarge it. Resource consumption observations return through Heartime and never mint Authority.
+Process owns `energy.authorization` and `cost.authorization` on the Card. ExecutionSlice v3 projects the remaining budget to ADK, AI SDK and Microsoft Agent Framework, but engines cannot enlarge it. Resource consumption observations return through Heartime and never mint Authority.
 
 ## Production persistence setting
 

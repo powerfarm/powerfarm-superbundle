@@ -8,10 +8,12 @@
 
 **Organism + Process + replaceable execution engines in one permanent body.**
 
+Start with **[The Founder’s Guide](./FOUNDERS-GUIDE.md)** for constitutional intent, then **[Engineer Quick Guide](./ENGINEER-QUICK-GUIDE.md)** for the technical map and current three-engine execution model.
+
 This repository is the permanent PowerFarm body outside Registry. The standalone
 Registry remains separate and owns Identity, Office/Occupancy, Brand, Store, Gadgets
 and exact artifact lineage. Process lives here as Continuum plus pinned execution
-Settings for Google ADK and Vercel AI SDK.
+Settings for Google ADK, Vercel AI SDK and Microsoft Agent Framework.
 
 ```text
 REGISTRY (separate)
@@ -22,7 +24,8 @@ POWERFARM SUPER BUNDLE
   Process
     Continuum · authority · admission · runs · consequence · proof
       ├─ continuum-adk    → Google ADK 2.8.0
-      └─ continuum-ai-sdk → Vercel AI SDK 7.0.84 (vendored + content-pinned)
+      ├─ continuum-ai-sdk → Vercel AI SDK 7.0.84 (vendored + content-pinned)
+      └─ continuum-maf    → Microsoft Agent Framework 1.16.0
                      │
   Organism
     Cards · Heartime · roster · homeostatic circulation · learning/sedimentation
@@ -35,7 +38,7 @@ identity, authority or consequence out of PowerFarm.
 ## Layout
 
 ```text
-process/       Process: Continuum + ADK and AI SDK Settings
+process/       Process: Continuum + ADK, AI SDK and Microsoft Agent Framework Settings
 heartime/      temporal circulation and wake enforcement
 circulation/   canonical Cards plus stateless reconcilers
 roster/        desired organ coverage
@@ -70,6 +73,8 @@ Pinned circulation goldens now cover the basic vertical path, engine equivalence
 ## Engine-equivalent execution
 
 `powerfarm.execution-slice.v3` is the engine-neutral executable projection of an executing Card. `attempt_ref` identifies the institutional attempt; `beat_ref` identifies one Heartime delivery. Recovery may issue a new beat while preserving the same attempt and `run_ref`.
+
+Microsoft Agent Framework is the third first-class Setting. Its `AgentSession`, ContextProviders, workflows and memory mechanisms are execution-engine facilities only. PowerFarm MEMORY may project read-only context into MAF, but MAF state never becomes institutional evidence or epistemic state implicitly.
 
 ```text
 executing Card
@@ -182,7 +187,7 @@ This is permanent source and contract work, not a disposable experiment. Deploym
 ## Verification
 
 Run the full deterministic verification suite, including organism seams, Continuum,
-ADK Setting, AI SDK golden integrations, exact upstream source pins, migration checks,
+ADK, AI SDK and Microsoft Agent Framework Settings, engine-equivalence goldens, exact source pins, migration checks,
 contract checks, and engine-boundary guards:
 
 ```bash
@@ -210,7 +215,7 @@ Admission requires real owner-organ ports, disposable-database execution, destru
 
 ## Legacy removal
 
-Milestone 7 makes the Cards + Heartime route mandatory rather than preferential. Writable Continuum cannot silently fall back to an embedded identity directory. ADK and AI SDK cannot derive institutional run identity from engine-local IDs. Public runtime packages expose no governance bootstrap helpers. The First Seam cannot circulate a historical attention-shaped object as if it were a canonical Card. Authenticated Process persistence cannot commit an admitted batch unless it is bound to `card_ref`, `beat_ref`, `attempt_ref`, and the exact ExecutionSlice digest.
+Milestone 7 makes the Cards + Heartime route mandatory rather than preferential. Writable Continuum cannot silently fall back to an embedded identity directory. ADK, AI SDK and Microsoft Agent Framework cannot derive institutional run identity from engine-local IDs. Public runtime packages expose no governance bootstrap helpers. The First Seam cannot circulate a historical attention-shaped object as if it were a canonical Card. Authenticated Process persistence cannot commit an admitted batch unless it is bound to `card_ref`, `beat_ref`, `attempt_ref`, and the exact ExecutionSlice digest.
 
 The legacy implementations retained for migration history and deterministic tests are explicit and non-production: `identity_mode="embedded-test"` and the internal PostgreSQL v1 transaction routine.
 

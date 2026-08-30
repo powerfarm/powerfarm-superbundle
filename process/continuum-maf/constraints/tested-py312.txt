@@ -1,0 +1,3 @@
+# Direct engine pin verified by PowerFarm for Python 3.12.
+# Transitive dependencies are resolved by pip from the Agent Framework 1.16.0 metadata.
+agent-framework-core==1.16.0

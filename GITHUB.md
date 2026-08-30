@@ -13,7 +13,7 @@ Recommended initial publication:
 ```sh
 git init -b main
 ./scripts/git-stage-github.sh
-git commit -m "PowerFarm Super Bundle v0.12.0"
+git commit -m "PowerFarm Super Bundle v0.13.0"
 git remote add origin <your-repository-url>
 git push -u origin main
 ```

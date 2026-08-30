@@ -19,6 +19,7 @@ function sourceFiles(directory, relative = '') {
     if (excluded.has(entry.name)) continue;
     const rel = path.join(relative, entry.name);
     if (rel.startsWith(path.join('evidence', 'organism-verification'))) continue;
+    if (rel === 'RELEASE-MANIFEST.sha256') continue;
     const absolute = path.join(directory, entry.name);
     if (entry.isDirectory()) files.push(...sourceFiles(absolute, rel));
     else files.push(rel);
@@ -64,9 +65,11 @@ const commands = [
   { id: 'production-conformance', command: 'npm', args: ['run', 'test:production-conformance'] },
   { id: 'process-continuum', command: 'npm', args: ['run', 'test:process-continuum'] },
   { id: 'process-adk', command: 'npm', args: ['run', 'test:process-adk'] },
+  { id: 'process-maf', command: 'npm', args: ['run', 'test:process-maf'] },
   { id: 'process-ai-sdk', command: 'npm', args: ['run', 'test:process-ai-sdk'] },
   { id: 'process-writer-setting', command: 'npm', args: ['run', 'test:process-worker'] },
   { id: 'ai-sdk-pin', command: 'npm', args: ['run', 'check:ai-sdk-pin'] },
+  { id: 'maf-pin', command: 'npm', args: ['run', 'check:maf-pin'] },
   { id: 'engine-boundaries', command: 'npm', args: ['run', 'check:engine-boundaries'] },
   { id: 'documentation-conformance', command: 'npm', args: ['run', 'docs:check'] },
 ];
@@ -139,7 +142,7 @@ const productionObservation = fs.existsSync(productionObservationPath)
   : null;
 
 const report = {
-  kind: 'powerfarm.superbundle.verification.v8',
+  kind: 'powerfarm.superbundle.verification.v9',
   started_at: startedAt,
   finished_at: new Date().toISOString(),
   source_tree_sha256: sourceTreeSha256,
@@ -183,6 +186,9 @@ const report = {
     homeostasis_resource_projection_runtime: 'LOCAL GOLDEN ONLY',
     live_cost_billing_source: 'NOT DEPLOYED',
     legacy_execution_bypasses: 'REMOVED AND VERIFIED LOCALLY',
+    microsoft_agent_framework_setting: 'BUILT AND CONTRACT-VERIFIED LOCALLY; REAL PACKAGE RUNTIME TEST SKIPPED BECAUSE DEPENDENCY IS UNAVAILABLE; NOT DEPLOYED',
+    maf_memory_projection: 'BUILT AND VERIFIED READ-ONLY LOCALLY; REAL CONTEXTPROVIDER TEST CONFIGURED FOR CI; NOT DEPLOYED',
+    three_engine_equivalence: 'LOCAL THREE-ENGINE GOLDEN VERIFIED; REAL MAF RUNTIME TEST CONFIGURED FOR CI AND NOT RUN LOCALLY',
     whole_system_test: 'NOT RUN',
     production_observation: productionObservation,
   },

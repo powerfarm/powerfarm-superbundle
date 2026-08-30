@@ -10,10 +10,12 @@ test("Process is Continuum plus pinned execution Settings, not a phantom wrapper
   assert.match(process, /Continuum institutional kernel plus its execution Settings/);
   assert.match(process, /continuum-adk/);
   assert.match(process, /continuum-ai-sdk/);
+  assert.match(process, /continuum-maf/);
   assert.match(boundary, /Registry owns/);
   assert.match(boundary, /Process owns/);
   assert.match(boundary, /workspace role is never a PowerFarm authority grant/);
   assert.equal(engineBoundary.institutional_kernel, "Continuum");
   assert.equal(engineBoundary.engines["google-adk"].setting, "process/continuum-adk");
   assert.equal(engineBoundary.engines["vercel-ai-sdk"].setting, "process/continuum-ai-sdk");
+  assert.equal(engineBoundary.engines["microsoft-agent-framework"].setting, "process/continuum-maf");
 });

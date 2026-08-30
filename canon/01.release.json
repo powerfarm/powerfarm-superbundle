@@ -42,7 +42,7 @@
     "energy_cost": {
       "id": "pf.contract.energy-cost.v1",
       "file": "contracts/energy-cost.v1.json",
-      "structural_checks": 28,
+      "structural_checks": 30,
       "sha256": "f986486ecacd35fc7122dad104f0dafd01f5ceca24f68b5b2f2c2ba0b4c5a36a"
     },
     "production_circulation": {

@@ -77,7 +77,7 @@
       },
       "energy_cost": {
         "status": "pass",
-        "checks": 28
+        "checks": 30
       },
       "production_circulation": {
         "status": "pass",
