@@ -1,0 +1,63 @@
+openapi: 3.1.0
+info:
+  title: Powerfarm Continuum Observatory
+  version: 0.3.0
+  description: Read-only institutional observatory. Mutation is deliberately unavailable over HTTP.
+servers:
+  - url: http://127.0.0.1:8787
+paths:
+  /api/health:
+    get:
+      summary: Audit-backed health of one branch
+      parameters:
+        - {name: branch, in: query, schema: {type: string, default: main}}
+      responses:
+        '200': {description: Institution audits cleanly}
+        '503': {description: Institutional audit failed}
+  /api/branches:
+    get:
+      summary: List timeline metadata
+      responses: {'200': {description: Branch list}}
+  /api/events:
+    get:
+      summary: Return visible events for a timeline
+      parameters:
+        - {name: branch, in: query, schema: {type: string, default: main}}
+      responses: {'200': {description: Event stream}}
+  /api/state:
+    get:
+      summary: Project bitemporal institutional state
+      parameters:
+        - {name: branch, in: query, schema: {type: string, default: main}}
+        - {name: at, in: query, schema: {type: string, format: date-time}}
+        - {name: known_at, in: query, schema: {type: string, format: date-time}}
+      responses: {'200': {description: Projected state}}
+  /api/proof:
+    get:
+      summary: Causal plus authority proof graph
+      parameters:
+        - {name: id, in: query, required: true, schema: {type: string}}
+        - {name: branch, in: query, schema: {type: string, default: main}}
+      responses: {'200': {description: Proof graph}}
+  /api/impact:
+    get:
+      summary: Blast radius if one act loses support
+      parameters:
+        - {name: id, in: query, required: true, schema: {type: string}}
+        - {name: branch, in: query, schema: {type: string, default: main}}
+      responses: {'200': {description: Impact graph}}
+  /api/lineage:
+    get:
+      summary: History for one institutional subject
+      parameters:
+        - {name: subject, in: query, required: true, schema: {type: string}}
+        - {name: branch, in: query, schema: {type: string, default: main}}
+      responses: {'200': {description: Subject lineage}}
+  /api/metrics:
+    get:
+      summary: Ledger and institutional metrics
+      responses: {'200': {description: Metrics}}
+  /api/audit:
+    get:
+      summary: Full authenticated semantic audit
+      responses: {'200': {description: Audit report}}

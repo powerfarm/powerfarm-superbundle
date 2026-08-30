@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://powerfarm.app/contracts/runtime-receipt-v1.schema.json",
+  "title": "Powerfarm Runtime Receipt",
+  "type": "object",
+  "required": ["format","runtime","run_ref","status","capability_ref","revision_ref","authority_ref","started_at","usage","provenance"],
+  "properties": {
+    "format": {"const":"powerfarm.runtime-receipt/v1"},
+    "runtime": {"type":"string"},
+    "run_ref": {"type":"string"},
+    "status": {"enum":["running","waiting_input","completed","failed","cancelled"]},
+    "capability_ref": {"type":"string"},
+    "revision_ref": {"type":"string"},
+    "authority_ref": {"type":"string"},
+    "started_at": {"type":"string","format":"date-time"},
+    "finished_at": {"type":["string","null"],"format":"date-time"},
+    "output": {"type":["object","null"]},
+    "error": {"type":["object","null"]},
+    "usage": {"type":"object"},
+    "provenance": {"type":"object"}
+  },
+  "additionalProperties": false
+}

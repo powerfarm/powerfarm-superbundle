@@ -1,0 +1,13 @@
+{
+  "name": "@powerfarm/continuum-ai-sdk",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "description": "PowerFarm Process boundary between Continuum and Vercel AI SDK",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs tests/golden/*.test.mjs"
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  }
+}

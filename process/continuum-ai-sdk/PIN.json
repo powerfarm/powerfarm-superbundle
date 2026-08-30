@@ -1,0 +1,11 @@
+{
+  "format": "powerfarm.setting-pin/v1",
+  "name": "continuum-ai-sdk",
+  "version": "0.2.0",
+  "requires_continuum": ">=0.4.0,<0.5",
+  "engine_pin": "../../engines/ai-sdk/PIN.json",
+  "engine": "ai@7.0.84",
+  "boundary_contract": "../../contracts/runtime-engine-boundary.v1.json",
+  "runtime_name": "vercel-ai-sdk",
+  "strict_defaults": true
+}

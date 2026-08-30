@@ -1,0 +1,15 @@
+# ADR 0001: Institution is not runtime
+
+<!-- POWERFARM-MAP:START -->
+> **PowerFarm map** · `Super Bundle / Process / Continuum / docs / adr` · **ADR**  
+> **Navigate:** [Super Bundle](../../../../README.md) · [Documentation map](../../../../DOCUMENTATION.md) · [Local home](../../README.md) · [Canon](../../../../canon/README.md) · [Contracts](../../../../contracts/README.md)  
+> **Boundary:** The Super Bundle owns Process and Organism. Registry remains the source of Identity, Office/Occupancy, Brand, Store and exact artifact lineage; engines do not define PowerFarm meaning.
+<!-- POWERFARM-MAP:END -->
+
+**Status:** accepted
+
+Runtime state is evidence. Continuum state is admitted institutional consequence. A pod, ADK session, Worker or model cannot become a source of institutional truth merely because it executed successfully.
+
+---
+
+Copyright © 2026 PowerFarm. All rights reserved.

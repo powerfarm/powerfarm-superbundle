@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Powerfarm Continuum</title>
+  <link rel="stylesheet" href="/assets/styles.css">
+</head>
+<body>
+<header>
+  <div>
+    <h1>POWERFARM / CONTINUUM</h1>
+    <div class="sub">institutional time · authority proof · counterfactual worlds</div>
+  </div>
+  <div class="status"><span id="healthDot" class="dot-status"></span><span id="healthText">checking</span></div>
+  <select id="branch" aria-label="Timeline"></select>
+  <button id="reload" type="button">reload</button>
+</header>
+<div class="shell">
+  <main>
+    <div class="cards">
+      <div class="card"><b id="nEvents">0</b><span>acts</span></div>
+      <div class="card"><b id="nOffices">0</b><span>offices</span></div>
+      <div class="card"><b id="nObjects">0</b><span>subjects</span></div>
+      <div class="card"><b id="nGrants">0</b><span>grants</span></div>
+      <div class="card"><b id="nSignatures">0</b><span>signatures</span></div>
+      <div class="card"><b id="nFindings">0</b><span>findings</span></div>
+    </div>
+    <section class="panel"><h2>Institutional timeline</h2><div id="timeline"></div></section>
+    <section class="panel"><h2>Projected subjects</h2><div id="objects" class="panel-pad"></div></section>
+  </main>
+  <aside class="side">
+    <section><h3>Timelines</h3><div id="branches"></div></section>
+    <section><h3>Reconciliation</h3><div id="findings"></div></section>
+    <section><h3>Selected act / proof</h3><div id="detail" class="empty">Select an act in the timeline.</div></section>
+  </aside>
+</div>
+<script type="module" src="/assets/app.js"></script>
+</body>
+</html>

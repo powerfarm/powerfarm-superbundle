@@ -1,0 +1,26 @@
+{
+  "built_at": "2026-08-30T08:42:00Z",
+  "database_schema_version": 3,
+  "features": [
+    "bitemporal-ledger",
+    "causal-proof",
+    "counterfactual-branches",
+    "hmac-seals",
+    "es256-event-signatures",
+    "witness-quorum",
+    "merkle-bundles",
+    "verified-backups",
+    "runtime-receipts",
+    "supabase-candidate-schema",
+    "atomic-admission-batch",
+    "run-continuation-authority",
+    "registry-required-production-identity",
+    "card-bound-postgres-admission"
+  ],
+  "format": "powerfarm.release/v1",
+  "github_modified": false,
+  "name": "powerfarm-continuum",
+  "tests": 59,
+  "tracked_files": 102,
+  "version": "0.4.0"
+}

@@ -1,0 +1,14 @@
+name = "powerfarm-process-writer"
+main = "src/index.js"
+compatibility_date = "2026-08-30"
+
+[vars]
+SUPABASE_URL = "https://PROJECT.supabase.co"
+SUPABASE_PUBLISHABLE_KEY = "sb_publishable_..."
+PROCESS_WRITER_CALLERS = "pf.runtime.process-writer"
+PROCESS_TOKEN_AUDIENCE = "powerfarm.supabase.postgrest"
+PROCESS_TOKEN_MIN_TTL_SECONDS = "60"
+
+# Bind REGISTRY_IDENTITY to the RegistryRuntimeTokenPort Service Binding.
+# No service-role key is used here. The Registry issues a short-lived token for
+# pf.runtime.process-writer after Registry-local runtime-subject admission.
