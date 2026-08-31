@@ -7,7 +7,8 @@
 61d370fcdc28c9a53651c5744ae8d4dd7d2852d7f0703e63a45499c9af58e59c  ./canon/01.release.json
 25093f607b2f4626d6b936a5db8ac4b3ef0c1c7b957a41787e7ae4a5206798dd  ./canon/02-capability-learning-and-sedimentation.md
 3c3ad2cf29a9fcf99ac4591374fbac18c9c90b7f97835c7021fcb1431062512c  ./canon/02.release.json
-5c06d13ce123271c62732a6574a9d3edddd73efed7385a091355b657f2acc814  ./canon/README.md
+43245d1a657bb72b071fad04e279bf5ffe5f9f384a86351c310228c89e2b3224  ./canon/03-automation-max.md
+239a457742c04a3eab7ad45d28d8526c5941190709b976479b2611020a24f444  ./canon/README.md
 e3291ad0810a410f60cfaec596931869e24c363aa50dabe4c1db43cb6803fb88  ./CHANGELOG.md
 21ef47c674a5f5d3e41568f76be08a6ae60461e3de53d8b41ff5a9192ca331a0  ./circulation/attention/lib/contract.mjs
 b721ce05ba7ae16b2da8102ed2af2a1358a401f1bbb159b53d09662a9888d96d  ./circulation/attention/lib/controller.mjs
@@ -8560,8 +8561,8 @@ f560ed162379d26b367341e2221cb388cc8deb6d9c5aebb68e8f06f8f9a846d1  ./engines/ai-s
 eab3c6ea8f03a6871dae99f6cde4580a06d13e39941c23aaa486a196a3e0e990  ./evidence/db-state-2026-08-23.json
 47f0c7db44e0af313f9b01a11a3c48f67d0001e32d14c718bbb94b87f66c8c86  ./evidence/first-seam-verification/source-manifest.txt
 49493f99110b1e5abb1163dba541e58f6836ce8da845fd5820387d9380927367  ./evidence/first-seam-verification/verification.json
-45620c114a65aecebcd98ae19322b7b6721d8c6d7aa5751370c64f1cc5c54dea  ./evidence/organism-verification/source-manifest.txt
-ac39c52ca03427aeb15082a8d553db5e7a5151a6e512ef1cc770d00568bad9f6  ./evidence/organism-verification/verification.json
+37f5a6cabadf9b17e6493ad0ea14aea39fa484beec63920d653aa2ce0d9cad7d  ./evidence/organism-verification/source-manifest.txt
+7af72264f4f2eae1127fbee40334966c8b846ad2b079ec4d271556cdfb255dce  ./evidence/organism-verification/verification.json
 e2088d1145831cafe1cc2ae83db72327d773bb7bfd17912fb57f4c50c81f513d  ./evidence/README.md
 f010fdfdba57d66e01124ae9ec6052b245803ec9b48e320ef49ada706fd5c77e  ./evidence/supabase-production-observation-2026-08-23.json
 703fb700f08eb3245d8a20aefef383d378391c945dbca3e2e423f53f3dc3dda7  ./evidence/superbundle-v0.5.0/verification.json
@@ -8813,5 +8814,5 @@ e82aae4cfed9830bcd765baa02f491df48bedcf0b3bdccc1fa4a492863b52d6f  ./scripts/vali
 3acaff81ee874fc97ddaae2bdffac030a7efa23e47b246d536f708c6db6bc699  ./scripts/write-release-descriptor.mjs
 82aa9a88be8e85d170506c188640eac0e202cb9914d3ded8ab9bc122a8be1c01  ./scripts/write-release-manifest.mjs
 215d3c717e58070a88cac57e4f0f1f0b984e78c12886182d1e260a1a70baec47  ./SECURITY.md
-b3eb999845d85687557633a0c3b0e72655dce561756eaf2a6a81455851046ec6  ./SUPERBUNDLE-RELEASE.json
+8fe7531a71c1fafc6a8baf6e17f722fcf620f39fe4bfc4bf9cfb1f5df3787a47  ./SUPERBUNDLE-RELEASE.json
 594cbccfb8bbb5b34c9261007b15c2371af3604591a86b296130ff96ca5ba5cd  ./THIRD_PARTY_NOTICES.md

@@ -11,6 +11,7 @@ Numbered documents. A document enters when it changes what gets built.
 ```text
 01  Organism and Organization
 02  Capability Learning and Sedimentation
+03  Automation Max
 ```
 
 Rules for anything added here:
