@@ -1,8 +1,14 @@
-import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+
+import {
+  ATTESTATION_PATHS,
+  sha256,
+  sourceTreeManifestLines,
+  trackedFiles,
+} from './lib/release-integrity.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const evidenceRoot = path.join(root, 'evidence', 'organism-verification');
@@ -12,29 +18,9 @@ const resumeRequested = process.env.POWERFARM_EVIDENCE_RESUME === '1';
 if (!resumeRequested) fs.rmSync(evidenceRoot, { recursive: true, force: true });
 fs.mkdirSync(logsRoot, { recursive: true });
 
-const excluded = new Set(['node_modules', '.git']);
-function sourceFiles(directory, relative = '') {
-  const files = [];
-  for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
-    if (excluded.has(entry.name)) continue;
-    const rel = path.join(relative, entry.name);
-    if (rel.startsWith(path.join('evidence', 'organism-verification'))) continue;
-    if (rel === 'RELEASE-MANIFEST.sha256') continue;
-    const absolute = path.join(directory, entry.name);
-    if (entry.isDirectory()) files.push(...sourceFiles(absolute, rel));
-    else files.push(rel);
-  }
-  return files.sort();
-}
-
-function sha256(value) {
-  return createHash('sha256').update(value).digest('hex');
-}
-
-const manifestLines = sourceFiles(root).map((relative) => {
-  const bytes = fs.readFileSync(path.join(root, relative));
-  return `${relative}\0${sha256(bytes)}`;
-});
+const manifestLines = sourceTreeManifestLines(
+  trackedFiles(root, { allowMissing: ATTESTATION_PATHS }),
+);
 const sourceTreeSha256 = sha256(manifestLines.join('\n'));
 
 const commands = [
@@ -72,6 +58,7 @@ const commands = [
   { id: 'maf-pin', command: 'npm', args: ['run', 'check:maf-pin'] },
   { id: 'engine-boundaries', command: 'npm', args: ['run', 'check:engine-boundaries'] },
   { id: 'documentation-conformance', command: 'npm', args: ['run', 'docs:check'] },
+  { id: 'release-integrity-tests', command: 'npm', args: ['run', 'test:release-integrity'] },
 ];
 
 let startedAt = new Date().toISOString();
@@ -148,6 +135,7 @@ const report = {
   source_tree_sha256: sourceTreeSha256,
   source_manifest_sha256: sha256(manifestLines.join('\n')),
   source_file_count: manifestLines.length,
+  command_count: commands.length,
   status: failed ? 'FAILED' : 'BUILT AND VERIFIED',
   scope: 'local deterministic source, contract, controller, setting, integration, and migration-structure verification; no deployment claim',
   contracts: [
@@ -186,9 +174,9 @@ const report = {
     homeostasis_resource_projection_runtime: 'LOCAL GOLDEN ONLY',
     live_cost_billing_source: 'NOT DEPLOYED',
     legacy_execution_bypasses: 'REMOVED AND VERIFIED LOCALLY',
-    microsoft_agent_framework_setting: 'BUILT AND CONTRACT-VERIFIED LOCALLY; REAL PACKAGE RUNTIME TEST SKIPPED BECAUSE DEPENDENCY IS UNAVAILABLE; NOT DEPLOYED',
-    maf_memory_projection: 'BUILT AND VERIFIED READ-ONLY LOCALLY; REAL CONTEXTPROVIDER TEST CONFIGURED FOR CI; NOT DEPLOYED',
-    three_engine_equivalence: 'LOCAL THREE-ENGINE GOLDEN VERIFIED; REAL MAF RUNTIME TEST CONFIGURED FOR CI AND NOT RUN LOCALLY',
+    microsoft_agent_framework_setting: 'BUILT AND VERIFIED WITH THE PINNED REAL PACKAGE RUNTIME; NOT DEPLOYED',
+    maf_memory_projection: 'BUILT AND VERIFIED READ-ONLY WITH THE PINNED REAL CONTEXTPROVIDER; NOT DEPLOYED',
+    three_engine_equivalence: 'LOCAL THREE-ENGINE GOLDEN VERIFIED WITH PINNED ADK, AI SDK AND MAF RUNTIMES',
     whole_system_test: 'NOT RUN',
     production_observation: productionObservation,
   },
