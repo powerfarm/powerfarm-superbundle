@@ -29,6 +29,7 @@ PowerFarm documentation is a distributed map of the code. A human or language mo
 | Understand conformance tests | [`conformance/README.md`](conformance/README.md) |
 | Understand engine policy | [`engines/README.md`](engines/README.md) |
 | Inspect recorded verification | [`evidence/README.md`](evidence/README.md) |
+| Start from the repo wiki scaffold | [`wiki/Home.md`](wiki/Home.md) |
 
 ## Ownership map
 
