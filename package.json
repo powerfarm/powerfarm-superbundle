@@ -13,7 +13,7 @@
     "test:heartime-worker": "node --test heartime/worker/tests/*.test.mjs",
     "test:heartime-migrations": "node heartime/scripts/validate-heartime.mjs && node heartime/scripts/validate-first-seam.mjs && node heartime/scripts/validate-capability-learning.mjs",
     "check:permanent": "npm run check:permanent:first-seam && npm run check:permanent:learning",
-    "verify": "npm run verify:organism && npm run verify:process && npm run verify:engines && npm run docs:check",
+    "verify": "npm run verify:organism && npm run verify:process && npm run verify:engines && npm run docs:check && npm run test:release-integrity && npm run check:release-integrity",
     "evidence": "node scripts/record-verification.mjs",
     "contract:check": "node scripts/validate-first-seam.mjs",
     "source:check": "node scripts/check-source.mjs",
@@ -46,6 +46,10 @@
     "test:production-conformance": "node --test conformance/operational-trace.test.mjs conformance/process-production-writer.test.mjs",
     "contract:legacy-removal": "node scripts/validate-legacy-removal.mjs",
     "github:check": "node scripts/check-github-package.mjs",
+    "test:release-integrity": "node --test scripts/tests/release-integrity.test.mjs",
+    "check:release-integrity": "node scripts/check-release-integrity.mjs",
+    "release:manifest": "node scripts/write-release-manifest.mjs",
+    "release:record": "node scripts/write-release-descriptor.mjs",
     "test:process-maf": "PYTHONPATH=process/continuum:process/continuum-maf/src python -m pytest -q process/continuum-maf/tests",
     "check:maf-pin": "node scripts/check-maf-pin.mjs"
   }

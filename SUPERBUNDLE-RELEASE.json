@@ -2,7 +2,7 @@
   "format": "powerfarm.superbundle-release/v1",
   "name": "powerfarm-superbundle",
   "version": "0.13.0",
-  "built_at": "2026-08-30T08:57:00Z",
+  "built_at": "2026-08-31T12:13:52.945Z",
   "deployment_claim": "BUILT_AND_VERIFIED_LOCALLY_NOT_DEPLOYED",
   "pairing": "standalone PowerFarm Registry",
   "process": {
@@ -21,13 +21,10 @@
   },
   "verification": {
     "full_verify": "passed",
-    "continuum_tests": "59 passed",
-    "continuum_adk_tests": "28 passed, 1 skipped",
-    "continuum_ai_sdk_tests": "9 passed",
-    "ai_sdk_source_pin": "passed",
-    "engine_boundary_guards": "passed",
-    "continuum_maf_tests": "8 passed, 1 skipped locally when Agent Framework dependency is unavailable; real runtime test enabled in GitHub CI",
-    "microsoft_agent_framework_pin": "passed"
+    "source_tree_sha256": "b1d0db10c4cd423e067ce0c5531211cd12a43402e6af5c1b81504881ec3677da",
+    "evidence_file": "evidence/organism-verification/verification.json",
+    "evidence_sha256": "942b093a0d71f52adb7c6aea8ae8b3514d21c406e39a5e1aaf8c76d58d336f9d",
+    "verified_commands": 35
   },
   "golden_properties": [
     "institutional admission precedes AI SDK tool execution",

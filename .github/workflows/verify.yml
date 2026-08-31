@@ -9,16 +9,37 @@ permissions:
   contents: read
 
 jobs:
-  verify:
+  package:
+    name: package
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22.13.0'
-      - name: GitHub package hygiene
-        run: npm run github:check
+      - run: npm run github:check
+
+  organism:
+    name: organism
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.13.0'
+      - run: npm run verify:organism
+
+  process:
+    name: process
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.13.0'
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -35,5 +56,36 @@ jobs:
           python -m pip install -e ./process/continuum
           python -m pip install -e './process/continuum-adk[test]' -c process/continuum-adk/constraints/tested-py312.txt
           python -m pip install -e './process/continuum-maf[test]' -c process/continuum-maf/constraints/tested-py312.txt
-      - name: Verify Super Bundle
-        run: npm run verify
+      - run: npm run verify:process
+
+  release:
+    name: engines-docs-release
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.13.0'
+      - run: npm run verify:engines
+      - run: npm run docs:check
+      - run: npm run test:release-integrity
+      - run: npm run check:release-integrity
+
+  verify:
+    name: verify
+    if: always()
+    needs: [package, organism, process, release]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require every verification gate
+        env:
+          PACKAGE_RESULT: ${{ needs.package.result }}
+          ORGANISM_RESULT: ${{ needs.organism.result }}
+          PROCESS_RESULT: ${{ needs.process.result }}
+          RELEASE_RESULT: ${{ needs.release.result }}
+        run: |
+          test "$PACKAGE_RESULT" = success
+          test "$ORGANISM_RESULT" = success
+          test "$PROCESS_RESULT" = success
+          test "$RELEASE_RESULT" = success

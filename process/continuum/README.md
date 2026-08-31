@@ -60,7 +60,9 @@ Python 3.11+ is required.
 
 ```bash
 python3 -m pip install -e .
-powerfarm --db ./powerfarm.db init --director director-human
+export POWERFARM_REGISTRY_SUPABASE_URL=https://your-registry.supabase.co
+export POWERFARM_REGISTRY_PUBLISHABLE_KEY=your-publishable-key
+powerfarm --db ./powerfarm.db init --director pf.identity.director
 ```
 
 For an existing v0.2 database, run the explicit writable upgrade once before read-only commands:
@@ -69,22 +71,17 @@ For an existing v0.2 database, run the explicit writable upgrade once before rea
 powerfarm --db ./powerfarm.db upgrade
 ```
 
-Create an office, occupy it, grant a narrow scope, then admit an act:
+Office, Occupancy and identity-key lifecycle belong to Registry and must exist
+there before Continuum starts. Process can then grant a narrow institutional
+scope and admit an act:
 
 ```bash
-powerfarm --db ./powerfarm.db office operations \
-  --mandate "Operate admitted capabilities" \
-  --actor director-human --request-id office-operations-v1
-
-powerfarm --db ./powerfarm.db occupy operations worker-17 \
-  --actor director-human --request-id occupy-operations-worker-17
-
 powerfarm --db ./powerfarm.db grant operations \
   --action 'claim.*' --subject 'claim:*' \
-  --actor director-human --request-id grant-operations-claims
+  --actor pf.identity.director --request-id grant-operations-claims
 
 powerfarm --db ./powerfarm.db act \
-  --actor worker-17 --office operations \
+  --actor pf.identity.worker-17 --office operations \
   --kind claim.assert --subject claim:edge-reachable \
   --payload '{"statement":"edge is reachable"}' \
   --request-id probe-2026-08-29-001
@@ -100,15 +97,9 @@ powerfarm witness-keygen \
   --public ./director-signing.pub.pem
 ```
 
-Register the public key as an institutional fact. Registration is root-authorized and requires that the principal currently occupies the bound office:
-
-```bash
-powerfarm --db ./powerfarm.db key-register \
-  --public ./director-signing.pub.pem \
-  --principal director-human \
-  --office director \
-  --actor director-human
-```
+Register the public key through Registry. Process deliberately exposes no
+parallel key-registration or revocation command; it only resolves the
+historical Registry binding when checking a signature.
 
 Then sign an already admitted event:
 
@@ -119,14 +110,7 @@ powerfarm --db ./powerfarm.db sign-event evt_... \
 
 `powerfarm audit` verifies the cryptographic signature **and** checks that the exact key was institutionally registered to that actor/office at the event's historical admission time.
 
-Revocation is another admitted act:
-
-```bash
-powerfarm --db ./powerfarm.db key-revoke <key-fingerprint> \
-  --actor director-human
-```
-
-A revoked key cannot sign later acts.
+Revoke the key through Registry. A revoked key cannot sign later acts.
 
 ## Bitemporal state and counterfactual worlds
 

@@ -8,6 +8,7 @@ from continuum_adk import (
     ActorFromAgent,
     ContinuumPlugin,
     DottedToolPolicy,
+    ExecutionSliceError,
     ExecutionSliceFromContext,
     StaticOffice,
     ToolMapping,
@@ -30,6 +31,7 @@ class Context:
     agent_name: str = "researcher"
     user_id: str = "sensitive-user-id"
     session: Session = field(default_factory=Session)
+    custom_metadata: dict | None = None
     powerfarm_execution_slice: dict | None = field(default_factory=make_execution_slice)
 
 
@@ -75,6 +77,60 @@ def make_kernel(tmp_path, *, with_run_start: bool = True) -> Kernel:
 
 def ledger_text(k: Kernel) -> str:
     return "\n".join(repr(e.public()) for e in k.events("main"))
+
+
+def test_execution_slice_uses_invocation_metadata_and_checks_requested_capability():
+    expected = make_execution_slice()
+    context = Context(
+        custom_metadata={"powerfarm_execution_slice": expected},
+        powerfarm_execution_slice=None,
+    )
+
+    resolved = ExecutionSliceFromContext()(
+        context,
+        tool_name="search",
+        kind="tool.invoke.search",
+        subject="tool:search",
+    )
+
+    assert resolved == expected
+    with pytest.raises(ExecutionSliceError, match="capability"):
+        ExecutionSliceFromContext()(
+            context,
+            tool_name="deploy",
+            kind="tool.invoke.deploy",
+            subject="service:billing",
+        )
+
+
+@pytest.mark.asyncio
+async def test_plugin_passes_projected_act_to_execution_slice_resolver(tmp_path):
+    class RecordingResolver:
+        def __init__(self):
+            self.requests = []
+
+        def __call__(self, context, *, tool_name, kind, subject):
+            self.requests.append((tool_name, kind, subject))
+            return make_execution_slice(tool_name=tool_name, kind=kind, subject=subject)
+
+    k = make_kernel(tmp_path)
+    resolver = RecordingResolver()
+    p = ContinuumPlugin(
+        kernel=k,
+        office=StaticOffice("research"),
+        actor=ActorFromAgent(),
+        execution_slice=resolver,
+        policy=POLICY,
+        revision_ref="build:abc123",
+    )
+
+    response = await p.before_tool_callback(
+        tool=Tool("search"), tool_args={"query": "edge"}, tool_context=Context()
+    )
+
+    assert response is None
+    assert resolver.requests == [("search", "tool.invoke.search", "tool:search")]
+    k.close()
 
 
 def test_strict_plugin_requires_explicit_policy_and_revision(tmp_path):

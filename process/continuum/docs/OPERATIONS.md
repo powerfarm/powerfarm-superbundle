@@ -26,7 +26,10 @@ Create a checkpoint after meaningful institutional transitions. Keep copies in a
 
 Generate witness/actor P-256 keys with `witness-keygen`. Private keys are created with mode `0600` and the command refuses to overwrite an existing file.
 
-Before a key can sign an institutional event it must be registered with `key-register`. Registration binds the public JWK to the current principal occupying an office. Revocation is itself an institutional act.
+Before a key can sign an institutional event, register its public JWK through
+Registry and bind it to the current principal and Office. Revocation also
+belongs to Registry. Continuum resolves that historical binding while auditing;
+it exposes no parallel identity-key mutation command.
 
 ## Portable bundles
 
