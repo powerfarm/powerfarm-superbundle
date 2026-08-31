@@ -77,5 +77,5 @@ def make_execution_slice(
 class StaticExecutionSlice:
     value: dict
 
-    def __call__(self, _context):
+    def __call__(self, _context, *, tool_name, kind, subject):
         return self.value

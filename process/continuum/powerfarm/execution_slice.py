@@ -23,22 +23,56 @@ class ExecutionSliceError(ValueError):
 
 @runtime_checkable
 class ExecutionSliceResolver(Protocol):
-    def __call__(self, context: Any) -> Mapping[str, Any]: ...
+    def __call__(
+        self,
+        context: Any,
+        *,
+        tool_name: str,
+        kind: str,
+        subject: str,
+    ) -> Mapping[str, Any]: ...
 
 
 class ExecutionSliceFromContext:
-    """Read the canonical execution slice placed on an ADK tool context."""
+    """Read a canonical slice from invocation metadata or a legacy context attribute.
+
+    Google ADK exposes ``RunConfig.custom_metadata`` on every ToolContext. That
+    is the production transport: it is scoped to one Runner invocation rather
+    than stored as engine session state. The attribute fallback keeps direct
+    adapter/conformance contexts usable without pretending ADK mints identity.
+    """
 
     def __init__(self, attribute: str = "powerfarm_execution_slice") -> None:
         self.attribute = attribute
 
-    def __call__(self, context: Any) -> Mapping[str, Any]:
-        value = getattr(context, self.attribute, None)
+    def __call__(
+        self,
+        context: Any,
+        *,
+        tool_name: str,
+        kind: str,
+        subject: str,
+    ) -> Mapping[str, Any]:
+        metadata = getattr(context, "custom_metadata", None)
+        value = metadata.get(self.attribute) if isinstance(metadata, Mapping) else None
+        if value is None:
+            value = getattr(context, self.attribute, None)
         if not isinstance(value, Mapping):
-            raise ExecutionSliceError(f"ADK context is missing {self.attribute}")
+            raise ExecutionSliceError(
+                f"ADK invocation metadata is missing {self.attribute}"
+            )
         validate_execution_slice(value, require_seal=True)
         if not verify_execution_slice_seal(value):
             raise ExecutionSliceError("ExecutionSlice content seal mismatch")
+        capability = value["capability"]
+        if (
+            capability["tool_name"] != tool_name
+            or capability["kind"] != kind
+            or capability["subject"] != subject
+        ):
+            raise ExecutionSliceError(
+                "ExecutionSlice capability does not match requested Process act"
+            )
         return value
 
 

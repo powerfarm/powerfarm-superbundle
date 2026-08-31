@@ -50,8 +50,8 @@ run.finish / run.fail
   digestible without introducing JSON floats into Continuum payloads.
 - Subject-template values use a readable prefix plus a digest, not lossy
   normalization/truncation alone.
-- Strict mode is the default: explicit tool mapping, concrete `revision_ref`,
-  `invocation_id` and `function_call_id` are required.
+- Strict mode is the default: explicit tool mapping, a concrete `revision_ref`,
+  and a sealed invocation-scoped ExecutionSlice are required.
 - Model-facing refusals do not disclose the acting principal by default.
 
 ## Install
@@ -75,6 +75,7 @@ from continuum_adk import (
     StaticOffice,
     ToolMapping,
 )
+from google.adk.agents.run_config import RunConfig
 
 policy = DottedToolPolicy(
     {
@@ -101,6 +102,16 @@ plugin = ContinuumPlugin(
 
 app = App(name="my-app", root_agent=agent, plugins=[plugin])
 runner = Runner(app=app, session_service=session_service)
+
+async for event in runner.run_async(
+    user_id=user_id,
+    session_id=session_id,
+    new_message=message,
+    run_config=RunConfig(
+        custom_metadata={"powerfarm_execution_slice": execution_slice}
+    ),
+):
+    ...
 ```
 
 The institution must already contain the Registry-backed Office/Occupancy reality and Process grants. **The ADK process spends authority; it does not create institutional identity or authority.** The runtime package intentionally exports no Office/Occupancy/grant bootstrap helpers. Deterministic tests keep their retired embedded-directory fixtures under `tests/` only.
@@ -138,6 +149,11 @@ that `run.start`. This is intentionally narrow and cannot authorize new work.
 The adapter targets ADK 2.x's `BasePlugin` tool callbacks:
 `before_tool_callback`, `after_tool_callback`, and `on_tool_error_callback`.
 A non-`None` result from `before_tool_callback` short-circuits tool execution.
+The sealed slice travels through `RunConfig.custom_metadata`, which ADK exposes
+on each `ToolContext`. This keeps it scoped to the Runner invocation instead of
+turning durable session state into an authority cache. The resolver is called
+with the projected `tool_name`, `kind`, and `subject`, and the adapter refuses
+the call unless those values exactly match the sealed capability.
 `ToolContext` engine-local identifiers such as `function_call_id`, `invocation_id`, `agent_name`, and session state are provenance only. Institutional run identity is derived exclusively from the sealed ExecutionSlice supplied by Cards + Heartime.
 
 `Context.branch` is never reused as the Continuum branch. Configure that with

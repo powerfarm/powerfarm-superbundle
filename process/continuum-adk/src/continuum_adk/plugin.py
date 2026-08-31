@@ -125,7 +125,7 @@ class ContinuumPlugin(BasePlugin):
             execution_slice = self._resolve_execution_slice(tool_context, tool.name, projection)
             office = str(execution_slice["principal"]["office"])
             actor = str(execution_slice["principal"]["actor"])
-            refs = self._call_refs(tool_context, tool.name)
+            refs = self._call_refs(execution_slice, tool.name)
             if self.record_outcomes and await asyncio.to_thread(self._outcome_exists, refs):
                 # The institutional call already reached a terminal outcome.
                 # Returning a non-None value from before_tool_callback prevents
@@ -231,21 +231,47 @@ class ContinuumPlugin(BasePlugin):
             return self._render_refusal(tool.name, "admission check failed", office, actor, projection)
 
     async def after_tool_callback(self, *, tool: BaseTool, tool_args: dict[str, Any], tool_context: Any, result: dict[str, Any]) -> Optional[dict[str, Any]]:
-        await self._close_run(tool=tool, tool_context=tool_context, status=COMPLETED, output=result, error=None)
+        await self._close_run(
+            tool=tool,
+            tool_args=tool_args,
+            tool_context=tool_context,
+            status=COMPLETED,
+            output=result,
+            error=None,
+        )
         return None
 
     async def on_tool_error_callback(self, *, tool: BaseTool, tool_args: dict[str, Any], tool_context: Any, error: Exception) -> Optional[dict[str, Any]]:
-        await self._close_run(tool=tool, tool_context=tool_context, status=FAILED, output=None, error=error)
+        await self._close_run(
+            tool=tool,
+            tool_args=tool_args,
+            tool_context=tool_context,
+            status=FAILED,
+            output=None,
+            error=error,
+        )
         return None
 
-    async def _close_run(self, *, tool: BaseTool, tool_context: Any, status: str, output: Any, error: Exception | None) -> None:
+    async def _close_run(
+        self,
+        *,
+        tool: BaseTool,
+        tool_args: dict[str, Any],
+        tool_context: Any,
+        status: str,
+        output: Any,
+        error: Exception | None,
+    ) -> None:
         if not self.record_outcomes:
             return
         try:
-            refs = self._call_refs(tool_context, tool.name)
+            projection = self.policy.project(tool.name, tool_args)
+            current_slice = self._resolve_execution_slice(
+                tool_context, tool.name, projection
+            )
+            refs = self._call_refs(current_slice, tool.name)
             if await asyncio.to_thread(self._outcome_exists, refs):
                 return
-            current_slice = self.execution_slice(tool_context)
             current_actor = str(current_slice["principal"]["actor"])
             current_office = str(current_slice["principal"]["office"])
             open_call = await asyncio.to_thread(self._recover_open_call, refs, current_actor, current_office)
@@ -254,7 +280,10 @@ class ContinuumPlugin(BasePlugin):
                 return
             output_evidence = self.evidence.result(tool.name, output) if output is not None else None
             error_evidence = self.evidence.error(tool.name, error) if error is not None else None
-            receipt_provenance = {**self.evidence.provenance(tool_context), **slice_provenance(self.execution_slice(tool_context))}
+            receipt_provenance = {
+                **self.evidence.provenance(tool_context),
+                **slice_provenance(current_slice),
+            }
             receipt = build_receipt(
                 runtime=open_call.runtime,
                 revision_ref=open_call.revision_ref,
@@ -279,7 +308,13 @@ class ContinuumPlugin(BasePlugin):
                 causes=[open_call.run_event_id, open_call.intent_event_id],
                 request_id=refs.outcome_request_id,
             )
-        except (InstitutionalError, ValidationError, AdapterContextError, ExecutionSliceError) as exc:
+        except (
+            InstitutionalError,
+            ValidationError,
+            MappingError,
+            AdapterContextError,
+            ExecutionSliceError,
+        ) as exc:
             # A failed close never changes the tool's result. The open run is
             # intentionally visible to Continuum reconciliation/findings.
             logger.warning("continuum could not close run for %s: %s", tool.name, exc)
@@ -347,7 +382,12 @@ class ContinuumPlugin(BasePlugin):
         return "institutional authority denied"
 
     def _resolve_execution_slice(self, context: Any, tool_name: str, projection: ActProjection) -> dict[str, Any]:
-        value = self.execution_slice(context)
+        value = self.execution_slice(
+            context,
+            tool_name=tool_name,
+            kind=projection.kind,
+            subject=projection.subject,
+        )
         validate_execution_slice(value, require_seal=True)
         if not verify_execution_slice_seal(value):
             raise ExecutionSliceError("ExecutionSlice content seal mismatch")
@@ -364,8 +404,7 @@ class ContinuumPlugin(BasePlugin):
             raise ExecutionSliceError("ExecutionSlice actor does not match ADK actor resolver")
         return dict(value)
 
-    def _call_refs(self, context: Any, tool_name: str) -> _CallRefs:
-        value = self.execution_slice(context)
+    def _call_refs(self, value: dict[str, Any], tool_name: str) -> _CallRefs:
         validate_execution_slice(value, require_seal=True)
         if not verify_execution_slice_seal(value):
             raise ExecutionSliceError("ExecutionSlice content seal mismatch")

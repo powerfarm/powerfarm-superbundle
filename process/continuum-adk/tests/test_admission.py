@@ -14,6 +14,7 @@ if os.environ.get("CONTINUUM_ADK_REAL_ADK") != "1":
     pytest.skip("google-adk is not installed in this offline QA environment", allow_module_level=True)
 
 from google.adk.agents.llm_agent import LlmAgent
+from google.adk.agents.run_config import RunConfig
 from google.adk.apps.app import App
 from google.adk.runners import Runner
 from google.adk.sessions.in_memory_session_service import InMemorySessionService
@@ -23,9 +24,11 @@ from continuum_adk import (
     ActorFromAgent,
     ContinuumPlugin,
     DottedToolPolicy,
+    ExecutionSliceFromContext,
     StaticOffice,
     ToolMapping,
 )
+from support import make_execution_slice
 
 from typing import AsyncGenerator
 from google.adk.models.base_llm import BaseLlm
@@ -81,6 +84,7 @@ def make_plugin(kernel, **kwargs) -> ContinuumPlugin:
         kernel=kernel,
         office=StaticOffice("research"),
         actor=ActorFromAgent(),
+        execution_slice=ExecutionSliceFromContext(),
         policy=POLICY,
         revision_ref="test",
         **kwargs,
@@ -105,6 +109,14 @@ async def run_script(kernel, script, tools, **plugin_kwargs):
     app = App(name="test", root_agent=agent, plugins=[plugin])
     runner = Runner(app=app, session_service=session_service)
 
+    first_call = next(step for step in script if step[0] == "call")
+    projection = POLICY.project(first_call[1], first_call[2])
+    execution_slice = make_execution_slice(
+        tool_name=first_call[1],
+        kind=projection.kind,
+        subject=projection.subject,
+    )
+
     responses = []
     error = None
     try:
@@ -112,6 +124,9 @@ async def run_script(kernel, script, tools, **plugin_kwargs):
             user_id="u1",
             session_id="s1",
             new_message=types.Content(role="user", parts=[types.Part(text="go")]),
+            run_config=RunConfig(
+                custom_metadata={"powerfarm_execution_slice": execution_slice}
+            ),
         ):
             for part in event.content.parts if event.content else []:
                 if part.function_response:
@@ -223,7 +238,7 @@ async def test_tool_failure_closes_the_run_as_failed(kernel):
 async def test_failure_payload_records_the_error(kernel):
     await run_script(kernel, [("call", "read_doc", {"doc_id": "rfc-42"})], [read_doc])
     fail = next(e for e in kernel.events("main") if e.kind == "run.fail")
-    assert fail.payload["error"]["type"] == "FileNotFoundError"
+    assert fail.payload["error"]["type"] == "builtins.FileNotFoundError"
 
 
 # ----------------------------------------------------------------------
