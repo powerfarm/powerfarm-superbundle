@@ -13,10 +13,11 @@ from .validation import MAX_PAYLOAD_BYTES
 from .bundle import export_bundle, verify_bundle
 from .core.files import atomic_write_json as core_atomic_write_json
 from .crypto import (
-    generate_private_key, key_fingerprint, load_private_key, load_public_key, make_event_signature, make_receipt, public_jwk, save_private_key,
+    generate_private_key, load_private_key, make_event_signature, make_receipt, save_private_key,
     save_public_key, verify_quorum, verify_receipt,
 )
 from .ops import create_backup, doctor, metrics, verify_backup
+from .registry import PostgrestRegistryDirectory, RegistryTransportError
 
 
 def _object_no_duplicates(pairs):
@@ -118,23 +119,6 @@ def parser() -> argparse.ArgumentParser:
     act.add_argument("--effective-at")
     add_write_guards(act)
 
-    office = sub.add_parser("office", help="Create a durable office")
-    office.add_argument("id")
-    office.add_argument("--mandate", required=True)
-    office.add_argument("--actor", required=True)
-    office.add_argument("--as-office", default="director")
-    office.add_argument("--branch", default="main")
-    add_write_guards(office)
-
-    occupy = sub.add_parser("occupy", help="Assign a principal to an office")
-    occupy.add_argument("office_id")
-    occupy.add_argument("principal")
-    occupy.add_argument("--definition")
-    occupy.add_argument("--actor", required=True)
-    occupy.add_argument("--as-office", default="director")
-    occupy.add_argument("--branch", default="main")
-    add_write_guards(occupy)
-
     grant = sub.add_parser("grant", help="Root office: grant an office authority over acts/subjects")
     grant.add_argument("grantee_office")
     grant.add_argument("--action", default="*")
@@ -227,22 +211,6 @@ def parser() -> argparse.ArgumentParser:
     quorum.add_argument("--receipt", action="append", required=True)
     quorum.add_argument("--trust-key-id", action="append", default=[])
 
-    key_register = sub.add_parser("key-register", help="Register an ES256 public key for the current occupant of an office")
-    key_register.add_argument("--public", required=True, help="P-256 public key PEM")
-    key_register.add_argument("--principal", required=True)
-    key_register.add_argument("--office", required=True)
-    key_register.add_argument("--actor", required=True)
-    key_register.add_argument("--as-office", default="director")
-    key_register.add_argument("--branch", default="main")
-    add_write_guards(key_register)
-
-    key_revoke = sub.add_parser("key-revoke", help="Revoke a previously registered institutional signing key")
-    key_revoke.add_argument("key_id")
-    key_revoke.add_argument("--actor", required=True)
-    key_revoke.add_argument("--as-office", default="director")
-    key_revoke.add_argument("--branch", default="main")
-    add_write_guards(key_revoke)
-
     sign_event = sub.add_parser("sign-event", help="Attach an ES256 signature to an admitted event")
     sign_event.add_argument("event_id")
     sign_event.add_argument("--private", required=True)
@@ -303,11 +271,16 @@ def main(argv: list[str] | None = None) -> None:
         "findings", "proof", "impact", "diff", "metrics", "doctor",
         "backup", "bundle-export", "signatures",
     }
-    kernel = Kernel(
-        args.db,
-        read_only=args.command in read_only_commands,
-        seal_key_path=args.seal_key,
-    )
+    try:
+        registry = PostgrestRegistryDirectory.from_env()
+        kernel = Kernel(
+            args.db,
+            read_only=args.command in read_only_commands,
+            seal_key_path=args.seal_key,
+            registry=registry,
+        )
+    except (InstitutionalError, RegistryTransportError, ValueError, OSError) as exc:
+        raise SystemExit(f"error: {exc}") from exc
     try:
         if args.command == "upgrade":
             emit({"ok": True, "schema_version": SCHEMA_VERSION, "database": str(kernel.path), "initialized": kernel.initialized()})
@@ -323,31 +296,6 @@ def main(argv: list[str] | None = None) -> None:
                 payload=load_json(args.payload),
                 causes=args.cause,
                 effective_at=args.effective_at,
-                request_id=args.request_id,
-                expected_head=args.expect_head,
-            ).public())
-        elif args.command == "office":
-            emit(kernel.append(
-                branch=args.branch,
-                actor=args.actor,
-                office=args.as_office,
-                kind="office.create",
-                subject=f"office:{args.id}",
-                payload={"mandate": args.mandate},
-                request_id=args.request_id,
-                expected_head=args.expect_head,
-            ).public())
-        elif args.command == "occupy":
-            payload = {"principal": args.principal}
-            if args.definition:
-                payload["definition"] = args.definition
-            emit(kernel.append(
-                branch=args.branch,
-                actor=args.actor,
-                office=args.as_office,
-                kind="occupancy.assign",
-                subject=f"office:{args.office_id}",
-                payload=payload,
                 request_id=args.request_id,
                 expected_head=args.expect_head,
             ).public())
@@ -414,21 +362,6 @@ def main(argv: list[str] | None = None) -> None:
             bundle = export_bundle(kernel)
             core_atomic_write_json(args.out, bundle)
             emit({"ok": True, "path": args.out, "digest": bundle["digest"], "events": len(bundle["events"])})
-        elif args.command == "key-register":
-            pub = load_public_key(args.public)
-            key_id_value = key_fingerprint(pub)
-            emit(kernel.append(
-                branch=args.branch, actor=args.actor, office=args.as_office,
-                kind="identity.key.register", subject=f"key:{key_id_value}",
-                payload={"principal": args.principal, "office": args.office, "jwk": public_jwk(pub)},
-                request_id=args.request_id, expected_head=args.expect_head,
-            ).public())
-        elif args.command == "key-revoke":
-            emit(kernel.append(
-                branch=args.branch, actor=args.actor, office=args.as_office,
-                kind="identity.key.revoke", subject=f"key:{args.key_id}",
-                payload={"key_id": args.key_id}, request_id=args.request_id, expected_head=args.expect_head,
-            ).public())
         elif args.command == "sign-event":
             event = kernel.event(args.event_id)
             signature = make_event_signature(
@@ -440,7 +373,7 @@ def main(argv: list[str] | None = None) -> None:
         elif args.command == "serve":
             from .server import serve
             serve(kernel, host=args.host, port=args.port, unsafe_bind=args.unsafe_bind)
-    except (InstitutionalError, ValueError, json.JSONDecodeError, OSError) as exc:
+    except (InstitutionalError, RegistryTransportError, ValueError, json.JSONDecodeError, OSError) as exc:
         raise SystemExit(f"error: {exc}") from exc
     finally:
         kernel.close()
