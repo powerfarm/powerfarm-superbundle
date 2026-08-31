@@ -8560,8 +8560,8 @@ f560ed162379d26b367341e2221cb388cc8deb6d9c5aebb68e8f06f8f9a846d1  ./engines/ai-s
 eab3c6ea8f03a6871dae99f6cde4580a06d13e39941c23aaa486a196a3e0e990  ./evidence/db-state-2026-08-23.json
 47f0c7db44e0af313f9b01a11a3c48f67d0001e32d14c718bbb94b87f66c8c86  ./evidence/first-seam-verification/source-manifest.txt
 49493f99110b1e5abb1163dba541e58f6836ce8da845fd5820387d9380927367  ./evidence/first-seam-verification/verification.json
-e0ce5361d23b23bd7ac718acc3461f042119e41f82b6824ed5283460c3d3a44c  ./evidence/organism-verification/source-manifest.txt
-942b093a0d71f52adb7c6aea8ae8b3514d21c406e39a5e1aaf8c76d58d336f9d  ./evidence/organism-verification/verification.json
+45620c114a65aecebcd98ae19322b7b6721d8c6d7aa5751370c64f1cc5c54dea  ./evidence/organism-verification/source-manifest.txt
+ac39c52ca03427aeb15082a8d553db5e7a5151a6e512ef1cc770d00568bad9f6  ./evidence/organism-verification/verification.json
 e2088d1145831cafe1cc2ae83db72327d773bb7bfd17912fb57f4c50c81f513d  ./evidence/README.md
 f010fdfdba57d66e01124ae9ec6052b245803ec9b48e320ef49ada706fd5c77e  ./evidence/supabase-production-observation-2026-08-23.json
 703fb700f08eb3245d8a20aefef383d378391c945dbca3e2e423f53f3dc3dda7  ./evidence/superbundle-v0.5.0/verification.json
@@ -8674,6 +8674,7 @@ f873b2c514535feedbfc2d54de465952885169c86335597698a1ec720004dfb1  ./process/cont
 443cb176b033831cf5777e4357d6217d37bb4ad8958861220e6209d263804888  ./process/continuum/docs/adr/0007-postgres-read-boundary.md
 656bbb62f45e2b88b704dee0c8830fe83e4eec19c5b7f25f46f658b45ece576c  ./process/continuum/docs/adr/0008-portable-evidence-bundles.md
 3f407ca0457310ba6cb46df08c9b937601317a64710d071181e70dcd7b6acb6b  ./process/continuum/docs/adr/0009-handoff-preserves-execution-identity.md
+430990c43598bd6a49eeb9fa24faa7e4c38d7e8271907633fe682232410c3805  ./process/continuum/docs/adr/0010-database-lineage-is-institutional.md
 679745fbc29249914a191a7d74e01e9fca4d8c8c5f4d107fed782cd318c81ea3  ./process/continuum/docs/ARCHITECTURE.md
 34f1b1d3fd041454ee5c01b12abbafae894ca0ede4106c8d2883aebf6e16270b  ./process/continuum/docs/INVARIANTS.md
 1261fa5098d0694742f2f394b705a21c92ff46e58bddd0bb5e2d5b53eaad88aa  ./process/continuum/docs/OPERATIONS.md
@@ -8812,5 +8813,5 @@ e82aae4cfed9830bcd765baa02f491df48bedcf0b3bdccc1fa4a492863b52d6f  ./scripts/vali
 3acaff81ee874fc97ddaae2bdffac030a7efa23e47b246d536f708c6db6bc699  ./scripts/write-release-descriptor.mjs
 82aa9a88be8e85d170506c188640eac0e202cb9914d3ded8ab9bc122a8be1c01  ./scripts/write-release-manifest.mjs
 215d3c717e58070a88cac57e4f0f1f0b984e78c12886182d1e260a1a70baec47  ./SECURITY.md
-566e9625d2bff1505c8660cc46690cb895cc8b100a4f14ca96c8ebeb9c2f79b6  ./SUPERBUNDLE-RELEASE.json
+b3eb999845d85687557633a0c3b0e72655dce561756eaf2a6a81455851046ec6  ./SUPERBUNDLE-RELEASE.json
 594cbccfb8bbb5b34c9261007b15c2371af3604591a86b296130ff96ca5ba5cd  ./THIRD_PARTY_NOTICES.md
