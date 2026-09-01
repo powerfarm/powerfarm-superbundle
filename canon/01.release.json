@@ -6,9 +6,9 @@
   "date": "2026-08-24",
   "generated_by": "scripts/derive-repository.mjs",
   "document_metrics": {
-    "lines": 1888,
-    "bytes": 81908,
-    "sha256": "ed43383a1eb9c7337ac6f920e4141bb94cca3c2d51c5f1f86563b994e2dd8ad5",
+    "lines": 1910,
+    "bytes": 83371,
+    "sha256": "83d7a0d74e9e819e5af4cc97e21f5a00f885429619a93ffc5384645fc0f65ccf",
     "h1_headings": 6,
     "sections": 23,
     "subsections": 53,
@@ -42,8 +42,8 @@
     "energy_cost": {
       "id": "pf.contract.energy-cost.v1",
       "file": "contracts/energy-cost.v1.json",
-      "structural_checks": 30,
-      "sha256": "f986486ecacd35fc7122dad104f0dafd01f5ceca24f68b5b2f2c2ba0b4c5a36a"
+      "structural_checks": 32,
+      "sha256": "dda8bcbfbdce71726c25ef3d9ea56d03155601c871099202a443ef26e2c2071d"
     },
     "production_circulation": {
       "id": "pf.contract.production-circulation.v1",
@@ -55,76 +55,81 @@
       "id": "pf.contract.legacy-removal.v1",
       "file": "contracts/legacy-removal.v1.json",
       "structural_checks": 32,
-      "sha256": "d61ae60aa154e16a0cd5f61874300037889e1fc3b0968a7d25bac02130b471db"
+      "sha256": "3a9f654a366ef8dcf1fbddcc78afa3802d6fb5f4fd4d4fa54877e297290d4bdc"
     }
   },
-  "executable_evidence": {
-    "total_deterministic_tests": 162,
+  "declared_test_inventory": {
+    "measurement": "structural source count of test(...) declarations; not an execution result",
+    "executed_by": "evidence/organism-verification/verification.json",
+    "declared_test_cases": 172,
     "test_suites": {
       "heartime_logic": {
-        "files": 2,
-        "tests": 15
+        "files": 3,
+        "declared_test_cases": 16
       },
       "heartime_setting": {
         "files": 5,
-        "tests": 33
+        "declared_test_cases": 33
       },
       "roster": {
         "files": 1,
-        "tests": 4
+        "declared_test_cases": 4
       },
       "first_seam_core": {
         "files": 1,
-        "tests": 16
+        "declared_test_cases": 16
       },
       "first_seam_setting": {
         "files": 1,
-        "tests": 5
+        "declared_test_cases": 5
       },
       "first_seam_integration": {
         "files": 1,
-        "tests": 1
+        "declared_test_cases": 1
       },
       "capability_learning_core": {
         "files": 1,
-        "tests": 46
+        "declared_test_cases": 46
       },
       "capability_learning_setting": {
         "files": 1,
-        "tests": 5
+        "declared_test_cases": 5
       },
       "capability_learning_integration": {
         "files": 1,
-        "tests": 1
+        "declared_test_cases": 1
       },
       "cards_core": {
-        "files": 4,
-        "tests": 30
+        "files": 5,
+        "declared_test_cases": 39
       },
       "card_circulation_integration": {
         "files": 6,
-        "tests": 6
+        "declared_test_cases": 6
       }
     },
-    "heartime_migration_checks": 80,
-    "negative_controls_made_executable": [
-      1,
-      2,
-      3,
-      4,
-      5,
-      6,
-      7,
-      8,
-      9,
-      10,
-      11,
-      12,
-      13,
-      30,
-      31,
-      56
-    ]
+    "heartime_migration_structural_checks": 80,
+    "negative_controls_named_in_test_source": {
+      "measurement": "negative-control identifiers named in test source; naming a control is not proof that it is enforced",
+      "controls": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        30,
+        31,
+        56
+      ]
+    }
   },
   "deployment_evidence": {
     "heartime_postgres_migrations": "not_run",

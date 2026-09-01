@@ -1819,8 +1819,11 @@ BUILT AND VERIFIED LOCALLY; NOT DEPLOYED
   Heartime               pure scheduling, idle-liveness discipline, durable
                          PostgreSQL contracts, open-beat recovery, and one
                          private physical wake setting configurable by
-                         ReconcilerRef. Migrations are structurally verified;
-                         no production migration or Worker deployment is claimed.
+                         ReconcilerRef. Migrations are structurally verified and
+                         applied in order against a disposable in-process
+                         PostgreSQL, which also exercises the real trace RPC. No
+                         hosted database, production migration or Worker
+                         deployment is claimed.
   Organ roster           desired state, validation, and level-triggered
                          reconciliation planner. No live organ register or
                          production coverage claim exists yet.
@@ -1858,9 +1861,18 @@ DESIGNED, NOT BUILT
                          while the previous Appendix said none exists. There is no
                          model roster, work-class benchmark, or path by which a
                          card reaches a local model.
-  Cost function          §0.3. No card carries a ceiling, and nothing asks the
-                         frontier question at eval time. The ladder is written
-                         and never descended.
+  Cost function          §0.3, in two halves that must not be confused.
+                         The ceiling half is BUILT AND VERIFIED LOCALLY: a Card
+                         carries an explicit energy authorization vector and a
+                         monetary ceiling in integer micros, Process owns the
+                         authorization, Heartime owns admitted consumption, and
+                         circulation is blocked on exhaustion, overdraw, or an
+                         authorization outside its window. The frontier half is
+                         still DESIGNED, NOT BUILT: nothing asks the Automation
+                         Max question per card at eval time, no card can select a
+                         cheaper rung, and there is no path by which a card
+                         reaches a local model. The ladder is written and still
+                         never descended.
   Amplification          §12.4. The compression direction is designed; the
                          expansion direction has no surface, no mechanism and
                          no test.
@@ -1878,10 +1890,20 @@ ENGINES — HOW THEY ARE HELD TODAY
                     branch that was studied, and the setting exposes a fraction
                     of what the engine offers. §5.3 drift, unmeasured.
 
-NOT CONNECTED
-  Of thirty possible directed edges between the six organs, one exists, and it
-  is a hardcoded preview URL that the naming rules already forbid.
-  The organs are built. The circulation is not.
+NOT CONNECTED IN ANY DEPLOYED FORM
+  Circulation now exists as verified local goldens: a Card is emitted by
+  Heartime, projected into a sealed engine-neutral ExecutionSlice, admitted by
+  Process, executed identically by three pinned engine runtimes, and settled
+  with evidence — including recovery across a lost receipt, a stale Occupancy
+  and a takeover. Every one of those goldens runs in-process against SQLite and
+  disposable PostgreSQL. Not one of them runs against a deployed organ.
+
+  Of thirty possible directed edges between the six organs, no live edge exists.
+  The one that was described previously was a hardcoded preview URL that the
+  naming rules already forbid.
+
+  The organs are built. The circulation is proven locally and connected
+  nowhere.
 ```
 
 **The engine gap analysis is not in this document.** Which engines are missing,

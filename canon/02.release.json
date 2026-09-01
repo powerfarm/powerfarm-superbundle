@@ -20,56 +20,61 @@
     "structural_checks": 58,
     "sha256": "bcdc29505873113f052a99f588f94c50c4c3c76244a1acfff92a69053fcee54b"
   },
-  "executable_evidence": {
-    "total_deterministic_tests": 52,
+  "declared_test_inventory": {
+    "measurement": "structural source count of test(...) declarations; not an execution result",
+    "executed_by": "evidence/organism-verification/verification.json",
+    "declared_test_cases": 52,
     "test_suites": {
       "capability_learning_core": {
         "files": 1,
-        "tests": 46
+        "declared_test_cases": 46
       },
       "capability_learning_setting": {
         "files": 1,
-        "tests": 5
+        "declared_test_cases": 5
       },
       "capability_learning_integration": {
         "files": 1,
-        "tests": 1
+        "declared_test_cases": 1
       }
     },
     "structural_contract_checks": 58,
-    "heartime_migration_checks": 14,
-    "negative_controls_made_executable": [
-      1,
-      2,
-      3,
-      4,
-      5,
-      6,
-      7,
-      8,
-      9,
-      10,
-      11,
-      12,
-      13,
-      14,
-      15,
-      16,
-      17,
-      18,
-      19,
-      20,
-      21,
-      22,
-      23,
-      24,
-      25,
-      26,
-      27,
-      28,
-      29,
-      30
-    ]
+    "heartime_migration_structural_checks": 14,
+    "negative_controls_named_in_test_source": {
+      "measurement": "negative-control identifiers named in test source; naming a control is not proof that it is enforced",
+      "controls": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30
+      ]
+    }
   },
   "deployment_evidence": {
     "heartime_postgres_migration": "not_run",

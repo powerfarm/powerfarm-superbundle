@@ -1,18 +1,64 @@
 {
-  "kind": "powerfarm.superbundle.verification.v9",
-  "started_at": "2026-08-31T14:20:07.213Z",
-  "finished_at": "2026-08-31T14:20:50.906Z",
-  "source_tree_sha256": "cb794b49d5efbd29a73f44164e04439aa6591a09231bbffb45260cb1cf429a4a",
-  "source_manifest_sha256": "cb794b49d5efbd29a73f44164e04439aa6591a09231bbffb45260cb1cf429a4a",
-  "source_file_count": 8814,
-  "command_count": 35,
+  "kind": "powerfarm.superbundle.verification.v10",
+  "started_at": "2026-09-01T11:57:18.779Z",
+  "finished_at": "2026-09-01T11:57:51.043Z",
+  "source_tree_sha256": "b9dff4a8870d55f722d93d2d13063cad98c0b2078f64af97cfef28cafca11a4e",
+  "source_manifest_sha256": "b9dff4a8870d55f722d93d2d13063cad98c0b2078f64af97cfef28cafca11a4e",
+  "source_file_count": 8838,
+  "command_count": 38,
   "status": "BUILT AND VERIFIED",
   "scope": "local deterministic source, contract, controller, setting, integration, and migration-structure verification; no deployment claim",
+  "evidence_semantics": {
+    "structural": "inspects source, shape, digests or documents. Proves the artifact looks right. Does NOT prove any interface works.",
+    "derived": "recomputes derived metadata from source and compares it to what is committed. Proves the committed metadata is current, not that the underlying behaviour is correct.",
+    "executable-local": "runs code in-process against in-memory or SQLite doubles. Proves in-process behaviour. Does NOT prove behaviour against a production interface.",
+    "executable-integration": "runs code across a real interface — a real PostgreSQL engine, a pinned real engine runtime, or a subprocess boundary. Proves the wire, not the deployment.",
+    "external": "NOT PRESENT IN THIS REPORT. Nothing here runs against a deployed PowerFarm, a live Registry, a live Cloudflare binding, or a hosted PostgreSQL instance.",
+    "assertion_counts": "assertions_passed is null when the command reports no counts. null is not zero.",
+    "status_meaning": "\"BUILT AND VERIFIED\" means every recorded command exited zero at the recorded source digest. It is not a deployment readiness claim."
+  },
+  "proof_classes": {
+    "structural": {
+      "commands": 17,
+      "all_exit_zero": true,
+      "commands_reporting_assertions": 0,
+      "assertions_passed": null,
+      "assertions_failed": null
+    },
+    "derived": {
+      "commands": 1,
+      "all_exit_zero": true,
+      "commands_reporting_assertions": 0,
+      "assertions_passed": null,
+      "assertions_failed": null
+    },
+    "executable-local": {
+      "commands": 14,
+      "all_exit_zero": true,
+      "commands_reporting_assertions": 14,
+      "assertions_passed": 256,
+      "assertions_failed": 0
+    },
+    "executable-integration": {
+      "commands": 6,
+      "all_exit_zero": true,
+      "commands_reporting_assertions": 6,
+      "assertions_passed": 71,
+      "assertions_failed": 0
+    },
+    "external": {
+      "commands": 0,
+      "all_exit_zero": false,
+      "commands_reporting_assertions": 0,
+      "assertions_passed": null,
+      "assertions_failed": null
+    }
+  },
   "contracts": [
     "pf.contract.first-seam.v1",
     "pf.contract.capability-learning.v1",
     "pf.contract.card.v1",
-    "pf.contract.execution-slice.v3",
+    "pf.contract.execution-slice.v4",
     "pf.contract.card-recovery.v1",
     "pf.contract.epistemic-continuity.v1",
     "pf.contract.energy-cost.v1",
@@ -23,6 +69,7 @@
   "commands": [
     {
       "id": "derive-check",
+      "kind": "derived",
       "command": [
         "npm",
         "run",
@@ -30,14 +77,16 @@
       ],
       "exit_code": 0,
       "signal": null,
-      "duration_ms": 969,
-      "stdout_sha256": "487180f338f472f570c38a2768b28fa29db0484cb7ed671a83d90ac1a3400a8a",
+      "duration_ms": 584,
+      "stdout_sha256": "e96631d8849f39b8433a0c779e0cf84079f30c892e50517faa45af037f459e10",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tap_passes": 0,
-      "tap_failures": 0
+      "assertion_reporter": null,
+      "assertions_passed": null,
+      "assertions_failed": null
     },
     {
       "id": "first-seam-contract",
+      "kind": "structural",
       "command": [
         "npm",
         "run",
@@ -45,14 +94,16 @@
       ],
       "exit_code": 0,
       "signal": null,
-      "duration_ms": 226,
-      "stdout_sha256": "732fb738a8c43b4f8fa7775f9d41760d4aca080eda5c59c50b6e285125f3f0df",
+      "duration_ms": 186,
+      "stdout_sha256": "9fa4f47b60ef573062d0ebbe9ad4c68e69a4aed12f8cb48d2cd09b8ab30ec55d",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tap_passes": 0,
-      "tap_failures": 0
+      "assertion_reporter": null,
+      "assertions_passed": null,
+      "assertions_failed": null
     },
     {
       "id": "capability-learning-contract",
+      "kind": "structural",
       "command": [
         "npm",
         "run",
@@ -60,14 +111,16 @@
       ],
       "exit_code": 0,
       "signal": null,
-      "duration_ms": 225,
-      "stdout_sha256": "fec4ffd82fbb2471f6e49ee282f39fb422bb44659329837864b212286066dae6",
+      "duration_ms": 181,
+      "stdout_sha256": "443e7568b421637464ad0a3bba3532fa544542a05d8dbe67a1c8f6a6634d6159",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tap_passes": 0,
-      "tap_failures": 0
+      "assertion_reporter": null,
+      "assertions_passed": null,
+      "assertions_failed": null
     },
     {
       "id": "card-contract",
+      "kind": "structural",
       "command": [
         "npm",
         "run",
@@ -75,14 +128,16 @@
       ],
       "exit_code": 0,
       "signal": null,
-      "duration_ms": 218,
-      "stdout_sha256": "638ab27c85dc8c7fd46c0c11c3b9a266c926ac60f6901e7d353613c47447dc13",
+      "duration_ms": 177,
+      "stdout_sha256": "1e9d0d80347c23f6e00060d5926fdacee6b5b0efe17df8249407fbc2ee4aa73c",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tap_passes": 0,
-      "tap_failures": 0
+      "assertion_reporter": null,
+      "assertions_passed": null,
+      "assertions_failed": null
     },
     {
       "id": "execution-slice-contract",
+      "kind": "structural",
       "command": [
         "npm",
         "run",
@@ -90,14 +145,16 @@
       ],
       "exit_code": 0,
       "signal": null,
-      "duration_ms": 231,
-      "stdout_sha256": "ef228267dfcbad020aba85cf12d9e45f268f3a261e4a9d4b86ed8757d6d01f40",
+      "duration_ms": 184,
+      "stdout_sha256": "5f319cef5adcc3832d78991789c81f32c0a3d2fd2e7e88cec4014fefff080077",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tap_passes": 0,
-      "tap_failures": 0
+      "assertion_reporter": null,
+      "assertions_passed": null,
+      "assertions_failed": null
     },
     {
       "id": "recovery-contract",
+      "kind": "structural",
       "command": [
         "npm",
         "run",
@@ -105,14 +162,16 @@
       ],
       "exit_code": 0,
       "signal": null,
-      "duration_ms": 207,
-      "stdout_sha256": "b509e7e07420dc906b498d35d6905ba465246f139783c6b74f7854e37f9ba4a9",
+      "duration_ms": 251,
+      "stdout_sha256": "12fab70d59ec31d4754d3e787a24ddf2915c4bb6a16a3467cc3ef793c5bb5bad",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tap_passes": 0,
-      "tap_failures": 0
+      "assertion_reporter": null,
+      "assertions_passed": null,
+      "assertions_failed": null
     },
     {
       "id": "epistemic-continuity-contract",
+      "kind": "structural",
       "command": [
         "npm",
         "run",
@@ -120,14 +179,16 @@
       ],
       "exit_code": 0,
       "signal": null,
-      "duration_ms": 206,
-      "stdout_sha256": "caeb06f42b559fd33599dac50aae95ae3c6fa2c70b4a431fb22c4e69c089b88b",
+      "duration_ms": 180,
+      "stdout_sha256": "a6ac35f9bbb5a3be2cb32301efdf18a70b516c87e424026cde0324fe1a9427f6",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tap_passes": 0,
-      "tap_failures": 0
+      "assertion_reporter": null,
+      "assertions_passed": null,
+      "assertions_failed": null
     },
     {
       "id": "energy-cost-contract",
+      "kind": "structural",
       "command": [
         "npm",
         "run",
@@ -135,14 +196,16 @@
       ],
       "exit_code": 0,
       "signal": null,
-      "duration_ms": 214,
-      "stdout_sha256": "b7f61f421195672055b9e18bae651a00fedb56a1617bb6297430d8450bd51bfd",
+      "duration_ms": 183,
+      "stdout_sha256": "81af07b8a855ee8f0495b8ddd62c6da7bc6e51c2517b0d33fb1cab52ccd7c810",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tap_passes": 0,
-      "tap_failures": 0
+      "assertion_reporter": null,
+      "assertions_passed": null,
+      "assertions_failed": null
     },
     {
       "id": "production-circulation-contract",
+      "kind": "structural",
       "command": [
         "npm",
         "run",
@@ -150,14 +213,16 @@
       ],
       "exit_code": 0,
       "signal": null,
-      "duration_ms": 204,
-      "stdout_sha256": "57084ea3527f13904237cc984ff338aad8ffa50eb3bb29997e61d43ea7b9efd3",
+      "duration_ms": 192,
+      "stdout_sha256": "a33d0e4f71ccdaaf36be2010c63c706b98844de20c6f59bf77e493cf55e22d56",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tap_passes": 0,
-      "tap_failures": 0
+      "assertion_reporter": null,
+      "assertions_passed": null,
+      "assertions_failed": null
     },
     {
       "id": "legacy-removal-contract",
+      "kind": "structural",
       "command": [
         "npm",
         "run",
@@ -165,14 +230,16 @@
       ],
       "exit_code": 0,
       "signal": null,
-      "duration_ms": 214,
-      "stdout_sha256": "57f8f6ab765ab80cac485a68489f2dfc38de6b0b4a350c951b4b6202f0b5c8cf",
+      "duration_ms": 187,
+      "stdout_sha256": "904636ce8ba0d31d8a6ca22e9bc7f6bb348362885770d59ff63de54184b63b7f",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tap_passes": 0,
-      "tap_failures": 0
+      "assertion_reporter": null,
+      "assertions_passed": null,
+      "assertions_failed": null
     },
     {
       "id": "source-check",
+      "kind": "structural",
       "command": [
         "npm",
         "run",
@@ -180,14 +247,16 @@
       ],
       "exit_code": 0,
       "signal": null,
-      "duration_ms": 17005,
-      "stdout_sha256": "149249c7510c514da5667292d780eff9a5963f4d527d0aa5b7f1d7c7931289fc",
+      "duration_ms": 10827,
+      "stdout_sha256": "73692d273b1a6f20539de496aae3b1fe98dc590dc0f793e25aa34a6b644dcc0c",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tap_passes": 0,
-      "tap_failures": 0
+      "assertion_reporter": null,
+      "assertions_passed": null,
+      "assertions_failed": null
     },
     {
       "id": "permanent-checks",
+      "kind": "structural",
       "command": [
         "npm",
         "run",
@@ -195,14 +264,16 @@
       ],
       "exit_code": 0,
       "signal": null,
-      "duration_ms": 614,
-      "stdout_sha256": "b21992be48f3e39faad656d94643532bc8f444c5415c5337c4964e20a8f22903",
+      "duration_ms": 585,
+      "stdout_sha256": "52e98e6bfb83a0f1a174fb02e9d69da78eeceea38f6936c69a0919605788c807",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tap_passes": 0,
-      "tap_failures": 0
+      "assertion_reporter": null,
+      "assertions_passed": null,
+      "assertions_failed": null
     },
     {
       "id": "roster-tests",
+      "kind": "executable-local",
       "command": [
         "npm",
         "run",
@@ -210,14 +281,16 @@
       ],
       "exit_code": 0,
       "signal": null,
-      "duration_ms": 313,
-      "stdout_sha256": "579ea603636e1e0a63881802a283659c688460b5848e5b356c2d93c5f128ca3d",
+      "duration_ms": 266,
+      "stdout_sha256": "ec6c7f219b9fa8bc3d3892349a231864e1605d36f26491c6829f02dadce620d5",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tap_passes": 4,
-      "tap_failures": 0
+      "assertion_reporter": "node-test",
+      "assertions_passed": 4,
+      "assertions_failed": 0
     },
     {
       "id": "card-tests",
+      "kind": "executable-local",
       "command": [
         "npm",
         "run",
@@ -225,14 +298,16 @@
       ],
       "exit_code": 0,
       "signal": null,
-      "duration_ms": 381,
-      "stdout_sha256": "04a97cfbaf5d43270c632a8ee6bfbb2fbefd9e3ef3cc086e2b36b5624f949266",
+      "duration_ms": 316,
+      "stdout_sha256": "7a62eadb4e7243e679f7d5eccdcbf8a5ba4c92a7e365e9c3e2eec4636a1e8a92",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tap_passes": 30,
-      "tap_failures": 0
+      "assertion_reporter": "node-test",
+      "assertions_passed": 39,
+      "assertions_failed": 0
     },
     {
       "id": "first-seam-tests",
+      "kind": "executable-local",
       "command": [
         "npm",
         "run",
@@ -240,14 +315,16 @@
       ],
       "exit_code": 0,
       "signal": null,
-      "duration_ms": 312,
-      "stdout_sha256": "ddc527119690b3f7dbe4c4c80d057f4bf8606209f9a4b9d4261f69cb69c15b81",
+      "duration_ms": 290,
+      "stdout_sha256": "13108609a919419e03ef36ccf6c8c8607b83543609a6f10f8b2124af2ef1522b",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tap_passes": 16,
-      "tap_failures": 0
+      "assertion_reporter": "node-test",
+      "assertions_passed": 16,
+      "assertions_failed": 0
     },
     {
       "id": "attention-setting-tests",
+      "kind": "executable-local",
       "command": [
         "npm",
         "run",
@@ -255,14 +332,16 @@
       ],
       "exit_code": 0,
       "signal": null,
-      "duration_ms": 302,
-      "stdout_sha256": "380150d96584c9c8c823c1a007d5b8088bb2ffa8fc4718b29d8dc2272a5882d2",
+      "duration_ms": 273,
+      "stdout_sha256": "d075361bade5f2e985573a287fb3c5041c1cf3e6af9283e87141266208600bd9",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tap_passes": 5,
-      "tap_failures": 0
+      "assertion_reporter": "node-test",
+      "assertions_passed": 5,
+      "assertions_failed": 0
     },
     {
       "id": "first-seam-integration",
+      "kind": "executable-local",
       "command": [
         "npm",
         "run",
@@ -270,14 +349,16 @@
       ],
       "exit_code": 0,
       "signal": null,
-      "duration_ms": 299,
-      "stdout_sha256": "86b8a528957fb53c4b4cb46a05e0bc1b7ec3108e1e8c9fa356b9cd1ed8f7b09a",
+      "duration_ms": 234,
+      "stdout_sha256": "e49fbf9a2b6108bb59d20170a886e5575ac60909c4d3d9ff7db4bc440ca32db4",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tap_passes": 1,
-      "tap_failures": 0
+      "assertion_reporter": "node-test",
+      "assertions_passed": 1,
+      "assertions_failed": 0
     },
     {
       "id": "card-circulation-integration",
+      "kind": "executable-integration",
       "command": [
         "npm",
         "run",
@@ -285,14 +366,16 @@
       ],
       "exit_code": 0,
       "signal": null,
-      "duration_ms": 5469,
-      "stdout_sha256": "fb025d974b6e52b652efcef701ed88c602cbfabae01077f64a927c183e97d9f2",
+      "duration_ms": 1362,
+      "stdout_sha256": "4970955aa0b640f669c9974a800acfcd4a5ca6230b183304d648da700da2aca5",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tap_passes": 6,
-      "tap_failures": 0
+      "assertion_reporter": "node-test",
+      "assertions_passed": 6,
+      "assertions_failed": 0
     },
     {
       "id": "sedimentation-tests",
+      "kind": "executable-local",
       "command": [
         "npm",
         "run",
@@ -300,14 +383,16 @@
       ],
       "exit_code": 0,
       "signal": null,
-      "duration_ms": 354,
-      "stdout_sha256": "f6eedccc9ab894cdb005d21e05a37ba750a3197b65e23e3e853b10a3afde6d3a",
+      "duration_ms": 346,
+      "stdout_sha256": "16d74c0e770775683cd45be493f73b38db76f3c54f90a7e637fcdfd3f0bea1ff",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tap_passes": 46,
-      "tap_failures": 0
+      "assertion_reporter": "node-test",
+      "assertions_passed": 46,
+      "assertions_failed": 0
     },
     {
       "id": "sedimentation-setting-tests",
+      "kind": "executable-local",
       "command": [
         "npm",
         "run",
@@ -315,14 +400,16 @@
       ],
       "exit_code": 0,
       "signal": null,
-      "duration_ms": 316,
-      "stdout_sha256": "e823dfcfacff00154698cacbfd7a43699171b72bde8b76ae92e1eb02b49dc7b8",
+      "duration_ms": 231,
+      "stdout_sha256": "392d37e13123895f5a567407fba5043d77589089f545023c8cebaac484b44079",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tap_passes": 5,
-      "tap_failures": 0
+      "assertion_reporter": "node-test",
+      "assertions_passed": 5,
+      "assertions_failed": 0
     },
     {
       "id": "capability-learning-integration",
+      "kind": "executable-local",
       "command": [
         "npm",
         "run",
@@ -330,14 +417,16 @@
       ],
       "exit_code": 0,
       "signal": null,
-      "duration_ms": 291,
-      "stdout_sha256": "ea21a9fd8535424fc30450f80b4bc9cc50b32a083317dffc5a59ed778c8b3c6e",
+      "duration_ms": 264,
+      "stdout_sha256": "25af8f3c90f2995bd5078269f2d6d492e104c415b48ed66592fda41f48cdc12c",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tap_passes": 1,
-      "tap_failures": 0
+      "assertion_reporter": "node-test",
+      "assertions_passed": 1,
+      "assertions_failed": 0
     },
     {
       "id": "heartime-setting-tests",
+      "kind": "executable-local",
       "command": [
         "npm",
         "run",
@@ -345,14 +434,16 @@
       ],
       "exit_code": 0,
       "signal": null,
-      "duration_ms": 361,
-      "stdout_sha256": "f5a83d40c8b488e248eabe16b4728d8a930a2c18c117169f8bad0b8adcaf4114",
+      "duration_ms": 294,
+      "stdout_sha256": "838ce330f75e2fa05d99d056ad6c26eefb7cbbfb017e49e52fd0f09a3a860123",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tap_passes": 33,
-      "tap_failures": 0
+      "assertion_reporter": "node-test",
+      "assertions_passed": 33,
+      "assertions_failed": 0
     },
     {
       "id": "heartime-verify",
+      "kind": "executable-local",
       "command": [
         "npm",
         "--prefix",
@@ -362,28 +453,32 @@
       ],
       "exit_code": 0,
       "signal": null,
-      "duration_ms": 783,
-      "stdout_sha256": "f48a4ccf932f9edf6a9c9a26d51d8dd9b5bca658f327637f0e06afba5d06ddbc",
+      "duration_ms": 2046,
+      "stdout_sha256": "88650cf2a8ddcd81aa6cdfaa59d9debf48f54ab4dce47f81687beecfc4cc617c",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tap_passes": 15,
-      "tap_failures": 0
+      "assertion_reporter": "node-test",
+      "assertions_passed": 16,
+      "assertions_failed": 0
     },
     {
       "id": "database-policy",
+      "kind": "structural",
       "command": [
-        "/Users/ubl-ops/.npm/_npx/cd797643f5f2e392/node_modules/node/bin/node",
+        "/Users/ubl-ops/.local/share/mise/installs/node/24.18.0/bin/node",
         "scripts/db-policy.mjs"
       ],
       "exit_code": 0,
       "signal": null,
-      "duration_ms": 137,
-      "stdout_sha256": "517936d6878f712f0e99c0585608aa0839f99319e0e3066aee15a0ba1366da0a",
+      "duration_ms": 102,
+      "stdout_sha256": "eaabf60131d071fd2001fb38b2531e14174671e3a7f007efa69090b96b375a79",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tap_passes": 0,
-      "tap_failures": 0
+      "assertion_reporter": null,
+      "assertions_passed": null,
+      "assertions_failed": null
     },
     {
       "id": "production-conformance",
+      "kind": "executable-local",
       "command": [
         "npm",
         "run",
@@ -391,14 +486,16 @@
       ],
       "exit_code": 0,
       "signal": null,
-      "duration_ms": 290,
-      "stdout_sha256": "281392e12ca853084d734834b2cd5b1f31937d8dc235d126f5799cacbfe4a126",
+      "duration_ms": 226,
+      "stdout_sha256": "52f07205328e217a0593476140fea62ec64bf4ce364f6acd504e036f78dd6707",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tap_passes": 2,
-      "tap_failures": 0
+      "assertion_reporter": "node-test",
+      "assertions_passed": 2,
+      "assertions_failed": 0
     },
     {
       "id": "process-continuum",
+      "kind": "executable-local",
       "command": [
         "npm",
         "run",
@@ -406,14 +503,17 @@
       ],
       "exit_code": 0,
       "signal": null,
-      "duration_ms": 4709,
-      "stdout_sha256": "96e495bc070d1e1f3fd5d79d3710d181d9bd1b26897267c1f80b9d23ef263026",
+      "duration_ms": 4347,
+      "stdout_sha256": "6f3817f6d3061cc1f260e68a1e90fa6635891033aefeddc346422d0627167c0a",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tap_passes": 0,
-      "tap_failures": 0
+      "assertion_reporter": "pytest",
+      "assertions_passed": 82,
+      "assertions_failed": 0,
+      "assertions_skipped": 0
     },
     {
       "id": "process-adk",
+      "kind": "executable-integration",
       "command": [
         "npm",
         "run",
@@ -421,14 +521,17 @@
       ],
       "exit_code": 0,
       "signal": null,
-      "duration_ms": 3798,
-      "stdout_sha256": "2e9b094d07c67dbdc4fd2ded44b219e986bccc28e15a731abb161f1fc759c005",
+      "duration_ms": 670,
+      "stdout_sha256": "9f95758d130efc81d7e8d5857a91cf914bb79a48b83d056f659604ff7e87c7b5",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tap_passes": 0,
-      "tap_failures": 0
+      "assertion_reporter": "pytest",
+      "assertions_passed": 36,
+      "assertions_failed": 0,
+      "assertions_skipped": 1
     },
     {
       "id": "process-maf",
+      "kind": "executable-integration",
       "command": [
         "npm",
         "run",
@@ -436,14 +539,17 @@
       ],
       "exit_code": 0,
       "signal": null,
-      "duration_ms": 1079,
-      "stdout_sha256": "48242005c12a0a46dfe422819fbda432ee82aea70941980f6967d988f0c1b1d9",
+      "duration_ms": 490,
+      "stdout_sha256": "e16d8da56ee65d1e57580d0eb61de3ab37953cca6fedfe8a8d937c055c7d9f85",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tap_passes": 0,
-      "tap_failures": 0
+      "assertion_reporter": "pytest",
+      "assertions_passed": 14,
+      "assertions_failed": 0,
+      "assertions_skipped": 1
     },
     {
       "id": "process-ai-sdk",
+      "kind": "executable-integration",
       "command": [
         "npm",
         "run",
@@ -451,14 +557,16 @@
       ],
       "exit_code": 0,
       "signal": null,
-      "duration_ms": 1269,
-      "stdout_sha256": "b9e869b77bb0d6f225dfdc834566b52686a3bea28d5f999c229f05520c1d21ea",
+      "duration_ms": 1014,
+      "stdout_sha256": "0580b7a8bf3bc9762a2633f7a67f5ba091824bbeaae0e8cb3a22f6793bdb158c",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tap_passes": 9,
-      "tap_failures": 0
+      "assertion_reporter": "node-test",
+      "assertions_passed": 13,
+      "assertions_failed": 0
     },
     {
       "id": "process-writer-setting",
+      "kind": "executable-local",
       "command": [
         "npm",
         "run",
@@ -466,14 +574,16 @@
       ],
       "exit_code": 0,
       "signal": null,
-      "duration_ms": 329,
-      "stdout_sha256": "9f2fc6e3c0bfa83df1b5ec2a42b65cab96fcf598c62065364e5531c186b3999e",
+      "duration_ms": 256,
+      "stdout_sha256": "c3762be90819529e4cb393082869eb910e212830c3dc2b43ac2494e7e614eddd",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tap_passes": 3,
-      "tap_failures": 0
+      "assertion_reporter": "node-test",
+      "assertions_passed": 3,
+      "assertions_failed": 0
     },
     {
       "id": "ai-sdk-pin",
+      "kind": "structural",
       "command": [
         "npm",
         "run",
@@ -481,14 +591,16 @@
       ],
       "exit_code": 0,
       "signal": null,
-      "duration_ms": 1167,
-      "stdout_sha256": "2d60da421f4632ba84b259be28b0fef45ad0283b8c3cc79baa13a46e5af05f65",
+      "duration_ms": 958,
+      "stdout_sha256": "f138cebb68f36264fe233e11d533a1c0de234d32377d1c652ab82febe79360fb",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tap_passes": 0,
-      "tap_failures": 0
+      "assertion_reporter": null,
+      "assertions_passed": null,
+      "assertions_failed": null
     },
     {
       "id": "maf-pin",
+      "kind": "structural",
       "command": [
         "npm",
         "run",
@@ -496,14 +608,16 @@
       ],
       "exit_code": 0,
       "signal": null,
-      "duration_ms": 271,
-      "stdout_sha256": "edd28ca8ff127bb1509a8b107e868d0b65210ec5c0ce609e1d9b0278aa5f7180",
+      "duration_ms": 169,
+      "stdout_sha256": "b55e69ddb9611f60924c02acd913f086a633a4ed450ea4ac7910660cf573ab4c",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tap_passes": 0,
-      "tap_failures": 0
+      "assertion_reporter": null,
+      "assertions_passed": null,
+      "assertions_failed": null
     },
     {
       "id": "engine-boundaries",
+      "kind": "structural",
       "command": [
         "npm",
         "run",
@@ -511,14 +625,16 @@
       ],
       "exit_code": 0,
       "signal": null,
-      "duration_ms": 278,
-      "stdout_sha256": "82c798cbf975cb666ad00cd79980133db2336cd181d2ffd86e5c3970fff511e8",
+      "duration_ms": 197,
+      "stdout_sha256": "8cd52ebea9b3adbfefc7cb685b40ade25b6015a7b92c42561444de9329cdf412",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tap_passes": 0,
-      "tap_failures": 0
+      "assertion_reporter": null,
+      "assertions_passed": null,
+      "assertions_failed": null
     },
     {
       "id": "documentation-conformance",
+      "kind": "structural",
       "command": [
         "npm",
         "run",
@@ -526,14 +642,16 @@
       ],
       "exit_code": 0,
       "signal": null,
-      "duration_ms": 345,
-      "stdout_sha256": "b54b5f953da535e6aee7228ed68dfa54e11a1cc799cfcefab345ffee0f0086be",
+      "duration_ms": 286,
+      "stdout_sha256": "82e0975642665078eb5f3c58294398f188cf253d1e83826ec0670c18efb2c517",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tap_passes": 0,
-      "tap_failures": 0
+      "assertion_reporter": null,
+      "assertions_passed": null,
+      "assertions_failed": null
     },
     {
       "id": "release-integrity-tests",
+      "kind": "executable-local",
       "command": [
         "npm",
         "run",
@@ -541,15 +659,67 @@
       ],
       "exit_code": 0,
       "signal": null,
-      "duration_ms": 291,
-      "stdout_sha256": "42a7ca4b21f8d65207e75de0ed45434796656cee18c51ab31d725d690ec261bc",
+      "duration_ms": 227,
+      "stdout_sha256": "d477d21ce3217648f4bd1f3c107b1080afb4d4fd2a250823a38d8ec57dcb8bc7",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tap_passes": 3,
-      "tap_failures": 0
+      "assertion_reporter": "node-test",
+      "assertions_passed": 3,
+      "assertions_failed": 0
+    },
+    {
+      "id": "heartime-migration-structure",
+      "kind": "structural",
+      "command": [
+        "npm",
+        "run",
+        "test:heartime-migrations"
+      ],
+      "exit_code": 0,
+      "signal": null,
+      "duration_ms": 240,
+      "stdout_sha256": "9fa7da7606fd745f1f0f72de30427a54de028e2149d83f8000764ea047f38223",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "assertion_reporter": null,
+      "assertions_passed": null,
+      "assertions_failed": null
+    },
+    {
+      "id": "heartime-postgres-integration",
+      "kind": "executable-integration",
+      "command": [
+        "npm",
+        "run",
+        "test:heartime-postgres"
+      ],
+      "exit_code": 0,
+      "signal": null,
+      "duration_ms": 1635,
+      "stdout_sha256": "3d4970fd91afce1bbb00df598a4410c261f508f6cfa88b0287632c4918234446",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "assertion_reporter": "node-test",
+      "assertions_passed": 1,
+      "assertions_failed": 0
+    },
+    {
+      "id": "process-postgres-integration",
+      "kind": "executable-integration",
+      "command": [
+        "npm",
+        "run",
+        "test:process-postgres"
+      ],
+      "exit_code": 0,
+      "signal": null,
+      "duration_ms": 1795,
+      "stdout_sha256": "f3ef6970d05b12571828b36710d085e6d19bbc8d122ef5f260f5be1deae12902",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "assertion_reporter": "node-test",
+      "assertions_passed": 1,
+      "assertions_failed": 0
     }
   ],
   "deployment": {
-    "heartime_postgres_migrations": "NOT RUN",
+    "heartime_postgres_migrations": "APPLIED IN ORDER AGAINST A DISPOSABLE IN-PROCESS POSTGRESQL (pglite); NOT RUN AGAINST A HOSTED DATABASE",
     "heartime_cloudflare_settings": "NOT DEPLOYED",
     "attention_target_organ_ports": "NOT DEPLOYED",
     "capability_learning_registry_port": "NOT DEPLOYED",
@@ -560,10 +730,10 @@
     "card_snapshot_store": "NOT DEPLOYED",
     "card_transition_ledger": "NOT DEPLOYED",
     "registry_directory_production_binding": "BUILT AND VERIFIED; NOT DEPLOYED",
-    "process_postgres_admission_writer": "BUILT AND VERIFIED; NOT DEPLOYED",
+    "process_postgres_admission_writer": "WIRE VERIFIED AGAINST A DISPOSABLE IN-PROCESS POSTGRESQL (pglite) THROUGH THE WORKER PostgREST TRANSPORT; NOT DEPLOYED. The in-process Continuum Kernel still makes the canonical admission decision, so this path persists already-admitted acts and is not itself the admission boundary.",
     "process_writer_service_binding": "BUILT AND VERIFIED; NOT DEPLOYED",
     "registry_runtime_token_binding": "BUILT AND VERIFIED IN PAIRED REGISTRY; NOT DEPLOYED",
-    "heartime_operational_trace_projection": "BUILT AND VERIFIED; NOT DEPLOYED",
+    "heartime_operational_trace_projection": "RPC SIGNATURE AND REDACTION VERIFIED AGAINST A DISPOSABLE IN-PROCESS POSTGRESQL (pglite); NOT DEPLOYED",
     "recovery_runtime_path": "LOCAL GOLDEN ONLY",
     "epistemic_continuity_runtime": "LOCAL MULTI-PROCESS GOLDEN ONLY",
     "memory_evidence_production_binding": "NOT DEPLOYED",
@@ -575,6 +745,9 @@
     "maf_memory_projection": "BUILT AND VERIFIED READ-ONLY WITH THE PINNED REAL CONTEXTPROVIDER; NOT DEPLOYED",
     "three_engine_equivalence": "LOCAL THREE-ENGINE GOLDEN VERIFIED WITH PINNED ADK, AI SDK AND MAF RUNTIMES",
     "whole_system_test": "NOT RUN",
+    "canonical_process_commit_decision": "UNRESOLVED. SQLite-versus-PostgreSQL canonical commit is an open constitutional decision; no dual-write was introduced to hide it.",
+    "delegated_authority_decision": "UNRESOLVED. Authority grant/revoke remains root-only in the kernel; canon describes descending Authority.",
+    "execution_slice_resource_window": "ENFORCED LOCALLY. powerfarm.execution-slice.v4 seals resources.evaluated_at and both authorization windows, and AI SDK, ADK and MAF revalidate them against an injectable clock immediately before the external effect. Negative controls cover expiry after derivation, the exclusive expires_at boundary, a rewound clock, and occupant/engine identity failing to widen a window.",
     "production_observation": {
       "file": "evidence/supabase-production-observation-2026-08-23.json",
       "sha256": "f010fdfdba57d66e01124ae9ec6052b245803ec9b48e320ef49ada706fd5c77e"

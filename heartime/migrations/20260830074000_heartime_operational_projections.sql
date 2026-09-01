@@ -27,6 +27,40 @@ alter table heartime.beats add constraint beats_trace_ref_format
   check (trace_ref ~ '^pf(\.[a-z0-9][a-z0-9-]*)+$');
 create unique index if not exists beats_trace_ref_unique on heartime.beats(trace_ref);
 
+create or replace function heartime.trace_attributes_safe_v1(p_value jsonb)
+returns boolean
+language plpgsql
+immutable
+security invoker
+set search_path = ''
+as $$
+declare
+  v_key text;
+  v_child jsonb;
+begin
+  if p_value is null then return true; end if;
+  if jsonb_typeof(p_value) = 'object' then
+    for v_key, v_child in select key, value from jsonb_each(p_value)
+    loop
+      if lower(v_key) = any(array[
+        'prompt', 'chain_of_thought', 'card_body', 'authorization', 'secret',
+        'password', 'credential', 'access_token', 'refresh_token', 'raw_input',
+        'raw_output', 'workflow_state'
+      ]) then
+        return false;
+      end if;
+      if not heartime.trace_attributes_safe_v1(v_child) then return false; end if;
+    end loop;
+  elsif jsonb_typeof(p_value) = 'array' then
+    for v_child in select value from jsonb_array_elements(p_value)
+    loop
+      if not heartime.trace_attributes_safe_v1(v_child) then return false; end if;
+    end loop;
+  end if;
+  return true;
+end;
+$$;
+
 create table heartime.trace_events (
   id bigint generated always as identity primary key,
   trace_ref text not null check (trace_ref ~ '^pf(\.[a-z0-9][a-z0-9-]*)+$'),
@@ -36,7 +70,9 @@ create table heartime.trace_events (
   beat_ref text check (beat_ref is null or beat_ref ~ '^pf(\.[a-z0-9][a-z0-9-]*)+$'),
   attempt_ref text check (attempt_ref is null or attempt_ref ~ '^pf(\.[a-z0-9][a-z0-9-]*)+$'),
   attributes jsonb not null default '{}'::jsonb check (
-    jsonb_typeof(attributes) = 'object' and octet_length(attributes::text) <= 16384
+    jsonb_typeof(attributes) = 'object'
+    and octet_length(attributes::text) <= 16384
+    and heartime.trace_attributes_safe_v1(attributes)
   ),
   observed_at timestamptz not null,
   created_by uuid not null references public.identities(id),
@@ -74,7 +110,7 @@ as $$
 declare v_id bigint; v_me uuid := public.identidade_atual();
 begin
   if not heartime.current_identity_is('pf.runtime.heartime') then raise exception 'heartime_runtime_identity_required'; end if;
-  if p_attributes ?| array['prompt','chain_of_thought','card_body','authorization','secret'] then
+  if not heartime.trace_attributes_safe_v1(coalesce(p_attributes, '{}'::jsonb)) then
     raise exception 'trace_attributes_forbidden';
   end if;
   insert into heartime.trace_events(
@@ -89,6 +125,8 @@ end;
 $$;
 
 revoke all on function heartime.record_trace_event_v1(text,text,text,timestamptz,text,text,text,jsonb) from public, anon;
+revoke all on function heartime.trace_attributes_safe_v1(jsonb) from public, anon;
+grant execute on function heartime.trace_attributes_safe_v1(jsonb) to authenticated;
 grant execute on function heartime.record_trace_event_v1(text,text,text,timestamptz,text,text,text,jsonb) to authenticated;
 
 create or replace view heartime.circulation_pressure_v1

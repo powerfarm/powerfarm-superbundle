@@ -156,6 +156,7 @@ test('truthful overdraw is recorded but no further executable slice can be issue
   assert.equal(recorded.resource_state.reason, 'energy_overdrawn:tool_calls');
   await assert.rejects(() => deriveExecutionSlice(recorded.card, {
     actor: 'agent-1', office: 'operations', toolName: 'search', kind: 'tool.invoke.search', subject: 'tool:search',
+    evaluatedAt: T3,
   }), /resource budget is not executable: energy_overdrawn:tool_calls/);
 });
 

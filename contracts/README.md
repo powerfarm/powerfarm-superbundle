@@ -24,12 +24,12 @@ This is not a shared framework and not a universal DTO library. Engines remain n
 ## Engine-equivalent execution
 
 ```text
-pf.contract.execution-slice.v3
+pf.contract.execution-slice.v4
 pf.contract.card-recovery.v1
 pf.contract.execution-receipt.v1
 ```
 
-Current documents: `execution-slice.v3.json`, `recovery.v1.json`, `execution-receipt.v1.json`, and `execution-slice.md`. `execution-slice.v1.json` and `execution-slice.v2.json` remain historical and pinned. V3 carries the remaining resource budget while preserving the stable attempt/run identity introduced by v2.
+Current documents: `execution-slice.v4.json`, `recovery.v1.json`, `execution-receipt.v1.json`, and `execution-slice.md`. `execution-slice.v1.json`, `execution-slice.v2.json` and `execution-slice.v3.json` remain historical and pinned. V3 carried the remaining resource budget while preserving the stable attempt/run identity introduced by v2. V4 additionally seals `resources.evaluated_at` and the energy/cost authorization windows, so authorization is checked at the real execution boundary rather than at `Card.updated_at`.
 
 ## Epistemic continuity
 

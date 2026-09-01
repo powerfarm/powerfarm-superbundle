@@ -8,7 +8,7 @@
 
 The PowerFarm execution boundary begins with a Card, not with an engine callback.
 
-`powerfarm.execution-slice.v3` is a content-addressed projection of one institutional Card attempt. It is produced before selecting or entering ADK, AI SDK, or any future engine Setting. `execution-slice.v1.json` and `execution-slice.v2.json` remain pinned as historical contract evidence; v3 is the current boundary and adds the sealed remaining resource budget without changing run identity.
+`powerfarm.execution-slice.v4` is a content-addressed projection of one institutional Card attempt. It is produced before selecting or entering ADK, AI SDK, or any future engine Setting. `execution-slice.v1.json`, `execution-slice.v2.json` and `execution-slice.v3.json` remain pinned as historical contract evidence; v4 is the current boundary. V3 sealed the remaining resource budget; v4 additionally seals the instant at which that budget was evaluated and the energy/cost authorization windows, so that an engine can revalidate authorization against its own clock immediately before an external effect.
 
 ```text
 Card
@@ -18,11 +18,11 @@ Card
        |
        +-- Heartime beat_ref #1
        |        ↓
-       |   ExecutionSlice v2
+       |   ExecutionSlice v4
        |
        +-- Heartime beat_ref #2 after recovery
                 ↓
-           ExecutionSlice v2
+           ExecutionSlice v4
                 ↓
          same institutional run_ref
 ```

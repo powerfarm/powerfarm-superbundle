@@ -11,9 +11,13 @@ export async function makeExecutionSlice({
   attemptRef = 'pf.attempt.ai-sdk-test',
   directionRef = 'pf.direction.ai-sdk-test',
   ecsSha256 = 'a'.repeat(64),
+  evaluatedAt = '2026-08-30T00:00:00.000Z',
+  effectiveAt = '2026-08-30T00:00:00.000Z',
+  energyExpiresAt = null,
+  costExpiresAt = null,
 } = {}) {
   const base = {
-    contract_version: 'powerfarm.execution-slice.v3',
+    contract_version: 'powerfarm.execution-slice.v4',
     card: {
       ref: cardRef,
       generation: 1,
@@ -35,6 +39,19 @@ export async function makeExecutionSlice({
     circulation: { beat_ref: beatRef, attempt_ref: attemptRef },
     capability: { tool_name: toolName, kind, subject },
     resources: {
+      evaluated_at: evaluatedAt,
+      authorization_window: {
+        energy: {
+          authorization_ref: 'pf.energy-authorization.ai-sdk-test',
+          effective_at: effectiveAt,
+          expires_at: energyExpiresAt,
+        },
+        cost: {
+          authorization_ref: 'pf.cost-authorization.ai-sdk-test',
+          effective_at: effectiveAt,
+          expires_at: costExpiresAt,
+        },
+      },
       energy_remaining: {
         beats: 2,
         model_tokens: 100000,

@@ -1,0 +1,62 @@
+{
+  "contract_id": "pf.contract.execution-slice.v4",
+  "contract_version": "powerfarm.execution-slice.v4",
+  "owner": "Cards + Process boundary",
+  "role": "engine-neutral executable projection of one circulating Card attempt with an explicitly timed resource authorization boundary",
+  "derived_from": "powerfarm.card.v1",
+  "supersedes": "contracts/execution-slice.v3.json",
+  "engine_fields_forbidden": [
+    "runtime",
+    "provider",
+    "model",
+    "engine_revision_ref",
+    "invocation_id",
+    "tool_call_id",
+    "session_id"
+  ],
+  "identity": {
+    "run_ref": "sha256(card_ref + semantic_generation + attempt_ref + tool_name + kind + subject)",
+    "beat_ref": "delivery/re-emission provenance, not run identity",
+    "resume_request_id": "sha256(run_ref + beat_ref + attempt_ref)",
+    "engine_neutral": true,
+    "occupancy_independent": true,
+    "reissue_stable": true
+  },
+  "required_provenance": [
+    "card_ref",
+    "beat_ref",
+    "attempt_ref",
+    "execution_slice_sha256"
+  ],
+  "invariants": [
+    "the same Card attempt and capability mapping yields the same institutional run identity on every engine",
+    "a new Heartime beat for the same attempt does not redefine run_ref",
+    "each re-emission beat gets a distinct deterministic resume request id",
+    "resource evaluated_at is supplied explicitly and is never inferred from Card.updated_at",
+    "energy and cost authorization windows are sealed into the slice",
+    "both authorization windows use inclusive effective_at and exclusive expires_at boundaries",
+    "every engine Setting revalidates both windows against its current clock immediately before external execution",
+    "remaining energy and monetary cost are projected without changing run_ref",
+    "runtime-local invocation identifiers are provenance only",
+    "the execution slice contains no raw tool input or output",
+    "the adapter must validate the slice seal and exact capability mapping before execution",
+    "a completed institutional run cannot produce a second external effect",
+    "a duplicate delivery of the same admitted beat fails closed"
+  ],
+  "resource_projection": {
+    "source": "Card energy/cost authorization minus Heartime-admitted consumption",
+    "fields": [
+      "evaluated_at",
+      "authorization_window.energy.authorization_ref",
+      "authorization_window.energy.effective_at",
+      "authorization_window.energy.expires_at",
+      "authorization_window.cost.authorization_ref",
+      "authorization_window.cost.effective_at",
+      "authorization_window.cost.expires_at",
+      "energy_remaining",
+      "cost.currency",
+      "cost.remaining_micros"
+    ],
+    "identity_effect": "resource budget and authorization windows are sealed execution context but are excluded from institutional run identity"
+  }
+}

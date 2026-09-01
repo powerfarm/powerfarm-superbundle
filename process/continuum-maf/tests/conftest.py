@@ -33,10 +33,14 @@ def make_execution_slice(
     beat_ref: str = "pf.beat.maf-test",
     attempt_ref: str = "pf.attempt.maf-test",
     direction_ref: str = "pf.direction.maf-test",
+    evaluated_at: str = "2026-08-30T00:00:00.000Z",
+    effective_at: str = "2026-08-30T00:00:00.000Z",
+    energy_expires_at: str | None = None,
+    cost_expires_at: str | None = None,
 ) -> dict:
     safe_actor = actor.lower().replace(":", "-").replace("_", "-")
     base = {
-        "contract_version": "powerfarm.execution-slice.v3",
+        "contract_version": "powerfarm.execution-slice.v4",
         "card": {
             "ref": card_ref,
             "generation": 1,
@@ -58,6 +62,19 @@ def make_execution_slice(
         "circulation": {"beat_ref": beat_ref, "attempt_ref": attempt_ref},
         "capability": {"tool_name": tool_name, "kind": kind, "subject": subject},
         "resources": {
+            "evaluated_at": evaluated_at,
+            "authorization_window": {
+                "energy": {
+                    "authorization_ref": "pf.energy-authorization.maf-test",
+                    "effective_at": effective_at,
+                    "expires_at": energy_expires_at,
+                },
+                "cost": {
+                    "authorization_ref": "pf.cost-authorization.maf-test",
+                    "effective_at": effective_at,
+                    "expires_at": cost_expires_at,
+                },
+            },
             "energy_remaining": {
                 "beats": 2,
                 "model_tokens": 100000,

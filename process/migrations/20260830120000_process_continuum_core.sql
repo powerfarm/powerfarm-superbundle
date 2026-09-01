@@ -1,5 +1,5 @@
 -- PowerFarm Process -- Continuum institutional consequence schema.
--- Registry identity is referenced by stable UUID, never owned or mutated here.
+-- Registry identity is referenced by stable external refs, never owned or mutated here.
 -- Admission writes are reserved for a dedicated Process role; authenticated is read-only.
 
 create schema if not exists continuum;
@@ -18,7 +18,7 @@ create table continuum.timelines (
   institution_id text not null references continuum.institutions(id) on delete cascade,
   id text not null check (id ~ '^[a-zA-Z0-9._:-]{1,128}$'),
   parent_id text,
-  fork_act_id uuid,
+  fork_act_id text check (fork_act_id is null or fork_act_id ~ '^evt_[0-9a-f]{32}$'),
   label text,
   canonical boolean not null default false,
   metadata jsonb not null default '{}'::jsonb check (jsonb_typeof(metadata) = 'object'),
@@ -36,7 +36,7 @@ create unique index continuum_one_canonical_timeline
 
 create table continuum.acts (
   seq bigint generated always as identity primary key,
-  id uuid not null default gen_random_uuid() unique,
+  id text not null unique check (id ~ '^evt_[0-9a-f]{32}$'),
   institution_id text not null,
   timeline_id text not null,
   timeline_index bigint not null check (timeline_index > 0),
@@ -71,8 +71,8 @@ create index continuum_acts_timeline on continuum.acts(institution_id, timeline_
 create index continuum_acts_office on continuum.acts(office_ref, recorded_at);
 
 create table continuum.act_causes (
-  act_id uuid not null references continuum.acts(id) on delete cascade,
-  cause_act_id uuid not null references continuum.acts(id),
+  act_id text not null references continuum.acts(id) on delete cascade,
+  cause_act_id text not null references continuum.acts(id),
   relation text not null default 'caused_by'
     check (relation in ('caused_by','evidenced_by','authorized_by','supersedes','depends_on')),
   ordinal integer not null default 0 check (ordinal >= 0),
@@ -85,17 +85,28 @@ create table continuum.act_causes (
 create index continuum_causes_reverse on continuum.act_causes(cause_act_id, act_id);
 
 create table continuum.act_signatures (
-  act_id uuid not null references continuum.acts(id) on delete cascade,
+  seq bigint generated always as identity primary key,
+  act_id text not null references continuum.acts(id) on delete cascade,
   signer_identity_ref uuid not null,
-  registry_key_ref uuid not null,
+  registry_key_ref uuid,
+  registry_key_fingerprint text
+    check (registry_key_fingerprint is null or registry_key_fingerprint ~ '^[0-9a-f]{64}$'),
   algorithm text not null check (algorithm = 'ES256'),
   signature text not null,
   signed_sha256 text not null check (signed_sha256 ~ '^[0-9a-f]{64}$'),
   signed_at timestamptz not null,
   created_by uuid not null,
   created_at timestamptz not null default now(),
-  primary key (act_id, registry_key_ref)
+  constraint continuum_signature_registry_key_present
+    check (registry_key_ref is not null or registry_key_fingerprint is not null)
 );
+
+create unique index continuum_act_signature_registry_key
+  on continuum.act_signatures(act_id, registry_key_ref)
+  where registry_key_ref is not null;
+create unique index continuum_act_signature_key_fingerprint
+  on continuum.act_signatures(act_id, registry_key_fingerprint)
+  where registry_key_fingerprint is not null;
 
 create table continuum.checkpoints (
   id uuid primary key default gen_random_uuid(),

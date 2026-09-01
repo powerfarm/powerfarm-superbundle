@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Powerfarm Continuum Observatory
-  version: 0.3.0
+  version: 0.4.0
   description: Read-only institutional observatory. Mutation is deliberately unavailable over HTTP.
 servers:
   - url: http://127.0.0.1:8787
@@ -24,6 +24,12 @@ paths:
       parameters:
         - {name: branch, in: query, schema: {type: string, default: main}}
       responses: {'200': {description: Event stream}}
+  /api/head:
+    get:
+      summary: Return the authenticated head for one timeline
+      parameters:
+        - {name: branch, in: query, schema: {type: string, default: main}}
+      responses: {'200': {description: Timeline head}}
   /api/state:
     get:
       summary: Project bitemporal institutional state
@@ -32,6 +38,12 @@ paths:
         - {name: at, in: query, schema: {type: string, format: date-time}}
         - {name: known_at, in: query, schema: {type: string, format: date-time}}
       responses: {'200': {description: Projected state}}
+  /api/findings:
+    get:
+      summary: Return deterministic reconciliation findings for one timeline
+      parameters:
+        - {name: branch, in: query, schema: {type: string, default: main}}
+      responses: {'200': {description: Reconciliation findings}}
   /api/proof:
     get:
       summary: Causal plus authority proof graph

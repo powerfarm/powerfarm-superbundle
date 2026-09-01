@@ -39,7 +39,7 @@ No engine creates PowerFarm authority. All three are replaceable mechanisms.
 
 ## Common execution boundary
 
-Both Settings consume the same `powerfarm.execution-slice.v3` rather than constructing institutional context independently. The slice is derived from the Card before engine selection and is content-addressed.
+Both Settings consume the same `powerfarm.execution-slice.v4` rather than constructing institutional context independently. The slice is derived from the Card before engine selection and is content-addressed.
 
 ```text
 Card → ExecutionSlice → Process admission → engine-local execution → RuntimeReceipt

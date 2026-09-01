@@ -12,6 +12,7 @@
     "test:attention-worker": "node --test circulation/attention/worker/tests/*.test.mjs",
     "test:heartime-worker": "node --test heartime/worker/tests/*.test.mjs",
     "test:heartime-migrations": "node heartime/scripts/validate-heartime.mjs && node heartime/scripts/validate-first-seam.mjs && node heartime/scripts/validate-capability-learning.mjs",
+    "test:heartime-postgres": "node --test heartime/tests/heartime-postgres.integration.test.mjs",
     "check:permanent": "npm run check:permanent:first-seam && npm run check:permanent:learning",
     "verify": "npm run verify:organism && npm run verify:process && npm run verify:engines && npm run docs:check && npm run test:release-integrity && npm run check:release-integrity",
     "evidence": "node scripts/record-verification.mjs",
@@ -26,8 +27,8 @@
     "check:permanent:learning": "node scripts/check-permanent-learning.mjs",
     "test:process-continuum": "PYTHONPATH=process/continuum python -m pytest -q process/continuum/tests",
     "test:process-adk": "PYTHONPATH=process/continuum:process/continuum-adk/src python -m pytest -q process/continuum-adk/tests",
-    "verify:organism": "npm run derive:check && npm run contract:check && npm run contract:learning && npm run contract:card && npm run contract:execution && npm run contract:recovery && npm run contract:epistemic && npm run contract:energy-cost && npm run contract:production && npm run contract:legacy-removal && npm run source:check && npm run check:permanent && npm run test:roster && npm run test:cards && npm run test:first-seam && npm run test:attention-worker && npm run test:first-seam-integration && npm run test:card-circulation-integration && npm run test:sedimentation && npm run test:sedimentation-worker && npm run test:capability-learning-integration && npm run test:heartime-worker && npm --prefix heartime test && npm run test:heartime-migrations && node scripts/db-policy.mjs && npm run test:production-conformance && node --test conformance/process-boundary.test.mjs",
-    "verify:process": "npm run test:process-continuum && npm run test:process-adk && npm run test:process-maf && npm run test:process-ai-sdk && npm run test:process-worker",
+    "verify:organism": "npm run derive:check && npm run contract:check && npm run contract:learning && npm run contract:card && npm run contract:execution && npm run contract:recovery && npm run contract:epistemic && npm run contract:energy-cost && npm run contract:production && npm run contract:legacy-removal && npm run source:check && npm run check:permanent && npm run test:roster && npm run test:cards && npm run test:first-seam && npm run test:attention-worker && npm run test:first-seam-integration && npm run test:card-circulation-integration && npm run test:sedimentation && npm run test:sedimentation-worker && npm run test:capability-learning-integration && npm run test:heartime-worker && npm --prefix heartime test && npm run test:heartime-migrations && npm run test:heartime-postgres && node scripts/db-policy.mjs && npm run test:production-conformance && node --test conformance/process-boundary.test.mjs",
+    "verify:process": "npm run test:process-postgres && npm run test:process-continuum && npm run test:process-adk && npm run test:process-maf && npm run test:process-ai-sdk && npm run test:process-worker",
     "test:process-ai-sdk": "node --test process/continuum-ai-sdk/tests/*.test.mjs process/continuum-ai-sdk/tests/golden/*.test.mjs",
     "check:ai-sdk-pin": "node scripts/check-ai-sdk-pin.mjs",
     "check:engine-boundaries": "node scripts/check-engine-boundaries.mjs",
@@ -43,6 +44,7 @@
     "contract:energy-cost": "node scripts/validate-energy-cost.mjs",
     "contract:production": "node scripts/validate-production-circulation.mjs",
     "test:process-worker": "node --test process/worker/tests/*.test.mjs",
+    "test:process-postgres": "node --test process/tests/process-postgres.integration.test.mjs",
     "test:production-conformance": "node --test conformance/operational-trace.test.mjs conformance/process-production-writer.test.mjs",
     "contract:legacy-removal": "node scripts/validate-legacy-removal.mjs",
     "github:check": "node scripts/check-github-package.mjs",
@@ -51,6 +53,10 @@
     "release:manifest": "node scripts/write-release-manifest.mjs",
     "release:record": "node scripts/write-release-descriptor.mjs",
     "test:process-maf": "PYTHONPATH=process/continuum:process/continuum-maf/src python -m pytest -q process/continuum-maf/tests",
-    "check:maf-pin": "node scripts/check-maf-pin.mjs"
+    "check:maf-pin": "node scripts/check-maf-pin.mjs",
+    "experiment:canonical-commit": "node experiments/canonical-commit/run.mjs"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.8"
   }
 }

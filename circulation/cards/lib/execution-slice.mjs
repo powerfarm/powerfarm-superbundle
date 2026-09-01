@@ -3,7 +3,7 @@ import { validateCardV1, verifyCardSeal } from './card-v1.mjs';
 import { executionResourceBudget } from './resources.mjs';
 import { ENERGY_METERS } from './resource-schema.mjs';
 
-export const EXECUTION_SLICE_CONTRACT_VERSION = 'powerfarm.execution-slice.v3';
+export const EXECUTION_SLICE_CONTRACT_VERSION = 'powerfarm.execution-slice.v4';
 
 const SHA256 = /^sha256:[a-f0-9]{64}$/;
 const INSTITUTIONAL_REF = /^pf(?:\.[a-z0-9][a-z0-9-]*)+$/;
@@ -36,8 +36,28 @@ function nonNegativeInt(value, label) {
   if (!Number.isSafeInteger(value) || value < 0) throw new TypeError(`${label} must be a non-negative safe integer`);
 }
 
+function iso(value, label) {
+  if (typeof value !== 'string' || !Number.isFinite(Date.parse(value))) throw new TypeError(`${label} must be an ISO timestamp`);
+}
+
+function validateAuthorizationWindow(value, label) {
+  exactKeys(value, new Set(['authorization_ref', 'effective_at', 'expires_at']), label);
+  nonEmpty(value.authorization_ref, `${label}.authorization_ref`);
+  iso(value.effective_at, `${label}.effective_at`);
+  if (value.expires_at != null) {
+    iso(value.expires_at, `${label}.expires_at`);
+    if (Date.parse(value.expires_at) <= Date.parse(value.effective_at)) {
+      throw new Error(`${label}.expires_at must follow effective_at`);
+    }
+  }
+}
+
 function validateResourceBudget(value) {
-  exactKeys(value, new Set(['energy_remaining', 'cost']), 'ExecutionSlice.resources');
+  exactKeys(value, new Set(['evaluated_at', 'authorization_window', 'energy_remaining', 'cost']), 'ExecutionSlice.resources');
+  iso(value.evaluated_at, 'ExecutionSlice.resources.evaluated_at');
+  exactKeys(value.authorization_window, new Set(['energy', 'cost']), 'ExecutionSlice.resources.authorization_window');
+  validateAuthorizationWindow(value.authorization_window.energy, 'ExecutionSlice.resources.authorization_window.energy');
+  validateAuthorizationWindow(value.authorization_window.cost, 'ExecutionSlice.resources.authorization_window.cost');
   exactKeys(value.energy_remaining, new Set(ENERGY_METERS), 'ExecutionSlice.resources.energy_remaining');
   for (const meter of ENERGY_METERS) nonNegativeInt(value.energy_remaining[meter], `ExecutionSlice.resources.energy_remaining.${meter}`);
   exactKeys(value.cost, new Set(['currency', 'remaining_micros']), 'ExecutionSlice.resources.cost');
@@ -128,7 +148,7 @@ async function executionIdentityHex(slice) {
   return sha256Hex(canonicalJson(executionIdentityMaterial(slice)));
 }
 
-export async function deriveExecutionSlice(card, { actor, office, toolName, kind, subject }) {
+export async function deriveExecutionSlice(card, { actor, office, toolName, kind, subject, evaluatedAt }) {
   validateCardV1(card, { requireSeal: true });
   if (!(await verifyCardSeal(card))) throw new Error(`Card ${card.ref} content seal mismatch`);
   if (!STATES.has(card.circulation.state)) throw new Error(`Card ${card.ref} is not in an executable circulation state`);
@@ -136,6 +156,7 @@ export async function deriveExecutionSlice(card, { actor, office, toolName, kind
   for (const field of ['identity_ref', 'office_ref', 'occupancy_ref']) {
     if (!card.institutional[field]) throw new Error(`Card ${card.ref} lacks institutional.${field}`);
   }
+  iso(evaluatedAt, 'ExecutionSlice evaluatedAt');
 
   const slice = {
     contract_version: EXECUTION_SLICE_CONTRACT_VERSION,
@@ -166,7 +187,7 @@ export async function deriveExecutionSlice(card, { actor, office, toolName, kind
       kind: String(kind),
       subject: String(subject),
     },
-    resources: executionResourceBudget(card, { now: card.updated_at }),
+    resources: executionResourceBudget(card, { now: evaluatedAt }),
   };
   const derivedRunRef = `pfx-${(await executionIdentityHex(slice)).slice(0, 32)}`;
   if (card.institutional.run_ref != null && card.institutional.run_ref !== derivedRunRef) {
@@ -174,6 +195,27 @@ export async function deriveExecutionSlice(card, { actor, office, toolName, kind
   }
   slice.institutional.run_ref = derivedRunRef;
   return sealExecutionSlice(slice);
+}
+
+function assertWindowActive(window, now, label) {
+  const current = Date.parse(now);
+  if (current < Date.parse(window.effective_at)) {
+    throw new Error(`${label} is not effective at execution time`);
+  }
+  if (window.expires_at != null && current >= Date.parse(window.expires_at)) {
+    throw new Error(`${label} expired before execution`);
+  }
+}
+
+export function assertExecutionSliceTemporallyExecutable(slice, { now }) {
+  validateExecutionSlice(slice, { requireSeal: true });
+  iso(now, 'ExecutionSlice execution now');
+  if (Date.parse(now) < Date.parse(slice.resources.evaluated_at)) {
+    throw new Error('ExecutionSlice resource budget was evaluated after execution time');
+  }
+  assertWindowActive(slice.resources.authorization_window.energy, now, 'energy authorization');
+  assertWindowActive(slice.resources.authorization_window.cost, now, 'cost authorization');
+  return slice;
 }
 
 export async function executionRefsFromSlice(slice) {

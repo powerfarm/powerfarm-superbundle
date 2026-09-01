@@ -23,7 +23,7 @@ const check = (label, condition) => { assert.equal(Boolean(condition), true, lab
 
 check('legacy-removal contract id is pinned', manifest.contract_id === 'pf.contract.legacy-removal.v1');
 check('Card carrier version remains v1', manifest.card_contract === 'powerfarm.card.v1');
-check('ExecutionSlice version remains v3', manifest.execution_slice === 'powerfarm.execution-slice.v3');
+check('ExecutionSlice version is v4', manifest.execution_slice === 'powerfarm.execution-slice.v4');
 check('Card-bound Process write version is v2', manifest.process_admission_write === 'powerfarm.process.admission-write.v2');
 check('writable Continuum requires Registry by default', /writable Continuum Kernel requires a RegistryDirectory/.test(kernel));
 check('embedded identity is explicit test-only mode', /identity_mode='embedded-test' explicitly/.test(kernel));

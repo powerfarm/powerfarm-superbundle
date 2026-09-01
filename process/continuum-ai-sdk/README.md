@@ -26,7 +26,7 @@ PowerFarm Process
 The AI SDK may propose and execute work. It cannot create Office, Occupancy,
 institutional Grants, Commit, Direction, or institutional consequence.
 
-Every institutional executable tool must receive a sealed `powerfarm.execution-slice.v3` derived from the circulating Card. Engine-local invocation/session/tool-call IDs are provenance only. Every executable tool is then wrapped so that:
+Every institutional executable tool must receive a sealed `powerfarm.execution-slice.v4` derived from the circulating Card. Engine-local invocation/session/tool-call IDs are provenance only. Every executable tool is then wrapped so that:
 
 1. the sealed slice and exact tool mapping are verified before any institutional act is projected;
 2. only digest evidence crosses the boundary by default;

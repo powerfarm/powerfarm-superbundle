@@ -96,6 +96,7 @@ test('golden recovery: stale occupancy, lost receipt, takeover, reissue, and dup
   let card = await executingCard();
   const firstSlice = await deriveExecutionSlice(card, {
     actor: 'agent-old', office: 'operations', toolName: 'search', kind: 'tool.invoke.search', subject: 'tool:search',
+    evaluatedAt: T2,
   });
   const firstRefs = await executionRefsFromSlice(firstSlice);
 
@@ -184,6 +185,7 @@ test('golden recovery: stale occupancy, lost receipt, takeover, reissue, and dup
   card = (await transitionCard(card, { to: 'executing', at: T7, nextExpected: T8 })).card;
   const successorSlice = await deriveExecutionSlice(card, {
     actor: 'agent-new', office: 'operations', toolName: 'search', kind: 'tool.invoke.search', subject: 'tool:search',
+    evaluatedAt: T7,
   });
   const successorRefs = await executionRefsFromSlice(successorSlice);
   assert.equal(successorRefs.runRef, firstRefs.runRef);

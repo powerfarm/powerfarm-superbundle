@@ -29,6 +29,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22.13.0'
+      # verify:organism runs the disposable PostgreSQL suite, which needs the
+      # pinned @electric-sql/pglite from the lockfile.
+      - run: npm ci
       - run: npm run verify:organism
 
   process:
@@ -56,6 +59,7 @@ jobs:
           python -m pip install -e ./process/continuum
           python -m pip install -e './process/continuum-adk[test]' -c process/continuum-adk/constraints/tested-py312.txt
           python -m pip install -e './process/continuum-maf[test]' -c process/continuum-maf/constraints/tested-py312.txt
+      - run: npm ci
       - run: npm run verify:process
 
   release:

@@ -11,10 +11,11 @@ from __future__ import annotations
 import asyncio
 import logging
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Any, Callable, Optional
 
 from google.adk.plugins.base_plugin import BasePlugin
 from google.adk.tools.base_tool import BaseTool
+from powerfarm.core.time import utcnow
 from powerfarm.kernel import InstitutionalError, Kernel
 from powerfarm.validation import ValidationError
 
@@ -22,6 +23,7 @@ from .evidence import DigestOnlyEvidence, EvidencePolicy
 from .execution_slice import (
     ExecutionSliceError,
     ExecutionSliceResolver,
+    assert_execution_slice_temporally_executable,
     execution_refs_from_slice,
     slice_provenance,
     validate_execution_slice,
@@ -92,6 +94,7 @@ class ContinuumPlugin(BasePlugin):
         revision_ref: str | None = None,
         record_outcomes: bool = True,
         strict: bool = True,
+        clock: Callable[[], str] | None = None,
         name: str = "continuum_admission",
     ) -> None:
         super().__init__(name=name)
@@ -115,6 +118,7 @@ class ContinuumPlugin(BasePlugin):
         self.revision_ref = revision_ref or "unspecified"
         self.record_outcomes = record_outcomes
         self.strict = strict
+        self.clock = clock or utcnow
 
     async def before_tool_callback(self, *, tool: BaseTool, tool_args: dict[str, Any], tool_context: Any) -> Optional[dict[str, Any]]:
         projection: ActProjection | None = None
@@ -123,6 +127,7 @@ class ContinuumPlugin(BasePlugin):
         try:
             projection = self.policy.project(tool.name, tool_args)
             execution_slice = self._resolve_execution_slice(tool_context, tool.name, projection)
+            assert_execution_slice_temporally_executable(execution_slice, at=self.clock())
             office = str(execution_slice["principal"]["office"])
             actor = str(execution_slice["principal"]["actor"])
             refs = self._call_refs(execution_slice, tool.name)
@@ -160,6 +165,7 @@ class ContinuumPlugin(BasePlugin):
                         },
                         causes=[anchor.id], request_id=refs.resume_request_id,
                     )
+                    assert_execution_slice_temporally_executable(execution_slice, at=self.clock())
                     return None
             provenance = {**self.evidence.provenance(tool_context), **slice_provenance(execution_slice)}
             intent_payload = {
@@ -181,6 +187,7 @@ class ContinuumPlugin(BasePlugin):
                     payload=intent_payload,
                     request_id=refs.intent_request_id,
                 )
+                assert_execution_slice_temporally_executable(execution_slice, at=self.clock())
                 return None
 
             # All or nothing. If run.start lacks authority, the intent event is
@@ -222,6 +229,7 @@ class ContinuumPlugin(BasePlugin):
                 ],
                 branch=self.ledger_branch,
             )
+            assert_execution_slice_temporally_executable(execution_slice, at=self.clock())
             return None
         except (InstitutionalError, ValidationError, MappingError, AdapterContextError, ExecutionSliceError) as exc:
             logger.info("continuum refused %s: %s", tool.name, exc)

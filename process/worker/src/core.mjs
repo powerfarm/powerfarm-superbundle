@@ -114,7 +114,7 @@ export async function bootstrapInstitution({ request, env, fetchImpl = globalThi
   if (!allowedCallers(env).has(caller.identity_ref)) throw new Error(`Process admission caller not admitted: ${caller.identity_ref}`);
   const data = request.data ?? {};
   const envelope = await postgrestRpc({
-    env, fetchImpl, rpc: 'bootstrap_institution_v1',
+    env, fetchImpl, rpc: 'bootstrap_institution_v2',
     body: { p_institution_id: data.institution_id, p_title: data.title, p_timeline_id: data.timeline_id ?? 'main' },
   });
   if (!envelope || envelope.contract_version !== PROCESS_ADMISSION_WRITE) throw new Error('Process bootstrap response contract mismatch');

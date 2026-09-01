@@ -7,7 +7,7 @@
     "Process"
   ],
   "carrier": "powerfarm.card.v1",
-  "execution_slice": "powerfarm.execution-slice.v3",
+  "execution_slice": "powerfarm.execution-slice.v4",
   "states": [
     "orphaned",
     "reconciling",

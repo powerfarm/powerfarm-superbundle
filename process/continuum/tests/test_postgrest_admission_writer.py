@@ -27,7 +27,7 @@ class Handler(BaseHTTPRequestHandler):
             "authorization": self.headers.get("authorization"),
             "profile": self.headers.get("content-profile"),
         })
-        if self.path.endswith("bootstrap_institution_v1"):
+        if self.path.endswith("bootstrap_institution_v2"):
             data = {"institution_id": body["p_institution_id"], "timeline_id": body["p_timeline_id"]}
         elif self.path.endswith("admit_card_batch_v2"):
             request = body["p_request"]["data"]

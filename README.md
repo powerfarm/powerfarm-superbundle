@@ -72,7 +72,7 @@ Pinned circulation goldens now cover the basic vertical path, engine equivalence
 
 ## Engine-equivalent execution
 
-`powerfarm.execution-slice.v3` is the engine-neutral executable projection of an executing Card. `attempt_ref` identifies the institutional attempt; `beat_ref` identifies one Heartime delivery. Recovery may issue a new beat while preserving the same attempt and `run_ref`.
+`powerfarm.execution-slice.v4` is the engine-neutral executable projection of an executing Card. `attempt_ref` identifies the institutional attempt; `beat_ref` identifies one Heartime delivery. Recovery may issue a new beat while preserving the same attempt and `run_ref`.
 
 Microsoft Agent Framework is the third first-class Setting. Its `AgentSession`, ContextProviders, workflows and memory mechanisms are execution-engine facilities only. PowerFarm MEMORY may project read-only context into MAF, but MAF state never becomes institutional evidence or epistemic state implicitly.
 

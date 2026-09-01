@@ -142,3 +142,121 @@ test('strict mode requires an explicit institutional mapping', () => {
     /no explicit institutional mapping/,
   );
 });
+
+// --- ExecutionSlice v4 resource-window negative controls -------------------
+//
+// A slice may be derived while its authorization is valid and then reach the
+// engine after that authorization has expired. The Setting must revalidate the
+// sealed window against its own clock, immediately before the external effect.
+
+const WINDOW_EFFECTIVE = '2026-08-30T00:00:00.000Z';
+const WINDOW_EXPIRY = '2026-08-30T01:00:00.000Z';
+const AFTER_WINDOW_EXPIRY = '2026-08-30T01:00:00.001Z';
+
+async function expiringSlice(overrides = {}) {
+  return makeExecutionSlice({
+    evaluatedAt: WINDOW_EFFECTIVE,
+    effectiveAt: WINDOW_EFFECTIVE,
+    energyExpiresAt: WINDOW_EXPIRY,
+    costExpiresAt: WINDOW_EXPIRY,
+    ...overrides,
+  });
+}
+
+test('a slice admitted while valid does not execute after its resource window expired', async () => {
+  const port = fakePort();
+  let executions = 0;
+  const tools = wrapToolsWithContinuum({ search: { execute: () => { executions += 1; return 'effect'; } } }, {
+    port, mappings, revisionRef: PINNED_AI_SDK_REVISION_REF, clock: () => AFTER_WINDOW_EXPIRY,
+  });
+  const ctx = await context({ executionSlice: await expiringSlice() });
+  await assert.rejects(
+    () => tools.search.execute({}, ctx),
+    error => error instanceof InstitutionalRefusalError
+      && error.code === 'POWERFARM_RESOURCE_WINDOW_INVALID'
+      && /energy authorization expired before execution/.test(error.message),
+  );
+  assert.equal(executions, 0, 'no external effect may run outside the authorization window');
+  // Admission was already recorded, so the run must be closed as a failure
+  // rather than silently abandoned.
+  assert.deepEqual(port.calls.map(([name]) => name), ['admit', 'fail']);
+});
+
+test('expires_at is an exclusive upper boundary at the engine execution boundary', async () => {
+  const port = fakePort();
+  let executions = 0;
+  const tools = wrapToolsWithContinuum({ search: { execute: () => { executions += 1; return 'effect'; } } }, {
+    port, mappings, revisionRef: PINNED_AI_SDK_REVISION_REF, clock: () => WINDOW_EXPIRY,
+  });
+  const expiredCtx = await context({ executionSlice: await expiringSlice() });
+  await assert.rejects(
+    () => tools.search.execute({}, expiredCtx),
+    error => error instanceof InstitutionalRefusalError && error.code === 'POWERFARM_RESOURCE_WINDOW_INVALID',
+  );
+  assert.equal(executions, 0);
+
+  const stillValid = fakePort();
+  const okTools = wrapToolsWithContinuum({ search: { execute: () => 'effect' } }, {
+    port: stillValid,
+    mappings,
+    revisionRef: PINNED_AI_SDK_REVISION_REF,
+    clock: () => new Date(Date.parse(WINDOW_EXPIRY) - 1).toISOString(),
+  });
+  assert.equal(await okTools.search.execute({}, await context({ executionSlice: await expiringSlice() })), 'effect');
+});
+
+test('an expired cost window alone stops execution', async () => {
+  const port = fakePort();
+  let executions = 0;
+  const tools = wrapToolsWithContinuum({ search: { execute: () => { executions += 1; return 'effect'; } } }, {
+    port, mappings, revisionRef: PINNED_AI_SDK_REVISION_REF, clock: () => AFTER_WINDOW_EXPIRY,
+  });
+  const costExpiredCtx = await context({ executionSlice: await expiringSlice({ energyExpiresAt: null }) });
+  await assert.rejects(
+    () => tools.search.execute({}, costExpiredCtx),
+    error => /cost authorization expired before execution/.test(error.message),
+  );
+  assert.equal(executions, 0);
+});
+
+test('engine identity and a successor occupant cannot widen an expired resource window', async () => {
+  const expired = await expiringSlice();
+
+  // A successor occupant re-sealing the slice does not re-authorize it.
+  const successor = structuredClone(expired);
+  successor.principal.actor = 'agent-2';
+  delete successor.slice_sha256;
+  const { sealExecutionSlice } = await import('../../../circulation/cards/lib/execution-slice.mjs');
+  const resealed = await sealExecutionSlice(successor);
+
+  const port = fakePort();
+  let executions = 0;
+  const tools = wrapToolsWithContinuum({ search: { execute: () => { executions += 1; return 'effect'; } } }, {
+    port, mappings, revisionRef: PINNED_AI_SDK_REVISION_REF, clock: () => AFTER_WINDOW_EXPIRY,
+  });
+  const successorCtx = await context({ executionSlice: resealed, powerfarm: { invocationId: 'fresh-engine-invocation' } });
+  await assert.rejects(
+    () => tools.search.execute({}, successorCtx),
+    error => error instanceof InstitutionalRefusalError && error.code === 'POWERFARM_RESOURCE_WINDOW_INVALID',
+  );
+  assert.equal(executions, 0);
+
+  // Hand-widening the window breaks the seal, so the Setting refuses it before
+  // admission is even attempted.
+  const tampered = structuredClone(expired);
+  tampered.resources.authorization_window.energy.expires_at = '2099-01-01T00:00:00.000Z';
+  tampered.resources.authorization_window.cost.expires_at = '2099-01-01T00:00:00.000Z';
+  const tamperPort = fakePort();
+  const tamperTools = wrapToolsWithContinuum({ search: { execute: () => { executions += 1; return 'effect'; } } }, {
+    port: tamperPort, mappings, revisionRef: PINNED_AI_SDK_REVISION_REF, clock: () => AFTER_WINDOW_EXPIRY,
+  });
+  const tamperCtx = await context({ executionSlice: tampered });
+  await assert.rejects(
+    () => tamperTools.search.execute({}, tamperCtx),
+    error => error instanceof InstitutionalRefusalError
+      && error.code === 'POWERFARM_CONTEXT_INVALID'
+      && /seal mismatch/.test(error.message),
+  );
+  assert.equal(executions, 0);
+  assert.equal(tamperPort.calls.length, 0, 'a tampered slice never reaches Process admission');
+});
