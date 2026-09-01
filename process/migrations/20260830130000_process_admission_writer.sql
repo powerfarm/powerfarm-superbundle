@@ -32,8 +32,8 @@ create table continuum.admission_batches (
   institution_id text not null references continuum.institutions(id) on delete cascade,
   timeline_id text not null,
   expected_prev_sha256 text not null check (expected_prev_sha256 ~ '^[0-9a-f]{64}$'),
-  first_act_id uuid,
-  last_act_id uuid,
+  first_act_id text check (first_act_id is null or first_act_id ~ '^evt_[0-9a-f]{32}$'),
+  last_act_id text check (last_act_id is null or last_act_id ~ '^evt_[0-9a-f]{32}$'),
   act_count integer not null check (act_count >= 0),
   created_by uuid not null,
   created_at timestamptz not null default now(),
@@ -83,7 +83,7 @@ $$;
 
 -- Bootstrap is separate from admission so ordinary batches cannot silently
 -- create a new institution/timeline as a side effect.
-create or replace function continuum.bootstrap_institution_v1(
+create or replace function continuum.bootstrap_institution_v2(
   p_institution_id text,
   p_title text,
   p_timeline_id text default 'main'
@@ -108,7 +108,7 @@ begin
   on conflict (institution_id, id) do nothing;
 
   return jsonb_build_object(
-    'contract_version', 'powerfarm.process.admission-write.v1',
+    'contract_version', 'powerfarm.process.admission-write.v2',
     'data', jsonb_build_object('institution_id', p_institution_id, 'timeline_id', p_timeline_id)
   );
 end;
@@ -135,9 +135,9 @@ declare
   v_prev text;
   v_index bigint;
   v_act jsonb;
-  v_act_id uuid;
-  v_first uuid;
-  v_last uuid;
+  v_act_id text;
+  v_first text;
+  v_last text;
   v_count integer := 0;
   v_cause text;
   v_ordinal integer;
@@ -210,7 +210,8 @@ begin
     if (v_act->>'timeline_index')::bigint <> v_index then raise exception 'admission_timeline_index_mismatch'; end if;
     if lower(v_act->>'sha256') !~ '^[0-9a-f]{64}$' then raise exception 'admission_act_sha256_required'; end if;
     if lower(v_act->>'intent_sha256') !~ '^[0-9a-f]{64}$' then raise exception 'admission_intent_sha256_required'; end if;
-    v_act_id := (v_act->>'id')::uuid;
+    v_act_id := v_act->>'id';
+    if v_act_id !~ '^evt_[0-9a-f]{32}$' then raise exception 'admission_act_id_required'; end if;
     if v_first is null then v_first := v_act_id; end if;
     v_last := v_act_id;
 
@@ -238,8 +239,9 @@ begin
     v_ordinal := 0;
     for v_cause in select value from jsonb_array_elements_text(coalesce(v_act->'causes', '[]'::jsonb))
     loop
+      if v_cause !~ '^evt_[0-9a-f]{32}$' then raise exception 'admission_cause_id_required'; end if;
       insert into continuum.act_causes(act_id, cause_act_id, relation, ordinal, created_by)
-      values (v_act_id, v_cause::uuid, 'caused_by', v_ordinal, v_writer);
+      values (v_act_id, v_cause, 'caused_by', v_ordinal, v_writer);
       v_ordinal := v_ordinal + 1;
     end loop;
 
@@ -272,9 +274,9 @@ $$;
 
 revoke all on function continuum.current_runtime_ref_v1() from public, anon;
 revoke all on function continuum.assert_process_writer_v1() from public, anon;
-revoke all on function continuum.bootstrap_institution_v1(text,text,text) from public, anon;
+revoke all on function continuum.bootstrap_institution_v2(text,text,text) from public, anon;
 revoke all on function continuum.admit_batch_v1(jsonb) from public, anon;
-grant execute on function continuum.bootstrap_institution_v1(text,text,text) to authenticated;
+grant execute on function continuum.bootstrap_institution_v2(text,text,text) to authenticated;
 grant execute on function continuum.admit_batch_v1(jsonb) to authenticated;
 
 comment on function continuum.admit_batch_v1(jsonb) is

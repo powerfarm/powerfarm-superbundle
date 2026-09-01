@@ -15,7 +15,7 @@
     "production_circulation": "pf.contract.production-circulation.v1",
     "operational_trace": "powerfarm.operational-trace.v1",
     "legacy_removal": "pf.contract.legacy-removal.v1",
-    "execution_slice": "powerfarm.execution-slice.v3",
+    "execution_slice": "powerfarm.execution-slice.v4",
     "cycle": "powerfarm.heartime.cycle.v1",
     "attention_reconciler": "powerfarm.first-seam.reconciler.v1",
     "sedimentation_reconciler": "powerfarm.sedimentation.reconciler.v1"
@@ -33,21 +33,23 @@
       "capability_learning": "bcdc29505873113f052a99f588f94c50c4c3c76244a1acfff92a69053fcee54b",
       "card": "32f555db873bb1f8d0ff76decf8f1233364692292c30a8d3123fea07e43b75fb",
       "epistemic_continuity": "dd4e9f30c9a1deadd7e8e91a8d4358dd06017f6d98bf9b4ea6a79a334cc1fc54",
-      "energy_cost": "f986486ecacd35fc7122dad104f0dafd01f5ceca24f68b5b2f2c2ba0b4c5a36a",
+      "energy_cost": "dda8bcbfbdce71726c25ef3d9ea56d03155601c871099202a443ef26e2c2071d",
       "production_circulation": "a658ec29a3c16d5e953abe2904caae16e1ccfb96741629bc34c13025a496c0bb",
-      "legacy_removal": "d61ae60aa154e16a0cd5f61874300037889e1fc3b0968a7d25bac02130b471db"
+      "legacy_removal": "3a9f654a366ef8dcf1fbddcc78afa3802d6fb5f4fd4d4fa54877e297290d4bdc"
     }
   },
   "checks": {
     "deterministic_logic_tests": {
-      "status": "pass",
-      "passed": 15,
-      "failed": 0
+      "status": "declared_not_executed_here",
+      "measurement": "structural source count of test(...) declarations; not an execution result",
+      "declared_test_cases": 16,
+      "executed_by": "evidence/organism-verification/verification.json"
     },
     "physical_and_state_setting_tests": {
-      "status": "pass",
-      "passed": 33,
-      "failed": 0
+      "status": "declared_not_executed_here",
+      "measurement": "structural source count of test(...) declarations; not an execution result",
+      "declared_test_cases": 33,
+      "executed_by": "evidence/organism-verification/verification.json"
     },
     "migration_structure": {
       "status": "pass",
@@ -77,7 +79,7 @@
       },
       "energy_cost": {
         "status": "pass",
-        "checks": 30
+        "checks": 32
       },
       "production_circulation": {
         "status": "pass",
@@ -104,22 +106,25 @@
       "status": "not_run"
     }
   },
-  "negative_controls_made_executable": [
-    1,
-    2,
-    3,
-    4,
-    5,
-    6,
-    7,
-    8,
-    9,
-    10,
-    11,
-    12,
-    13,
-    30,
-    31,
-    56
-  ]
+  "negative_controls_named_in_test_source": {
+    "measurement": "negative-control identifiers named in test source; naming a control is not proof that it is enforced",
+    "controls": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      30,
+      31,
+      56
+    ]
+  }
 }

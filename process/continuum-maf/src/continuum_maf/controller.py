@@ -5,11 +5,12 @@ from __future__ import annotations
 import asyncio
 import logging
 from dataclasses import dataclass
-from typing import Any, Mapping
+from typing import Any, Callable, Mapping
 
 from powerfarm.core.time import utcnow
 from powerfarm.execution_slice import (
     ExecutionSliceError,
+    assert_execution_slice_temporally_executable,
     execution_refs_from_slice,
     slice_provenance,
     validate_execution_slice,
@@ -64,6 +65,7 @@ class ContinuumFunctionController:
         runtime_name: str = DEFAULT_RUNTIME,
         revision_ref: str,
         strict: bool = True,
+        clock: Callable[[], str] | None = None,
     ) -> None:
         if strict and policy is None:
             raise ValueError("strict Microsoft Agent Framework Setting requires an explicit tool mapping policy")
@@ -77,6 +79,7 @@ class ContinuumFunctionController:
         self.runtime_name = runtime_name
         self.revision_ref = revision_ref
         self.strict = strict
+        self.clock = clock or utcnow
 
     def resolve(self, *, tool_name: str, tool_args: Any, execution_slice: Mapping[str, Any]) -> tuple[ActProjection, dict[str, Any]]:
         args = _arguments(tool_args)
@@ -97,6 +100,7 @@ class ContinuumFunctionController:
         projection: ActProjection | None = None
         try:
             projection, value = self.resolve(tool_name=tool_name, tool_args=tool_args, execution_slice=execution_slice)
+            assert_execution_slice_temporally_executable(value, at=self.clock())
             office = str(value["principal"]["office"])
             actor = str(value["principal"]["actor"])
             refs = execution_refs_from_slice(value)
@@ -127,6 +131,7 @@ class ContinuumFunctionController:
                     causes=[anchor.id],
                     request_id=refs.resume_request_id,
                 )
+                assert_execution_slice_temporally_executable(value, at=self.clock())
                 return None
 
             provenance = {**context_provenance(context), **slice_provenance(value)}
@@ -174,6 +179,7 @@ class ContinuumFunctionController:
                 ],
                 branch=self.ledger_branch,
             )
+            assert_execution_slice_temporally_executable(value, at=self.clock())
             return None
         except (InstitutionalError, ValidationError, MappingError, ExecutionSliceError) as exc:
             logger.info("continuum refused MAF tool %s: %s", tool_name, exc)

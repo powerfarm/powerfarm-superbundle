@@ -1,5 +1,6 @@
 import {
   HEARTIME_CYCLE_VERSION,
+  HEARTIME_RUNTIME_REF,
   assertInstitutionalRef,
 } from '../../../circulation/lib/contract.mjs';
 import { ATTENTION_RECONCILER_REF } from '../../../circulation/attention/lib/contract.mjs';
@@ -43,6 +44,7 @@ export class PostgrestHeartimeState {
     requestTimeoutMs = 10_000,
     allowInsecure = false,
     reconcilerRef = ATTENTION_RECONCILER_REF,
+    componentRef = HEARTIME_RUNTIME_REF,
   }) {
     this.baseUrl = normalizeBaseUrl(baseUrl, { allowInsecure });
     this.publishableKey = requiredString(publishableKey, 'SUPABASE_PUBLISHABLE_KEY');
@@ -53,6 +55,7 @@ export class PostgrestHeartimeState {
     if (typeof fetchImpl !== 'function') throw new TypeError('fetch implementation is required');
     this.fetchImpl = fetchImpl;
     this.reconcilerRef = assertInstitutionalRef(reconcilerRef, 'HEARTIME_RECONCILER_REF');
+    this.componentRef = assertInstitutionalRef(componentRef, 'HEARTIME_COMPONENT_REF');
     this.requestTimeoutMs = Number(requestTimeoutMs);
     if (!Number.isFinite(this.requestTimeoutMs) || this.requestTimeoutMs < 100 || this.requestTimeoutMs > 60_000) {
       throw new TypeError('requestTimeoutMs must be between 100 and 60000');
@@ -148,6 +151,7 @@ export class PostgrestHeartimeState {
     if (!attributes || typeof attributes !== 'object' || Array.isArray(attributes)) throw new TypeError('trace attributes must be an object');
     return this.rpc('record_trace_event_v1', {
       p_trace_ref: trace_ref,
+      p_component_ref: this.componentRef,
       p_event_name: event_name,
       p_observed_at: observed_at,
       p_card_ref: card_ref,
@@ -168,6 +172,7 @@ export function createHeartimeStateFromEnv(env, fetchImpl = globalThis.fetch) {
     requestTimeoutMs: Number(env.HEARTIME_POSTGREST_TIMEOUT_MS ?? 10_000),
     allowInsecure: env.HEARTIME_ALLOW_INSECURE_POSTGREST === 'true',
     reconcilerRef: env.HEARTIME_RECONCILER_REF ?? ATTENTION_RECONCILER_REF,
+    componentRef: env.HEARTIME_COMPONENT_REF ?? HEARTIME_RUNTIME_REF,
   });
 }
 

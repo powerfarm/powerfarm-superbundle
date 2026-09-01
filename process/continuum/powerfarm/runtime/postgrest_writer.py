@@ -77,7 +77,7 @@ class PostgrestAdmissionWriter:
         return data
 
     def bootstrap(self, *, institution_id: str, title: str | None = None, timeline_id: str = "main") -> dict:
-        return self._rpc("bootstrap_institution_v1", {
+        return self._rpc("bootstrap_institution_v2", {
             "p_institution_id": institution_id,
             "p_title": title,
             "p_timeline_id": timeline_id,

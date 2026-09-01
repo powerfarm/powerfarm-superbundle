@@ -2,8 +2,21 @@
   "contract_version": "powerfarm.energy-cost-golden.v1",
   "card_ref": "pf.card.energy-cost-golden",
   "run_ref": "pfx-db7df1623c364447137b06384dc8625e",
-  "execution_slice": "powerfarm.execution-slice.v3",
+  "execution_slice": "powerfarm.execution-slice.v4",
   "budget_seen_by_engine": {
+    "evaluated_at": "2026-08-30T07:32:00.000Z",
+    "authorization_window": {
+      "energy": {
+        "authorization_ref": "pf.energy-authorization.energy-cost-golden",
+        "effective_at": "2026-08-30T07:30:00.000Z",
+        "expires_at": null
+      },
+      "cost": {
+        "authorization_ref": "pf.cost-authorization.energy-cost-golden",
+        "effective_at": "2026-08-30T07:30:00.000Z",
+        "expires_at": null
+      }
+    },
     "energy_remaining": {
       "beats": 1,
       "model_tokens": 2000,

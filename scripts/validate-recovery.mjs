@@ -6,13 +6,13 @@ import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const read = relative => fs.readFileSync(path.join(root, relative), 'utf8');
 const recovery = JSON.parse(read('contracts/recovery.v1.json'));
-const execution = JSON.parse(read('contracts/execution-slice.v3.json'));
+const execution = JSON.parse(read('contracts/execution-slice.v4.json'));
 const checks = [];
 function check(label, condition) { assert.equal(Boolean(condition), true, label); checks.push(label); }
 
 check('recovery contract is pinned', recovery.contract_id === 'pf.contract.card-recovery.v1');
 check('recovery uses canonical Card v1', recovery.carrier === 'powerfarm.card.v1');
-check('recovery uses current ExecutionSlice v3', recovery.execution_slice === execution.contract_version);
+check('recovery uses current ExecutionSlice v4', recovery.execution_slice === execution.contract_version);
 check('recovery freezes orphaned state', recovery.states.includes('orphaned'));
 check('recovery freezes reconciling state', recovery.states.includes('reconciling'));
 check('recovery freezes takeover before Registry Card refresh', recovery.sequence.indexOf('Process admits run.takeover when the Registry current occupant changed') < recovery.sequence.indexOf('Registry refreshes identity_ref and occupancy_ref on the Card'));

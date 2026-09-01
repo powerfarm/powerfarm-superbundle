@@ -128,6 +128,19 @@ export function executionResourceBudget(card, { now }) {
   const state = assessResourceState(card, { now });
   if (state.blocked) throw new Error(`Card ${card.ref} resource budget is not executable: ${state.reason}`);
   return {
+    evaluated_at: now,
+    authorization_window: {
+      energy: {
+        authorization_ref: card.energy.authorization.authorization_ref,
+        effective_at: card.energy.authorization.effective_at,
+        expires_at: card.energy.authorization.expires_at,
+      },
+      cost: {
+        authorization_ref: card.cost.authorization.authorization_ref,
+        effective_at: card.cost.authorization.effective_at,
+        expires_at: card.cost.authorization.expires_at,
+      },
+    },
     energy_remaining: structuredClone(state.remaining),
     cost: { currency: state.currency, remaining_micros: state.cost_remaining_micros },
   };

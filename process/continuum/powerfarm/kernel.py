@@ -11,7 +11,15 @@ from datetime import timedelta
 from pathlib import Path
 from typing import Any, Iterable, Iterator
 
+from .core.errors import InstitutionalError
 from .db import APP_ID, SCHEMA_VERSION, open_database
+from .institution_identity import (
+    GENESIS_KIND,
+    GENESIS_SUBJECT,
+    InstitutionAnchor,
+    InstitutionIdentityError,
+    coerce_expectation,
+)
 from .model import Event
 from .registry import RegistryDirectory
 from .projection import (
@@ -53,10 +61,6 @@ MAX_GRAPH_NODES = 100_000
 IDENTITY_MODE_REGISTRY = "registry"
 IDENTITY_MODE_EMBEDDED_TEST = "embedded-test"
 IDENTITY_MODE_READ_ONLY = "read-only"
-
-
-class InstitutionalError(RuntimeError):
-    pass
 
 
 def canonical_json(value: Any) -> str:
@@ -105,9 +109,23 @@ class Kernel:
         seal_key_path: str | Path | None = None,
         registry: RegistryDirectory | None = None,
         identity_mode: str | None = None,
+        expect: Any = None,
+        allow_genesis: bool | None = None,
     ):
         self.path = Path(path)
         self.read_only = read_only
+        # Genesis creates an institution. Recovery must never create one.
+        #
+        # A handle that names the institution it expects is by definition an
+        # operational handle, not a founding one, so it can never run genesis.
+        # Losing the store then produces a refusal instead of a second
+        # institution wearing the first one's name.
+        self._expect = coerce_expectation(expect)
+        self._allow_genesis = (self._expect is None) if allow_genesis is None else bool(allow_genesis)
+        if self._expect is not None and self._allow_genesis:
+            raise InstitutionIdentityError(
+                "a Kernel that expects a specific institution cannot also be authorized to create one"
+            )
         if identity_mode is None:
             if registry is not None:
                 identity_mode = IDENTITY_MODE_REGISTRY
@@ -138,6 +156,8 @@ class Kernel:
         self._key: bytes | None = None
         try:
             self._load_security_if_initialized()
+            if self._expect is not None:
+                self._assert_expected_institution()
         except Exception:
             self.db.close()
             raise
@@ -248,6 +268,250 @@ class Kernel:
             digest,
         )
 
+
+
+    # ---- CREATE / OPEN / RESTORE ------------------------------------------
+    #
+    # `init()` used to mean all three at once, which is why losing a store could
+    # be mistaken for founding one. They are now separate verbs with separate
+    # preconditions.
+
+    @classmethod
+    def create_institution(
+        cls,
+        path: str | Path,
+        director_principal: str,
+        mandate: str = "Direction, legitimacy, and commitments",
+        *,
+        root_office: str = "director",
+        **kwargs: Any,
+    ) -> tuple["Kernel", InstitutionAnchor]:
+        """CREATE: the genesis ceremony. Founds one institution, once.
+
+        Refuses a store that already holds an institution. Returns the anchor,
+        which is the value every later OPEN must present. Nothing else in the
+        system may reach this path implicitly.
+        """
+        kernel = cls(path, allow_genesis=True, **kwargs)
+        try:
+            if kernel.initialized():
+                raise InstitutionIdentityError(
+                    "refusing to create an institution in a store that already holds one; "
+                    "open it instead"
+                )
+            kernel.init(director_principal, mandate, root_office=root_office)
+            return kernel, kernel.anchor()
+        except Exception:
+            kernel.close()
+            raise
+
+    @classmethod
+    def open_institution(cls, path: str | Path, expect: Any, **kwargs: Any) -> "Kernel":
+        """OPEN: attach to one already-existing institution, named in advance.
+
+        Fails closed when the store is empty, when it holds a different
+        institution, when its genesis differs, or when its lineage does not
+        belong to the expected institution. The returned handle can never run
+        genesis.
+        """
+        if expect is None:
+            raise InstitutionIdentityError(
+                "open_institution requires the institution it expects; "
+                "opening whatever happens to be present is how a substitute store "
+                "becomes a second institution"
+            )
+        return cls(path, expect=expect, **kwargs)
+
+    @classmethod
+    def restore_institution(
+        cls,
+        path: str | Path,
+        *,
+        bundle: dict[str, Any],
+        expect: Any,
+        witness: dict[str, Any] | None = None,
+        **kwargs: Any,
+    ) -> "Kernel":
+        """RESTORE: rebuild an existing institution. Never runs genesis.
+
+        The bundle supplies the institution; `expect` says which institution it
+        is required to be; `witness` — a checkpoint taken from the institution
+        before it was lost — proves the restored copy continues the last
+        witnessed state rather than merely carrying its name.
+
+        Restoring without a witness is permitted and is honestly weaker: it
+        proves identity, not currency. A stale copy is only detectable against a
+        later witness, so pass one whenever one exists.
+        """
+        from .bundle.verifier import verify_bundle
+
+        expected = coerce_expectation(expect)
+        if expected is None:
+            raise InstitutionIdentityError("restore_institution requires the institution it expects")
+
+        verification = verify_bundle(bundle)
+        if not verification["ok"]:
+            raise InstitutionIdentityError(
+                "refusing to restore from a bundle that does not verify: " + "; ".join(verification["errors"])
+            )
+
+        kernel = cls(path, allow_genesis=False, **kwargs)
+        try:
+            if kernel.initialized():
+                raise InstitutionIdentityError(
+                    "refusing to restore into a store that already holds an institution"
+                )
+            kernel._restore_from_bundle(bundle)
+            kernel._expect = expected
+            kernel._load_security_if_initialized()
+            kernel._assert_expected_institution()
+            if witness is not None:
+                kernel.assert_continuity(witness)
+            return kernel
+        except Exception:
+            kernel.close()
+            raise
+
+    def _restore_from_bundle(self, bundle: dict[str, Any]) -> None:
+        """Reinstate branches, events and signatures exactly as exported.
+
+        This writes the ledger back verbatim. It deliberately does not mint an
+        act of any kind: restoring an institution is not an event in its own
+        history.
+        """
+        metadata = bundle.get("metadata")
+        branches = bundle.get("branches")
+        events = bundle.get("events")
+        if not isinstance(metadata, dict) or not isinstance(branches, list) or not isinstance(events, list):
+            raise InstitutionIdentityError("bundle is not restorable: missing metadata, branches or events")
+        signatures = bundle.get("signatures") or []
+        with self._write_transaction():
+            self.db.executemany(
+                "INSERT INTO metadata(key,value) VALUES(?,?)",
+                [(str(key), str(value)) for key, value in sorted(metadata.items())],
+            )
+            for branch in sorted(branches, key=lambda item: (item.get("parent_id") is not None, str(item.get("id")))):
+                self.db.execute(
+                    "INSERT INTO branches(id,parent_id,fork_event_id,created_at,label,canonical,seal) VALUES(?,?,?,?,?,?,?)",
+                    (
+                        str(branch["id"]), branch.get("parent_id"), branch.get("fork_event_id"),
+                        str(branch["created_at"]), branch.get("label"), int(branch.get("canonical", 0)),
+                        str(branch["seal"]),
+                    ),
+                )
+            for event in sorted(events, key=lambda item: int(item["seq"])):
+                self.db.execute(
+                    "INSERT INTO events(seq,branch_index,id,branch_id,request_id,recorded_at,effective_at,"
+                    "actor,office,kind,subject,payload,causes,authority_ref,intent_hash,prev_hash,hash,seal) "
+                    "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                    (
+                        int(event["seq"]), int(event["branch_index"]), str(event["id"]), str(event["branch_id"]),
+                        event.get("request_id"), str(event["recorded_at"]), str(event["effective_at"]),
+                        str(event["actor"]), str(event["office"]), str(event["kind"]), str(event["subject"]),
+                        canonical_json(event["payload"]), canonical_json(event["causes"]),
+                        str(event["authority_ref"]), str(event["intent_hash"]), str(event["prev_hash"]),
+                        str(event["hash"]), str(event["seal"]),
+                    ),
+                )
+            for signature in signatures:
+                self.db.execute(
+                    "INSERT INTO event_signatures(event_id,key_id,signer,office,algorithm,jwk,statement_digest,signature,signed_at) "
+                    "VALUES(?,?,?,?,?,?,?,?,?)",
+                    (
+                        str(signature["event_id"]), str(signature["key_id"]), str(signature["signer"]),
+                        str(signature["office"]), str(signature.get("algorithm", "ES256")),
+                        canonical_json(signature["jwk"]), str(signature["statement_digest"]),
+                        str(signature["signature"]), str(signature["signed_at"]),
+                    ),
+                )
+
+    # ---- institutional identity -------------------------------------------
+    #
+    #   Genesis creates an institution. Recovery must never create one.
+
+    def _genesis_event_locked(self) -> Event | None:
+        row = self.db.execute(
+            "SELECT * FROM events WHERE branch_id='main' AND kind=? AND subject=? ORDER BY branch_index LIMIT 1",
+            (GENESIS_KIND, GENESIS_SUBJECT),
+        ).fetchone()
+        return row_event(row) if row is not None else None
+
+    def _anchor_locked(self) -> InstitutionAnchor:
+        """Derive this store's institutional anchor from the ledger itself.
+
+        Derived rather than read from a metadata column on purpose: the genesis
+        act is the fact, and a metadata row is only a cache of it. Anything that
+        rewrote metadata alone would still be caught here.
+        """
+        if self.db.execute("SELECT 1 FROM branches WHERE id='main'").fetchone() is None:
+            raise InstitutionIdentityError("store holds no institution: there is no main branch")
+        genesis = self._genesis_event_locked()
+        if genesis is None:
+            raise InstitutionIdentityError("store holds no institution: there is no genesis act")
+        institution_ref = self._metadata_locked("institution_id")
+        trust_root = self._metadata_locked("seal_key_id")
+        protocol = self._metadata_locked("format")
+        if not institution_ref or not trust_root or not protocol:
+            raise InstitutionIdentityError("institution metadata is incomplete")
+        return InstitutionAnchor(
+            institution_ref=institution_ref,
+            genesis_ref=genesis.id,
+            genesis_digest=genesis.hash,
+            trust_root_ref=trust_root,
+            protocol_version=protocol,
+        )
+
+    def anchor(self) -> InstitutionAnchor:
+        """This institution's location-independent identity.
+
+        Carries nothing physical. The store may move between files, hosts or
+        engines without changing a single field.
+        """
+        with self._read_snapshot():
+            return self._anchor_locked()
+
+    def _assert_expected_institution(self) -> None:
+        """Fail closed unless this store holds exactly the expected institution."""
+        expected = self._expect
+        if expected is None:
+            return
+        with self._lock:
+            if self.db.execute("SELECT 1 FROM branches WHERE id='main'").fetchone() is None:
+                raise InstitutionIdentityError(
+                    "refusing to open an empty store as an existing institution: "
+                    "an empty store is not authorization to bootstrap. Use an explicit "
+                    "create or restore operation."
+                )
+            actual = self._anchor_locked()
+            if isinstance(expected, str):
+                if actual.institution_ref != expected:
+                    raise InstitutionIdentityError(
+                        f"store holds institution {actual.institution_ref}, not the expected {expected}"
+                    )
+                return
+            reasons = expected.differences(actual)
+            if reasons:
+                raise InstitutionIdentityError(
+                    "store does not hold the expected institution: " + "; ".join(reasons)
+                )
+
+    def assert_continuity(self, checkpoint: dict[str, Any]) -> dict[str, Any]:
+        """Prove this store continues the last witnessed state, not merely its name.
+
+        A stale copy carries the right `institution_ref` and the right genesis and
+        is still the wrong institution to run: it has lost everything admitted
+        after the witness. `verify_checkpoint` already answers exactly that
+        question — every anchored head must still be in the current history — so
+        continuity reuses it rather than inventing a second witness mechanism.
+        """
+        result = self.verify_checkpoint(checkpoint)
+        if not result["ok"]:
+            raise InstitutionIdentityError(
+                "store does not demonstrate continuity with the witnessed state: "
+                + "; ".join(result["errors"])
+            )
+        return result
+
     def init(
         self,
         director_principal: str,
@@ -255,6 +519,13 @@ class Kernel:
         *,
         root_office: str = "director",
     ) -> Event:
+        if not self._allow_genesis:
+            raise InstitutionIdentityError(
+                "this Kernel is not authorized to create an institution. "
+                "Genesis creates an institution; recovery must never create one. "
+                "Use Kernel.create_institution() for a deliberate genesis ceremony, or "
+                "Kernel.restore_institution() to rebuild an existing one."
+            )
         director_principal = validate_ref(director_principal, "director principal", max_len=256)
         root_office = validate_ref(root_office, "root office", max_len=128)
         now_for_registry = utcnow()

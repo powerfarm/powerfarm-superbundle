@@ -2,7 +2,11 @@ import { digestSummary, errorEvidence } from './canonical.mjs';
 import { defaultIdentityResolver } from './identity.mjs';
 import { DottedToolPolicy } from './mapping.mjs';
 import { InstitutionalRefusalError } from './refusal.mjs';
-import { executionRefsFromSlice, verifyExecutionSliceSeal } from '../../../circulation/cards/lib/execution-slice.mjs';
+import {
+  assertExecutionSliceTemporallyExecutable,
+  executionRefsFromSlice,
+  verifyExecutionSliceSeal,
+} from '../../../circulation/cards/lib/execution-slice.mjs';
 
 export const AI_SDK_RUNTIME = 'vercel-ai-sdk';
 
@@ -27,6 +31,7 @@ export function wrapToolsWithContinuum(tools, {
   strict = true,
   identityResolver = defaultIdentityResolver,
   runtimeName = AI_SDK_RUNTIME,
+  clock = () => new Date().toISOString(),
 } = {}) {
   if (!port || typeof port.admitToolCall !== 'function' || typeof port.completeToolCall !== 'function' || typeof port.failToolCall !== 'function') {
     throw new TypeError('a ProcessPort with admitToolCall/completeToolCall/failToolCall is required');
@@ -34,6 +39,7 @@ export function wrapToolsWithContinuum(tools, {
   if (strict && (!revisionRef || revisionRef === 'unspecified')) {
     throw new Error('strict continuum-ai-sdk requires a concrete pinned revisionRef');
   }
+  if (typeof clock !== 'function') throw new TypeError('clock must be a function returning an ISO timestamp');
   const policy = new DottedToolPolicy({ mappings, strict });
   const wrapped = Object.create(null);
 
@@ -62,6 +68,7 @@ export function wrapToolsWithContinuum(tools, {
           revisionRef,
           identityResolver,
           runtimeName,
+          clock,
         });
       },
     };
@@ -69,7 +76,7 @@ export function wrapToolsWithContinuum(tools, {
   return wrapped;
 }
 
-async function executeInstitutionally({ input, options, toolName, originalExecute, projection, port, revisionRef, identityResolver, runtimeName }) {
+async function executeInstitutionally({ input, options, toolName, originalExecute, projection, port, revisionRef, identityResolver, runtimeName, clock }) {
   let identity;
   let refs;
   try {
@@ -108,6 +115,18 @@ async function executeInstitutionally({ input, options, toolName, originalExecut
     throw new InstitutionalRefusalError({ reason: 'admission infrastructure failed', code: 'POWERFARM_ADMISSION_UNAVAILABLE', toolName });
   }
   if (!admission?.ok || admission.decision !== 'ALLOW') throw refusalFrom(admission, toolName);
+
+  try {
+    assertExecutionSliceTemporallyExecutable(identity.executionSlice, { now: clock() });
+  } catch (error) {
+    await safeFail(port, admission, refs, error);
+    throw new InstitutionalRefusalError({
+      reason: String(error.message || error),
+      code: 'POWERFARM_RESOURCE_WINDOW_INVALID',
+      toolName,
+      runRef: admission.run_ref || refs.runRef,
+    });
+  }
 
   const executionOptions = {
     ...options,

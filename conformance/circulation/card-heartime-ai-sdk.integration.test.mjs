@@ -78,6 +78,7 @@ test('golden circulation: Card -> Heartime -> Process -> AI SDK setting -> Evide
     toolName: 'search',
     kind: 'tool.invoke.search',
     subject: 'tool:search',
+    evaluatedAt: T2,
   });
 
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'pf-card-heartime-golden-'));

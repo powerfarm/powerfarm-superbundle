@@ -1,7 +1,7 @@
 {
-  "contract_version": "powerfarm.execution-slice.v3",
+  "contract_version": "powerfarm.execution-slice.v4",
   "card_ref": "pf.card.engine-equivalence-golden",
-  "execution_slice_sha256": "sha256:ebc84a8f474f9e096146fefc84f82cbd1d13ee35ad87edfb742bfb190ff9851a",
+  "execution_slice_sha256": "sha256:567ac9be1ad43d5dc5551208045e5764424c2ca7db0224e229ecb19507a7051d",
   "run_ref": "pfx-6d9e239027fe4d418f6bf726b9f4510c",
   "request_ids": {
     "intent": "pfx2-6d9e239027fe4d418f6bf726b9f4510c7e4786f1a9cbc3cc9341a24ba977bfd7-intent",
@@ -21,7 +21,7 @@
       "attempt_ref": "pf.attempt.engine-equivalence-golden",
       "direction_ref": "pf.direction.engine-equivalence",
       "ecs": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
-      "execution_slice_sha256": "sha256:ebc84a8f474f9e096146fefc84f82cbd1d13ee35ad87edfb742bfb190ff9851a",
+      "execution_slice_sha256": "sha256:567ac9be1ad43d5dc5551208045e5764424c2ca7db0224e229ecb19507a7051d",
       "status": null,
       "capability_ref": null
     },
@@ -37,7 +37,7 @@
       "attempt_ref": "pf.attempt.engine-equivalence-golden",
       "direction_ref": "pf.direction.engine-equivalence",
       "ecs": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
-      "execution_slice_sha256": "sha256:ebc84a8f474f9e096146fefc84f82cbd1d13ee35ad87edfb742bfb190ff9851a",
+      "execution_slice_sha256": "sha256:567ac9be1ad43d5dc5551208045e5764424c2ca7db0224e229ecb19507a7051d",
       "status": null,
       "capability_ref": null
     },
@@ -53,7 +53,7 @@
       "attempt_ref": "pf.attempt.engine-equivalence-golden",
       "direction_ref": "pf.direction.engine-equivalence",
       "ecs": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
-      "execution_slice_sha256": "sha256:ebc84a8f474f9e096146fefc84f82cbd1d13ee35ad87edfb742bfb190ff9851a",
+      "execution_slice_sha256": "sha256:567ac9be1ad43d5dc5551208045e5764424c2ca7db0224e229ecb19507a7051d",
       "status": "completed",
       "capability_ref": "tool:search"
     }

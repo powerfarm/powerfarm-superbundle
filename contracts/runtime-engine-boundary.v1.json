@@ -33,7 +33,7 @@
     "engine-local memory may consume a read-only projection from PowerFarm MEMORY but never writes institutional epistemic state implicitly"
   ],
   "execution_contracts": {
-    "slice": "contracts/execution-slice.v3.json",
+    "slice": "contracts/execution-slice.v4.json",
     "receipt": "contracts/execution-receipt.v1.json"
   }
 }

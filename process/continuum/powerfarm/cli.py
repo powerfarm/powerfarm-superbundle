@@ -52,6 +52,16 @@ def emit(value: Any) -> None:
     print(json.dumps(value, indent=2, ensure_ascii=False, sort_keys=True, allow_nan=False))
 
 
+def load_expectation(value: str | None) -> Any:
+    """Accept an institution_ref directly, or a path to an anchor JSON file."""
+    if not value:
+        return None
+    candidate = Path(value)
+    if candidate.exists():
+        return load_json_file(value)
+    return value
+
+
 def load_json_file(path: str) -> dict[str, Any]:
     source = Path(path)
     if source.stat().st_size > 1024 * 1024:
@@ -100,13 +110,46 @@ def parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="powerfarm", description="Powerfarm Continuum institutional kernel")
     p.add_argument("--db", default="powerfarm.db", help="SQLite institution database")
     p.add_argument("--seal-key", help="Path to the external HMAC seal key (default: <db>.sealkey)")
+    p.add_argument(
+        "--expect-institution",
+        help=(
+            "Open exactly this institution: an institution_ref, or a path to an anchor JSON file. "
+            "An empty or foreign store is then refused instead of bootstrapped, and the handle "
+            "cannot create an institution. Every operational invocation should pass this."
+        ),
+    )
     sub = p.add_subparsers(dest="command", required=True)
 
     sub.add_parser("upgrade", help="Open the database writable and apply supported local schema upgrades")
 
-    init = sub.add_parser("init", help="Create the official institutional timeline")
+    init = sub.add_parser(
+        "init",
+        help="CREATE: the genesis ceremony. Founds one institution, once. Recovery must never use this.",
+    )
     init.add_argument("--director", required=True, help="Principal occupying the root director office")
     init.add_argument("--mandate", default="Direction, legitimacy, and commitments")
+    init.add_argument(
+        "--create-new-institution",
+        action="store_true",
+        required=True,
+        help="Confirm this is a genesis ceremony and not a recovery. Genesis creates an institution; recovery never does.",
+    )
+
+    sub.add_parser("anchor", help="Print this institution's location-independent identity anchor")
+
+    restore = sub.add_parser(
+        "restore",
+        help="RESTORE: rebuild an existing institution from a verified bundle. Never runs genesis.",
+    )
+    restore.add_argument("--bundle", required=True, help="Portable evidence bundle to restore from")
+    restore.add_argument(
+        "--witness",
+        help=(
+            "Checkpoint taken from the institution before it was lost. Proves the restored copy "
+            "continues the witnessed state rather than merely carrying its name. Without it, "
+            "restore proves identity but not currency."
+        ),
+    )
 
     act = sub.add_parser("act", help="Record an authorized institutional act")
     act.add_argument("--branch", default="main")
@@ -271,21 +314,59 @@ def main(argv: list[str] | None = None) -> None:
         "findings", "proof", "impact", "diff", "metrics", "doctor",
         "backup", "bundle-export", "signatures",
     }
+    expectation = load_expectation(getattr(args, "expect_institution", None))
+    if args.command == "init" and expectation is not None:
+        raise SystemExit(
+            "error: --expect-institution names an institution that already exists; "
+            "it cannot be combined with init. Genesis creates an institution; recovery never does."
+        )
     try:
         registry = PostgrestRegistryDirectory.from_env()
-        kernel = Kernel(
-            args.db,
-            read_only=args.command in read_only_commands,
-            seal_key_path=args.seal_key,
-            registry=registry,
-        )
+        if args.command == "restore":
+            if expectation is None:
+                raise SystemExit("error: restore requires --expect-institution")
+            kernel = Kernel.restore_institution(
+                args.db,
+                bundle=load_json_file(args.bundle),
+                expect=expectation,
+                witness=load_json_file(args.witness) if args.witness else None,
+                seal_key_path=args.seal_key,
+                registry=registry,
+            )
+        else:
+            kernel = Kernel(
+                args.db,
+                read_only=args.command in read_only_commands,
+                seal_key_path=args.seal_key,
+                registry=registry,
+                expect=expectation,
+                allow_genesis=True if (expectation is None and args.command == "init") else None,
+            )
     except (InstitutionalError, RegistryTransportError, ValueError, OSError) as exc:
         raise SystemExit(f"error: {exc}") from exc
     try:
         if args.command == "upgrade":
             emit({"ok": True, "schema_version": SCHEMA_VERSION, "database": str(kernel.path), "initialized": kernel.initialized()})
         elif args.command == "init":
-            emit(kernel.init(args.director, args.mandate).public())
+            genesis = kernel.init(args.director, args.mandate)
+            emit({
+                "genesis": genesis.public(),
+                "anchor": kernel.anchor().public(),
+                "note": (
+                    "Keep this anchor. Every operational invocation should pass it as "
+                    "--expect-institution so that a lost or replaced store is refused "
+                    "rather than bootstrapped."
+                ),
+            })
+        elif args.command == "anchor":
+            emit(kernel.anchor().public())
+        elif args.command == "restore":
+            emit({
+                "restored": True,
+                "anchor": kernel.anchor().public(),
+                "events": len(kernel.events("main")),
+                "witnessed_continuity": bool(args.witness),
+            })
         elif args.command == "act":
             emit(kernel.append(
                 branch=args.branch,

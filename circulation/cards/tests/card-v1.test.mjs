@@ -232,6 +232,7 @@ test('ExecutionSlice is engine-neutral, sealed, and derives stable institutional
     toolName: 'search',
     kind: 'tool.invoke.search',
     subject: 'tool:search',
+    evaluatedAt: T2,
   });
   assert.equal(await verifyExecutionSliceSeal(slice), true);
   assert.equal('runtime' in slice, false, 'engine identity must not be part of the institutional execution slice');
@@ -277,7 +278,7 @@ test('Heartime recovery preserves attempt identity across a new beat and Registr
   card = (await emitCard(card, { at: T0, beatRef: 'pf.beat.recovery-1', nextExpected: T1 })).card;
   card = (await transitionCard(card, { to: 'acknowledged', at: T1, nextExpected: T2 })).card;
   card = (await transitionCard(card, { to: 'executing', at: T2, attemptRef: 'pf.attempt.recovery', nextExpected: T3 })).card;
-  const firstSlice = await deriveExecutionSlice(card, { actor: 'agent-old', office: 'operations', toolName: 'search', kind: 'tool.invoke.search', subject: 'tool:search' });
+  const firstSlice = await deriveExecutionSlice(card, { actor: 'agent-old', office: 'operations', toolName: 'search', kind: 'tool.invoke.search', subject: 'tool:search', evaluatedAt: T2 });
   const firstRefs = await executionRefsFromSlice(firstSlice);
 
   const observation = { office_ref: 'pf.office.operations', identity_ref: 'pf.identity.agent-new', occupancy_ref: 'pf.occupancy.agent-new' };
@@ -295,7 +296,7 @@ test('Heartime recovery preserves attempt identity across a new beat and Registr
   assert.equal(card.circulation.beat_ref, 'pf.beat.recovery-2');
   card = (await transitionCard(card, { to: 'acknowledged', at: T6, nextExpected: T7 })).card;
   card = (await transitionCard(card, { to: 'executing', at: T7, nextExpected: '2026-08-30T01:08:00.000Z' })).card;
-  const successorSlice = await deriveExecutionSlice(card, { actor: 'agent-new', office: 'operations', toolName: 'search', kind: 'tool.invoke.search', subject: 'tool:search' });
+  const successorSlice = await deriveExecutionSlice(card, { actor: 'agent-new', office: 'operations', toolName: 'search', kind: 'tool.invoke.search', subject: 'tool:search', evaluatedAt: T7 });
   const successorRefs = await executionRefsFromSlice(successorSlice);
   assert.equal(successorRefs.runRef, firstRefs.runRef, 'new Heartime beat must not redefine the institutional attempt');
   assert.notEqual(successorRefs.resumeRequestId, firstRefs.resumeRequestId, 'each reissue beat gets a distinct resume admission id');

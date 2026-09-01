@@ -74,6 +74,14 @@ function listTestFiles(directory) {
   return result.sort();
 }
 
+// A declaration count is not a test result. `tests` below is a structural count
+// of `test(` declarations in source; nothing here executes them. Execution
+// results live in evidence/organism-verification/verification.json, which runs
+// the suites and records their real exit codes and reported pass/fail counts.
+const DECLARATION_MEASUREMENT = 'structural source count of test(...) declarations; not an execution result';
+const CONTROL_MEASUREMENT = 'negative-control identifiers named in test source; naming a control is not proof that it is enforced';
+const EXECUTION_EVIDENCE = 'evidence/organism-verification/verification.json';
+
 function testStats(relativeDirectory) {
   const files = listTestFiles(path.join(root, relativeDirectory));
   const source = files.map((file) => fs.readFileSync(file, 'utf8')).join('\n');
@@ -192,14 +200,19 @@ const release = {
     negative_controls: controls,
   },
   contracts,
-  executable_evidence: {
-    total_deterministic_tests: totalTests,
+  declared_test_inventory: {
+    measurement: DECLARATION_MEASUREMENT,
+    executed_by: EXECUTION_EVIDENCE,
+    declared_test_cases: totalTests,
     test_suites: Object.fromEntries(Object.entries(suites).map(([name, suite]) => [name, {
       files: suite.files,
-      tests: suite.tests,
+      declared_test_cases: suite.tests,
     }])),
-    heartime_migration_checks: migrationCheckCount,
-    negative_controls_made_executable: executableControls,
+    heartime_migration_structural_checks: migrationCheckCount,
+    negative_controls_named_in_test_source: {
+      measurement: CONTROL_MEASUREMENT,
+      controls: executableControls,
+    },
   },
   deployment_evidence: {
     heartime_postgres_migrations: 'not_run',
@@ -227,27 +240,32 @@ const release2 = {
     negative_controls: doc2Controls,
   },
   contract: contracts.capability_learning,
-  executable_evidence: {
-    total_deterministic_tests: suites.capability_learning_core.tests
+  declared_test_inventory: {
+    measurement: DECLARATION_MEASUREMENT,
+    executed_by: EXECUTION_EVIDENCE,
+    declared_test_cases: suites.capability_learning_core.tests
       + suites.capability_learning_setting.tests
       + suites.capability_learning_integration.tests,
     test_suites: {
       capability_learning_core: {
         files: suites.capability_learning_core.files,
-        tests: suites.capability_learning_core.tests,
+        declared_test_cases: suites.capability_learning_core.tests,
       },
       capability_learning_setting: {
         files: suites.capability_learning_setting.files,
-        tests: suites.capability_learning_setting.tests,
+        declared_test_cases: suites.capability_learning_setting.tests,
       },
       capability_learning_integration: {
         files: suites.capability_learning_integration.files,
-        tests: suites.capability_learning_integration.tests,
+        declared_test_cases: suites.capability_learning_integration.tests,
       },
     },
     structural_contract_checks: contractChecks.capability_learning.checks,
-    heartime_migration_checks: migrationChecks[2].checks,
-    negative_controls_made_executable: executableLearningControls,
+    heartime_migration_structural_checks: migrationChecks[2].checks,
+    negative_controls_named_in_test_source: {
+      measurement: CONTROL_MEASUREMENT,
+      controls: executableLearningControls,
+    },
   },
   deployment_evidence: {
     heartime_postgres_migration: 'not_run',
@@ -278,7 +296,7 @@ const heartimeRelease = {
     production_circulation: 'pf.contract.production-circulation.v1',
     operational_trace: 'powerfarm.operational-trace.v1',
     legacy_removal: 'pf.contract.legacy-removal.v1',
-    execution_slice: 'powerfarm.execution-slice.v3',
+    execution_slice: 'powerfarm.execution-slice.v4',
     cycle: 'powerfarm.heartime.cycle.v1',
     attention_reconciler: 'powerfarm.first-seam.reconciler.v1',
     sedimentation_reconciler: 'powerfarm.sedimentation.reconciler.v1',
@@ -289,14 +307,16 @@ const heartimeRelease = {
   },
   checks: {
     deterministic_logic_tests: {
-      status: 'pass',
-      passed: suites.heartime_logic.tests,
-      failed: 0,
+      status: 'declared_not_executed_here',
+      measurement: DECLARATION_MEASUREMENT,
+      declared_test_cases: suites.heartime_logic.tests,
+      executed_by: EXECUTION_EVIDENCE,
     },
     physical_and_state_setting_tests: {
-      status: 'pass',
-      passed: suites.heartime_setting.tests,
-      failed: 0,
+      status: 'declared_not_executed_here',
+      measurement: DECLARATION_MEASUREMENT,
+      declared_test_cases: suites.heartime_setting.tests,
+      executed_by: EXECUTION_EVIDENCE,
     },
     migration_structure: {
       status: 'pass',
@@ -323,7 +343,10 @@ const heartimeRelease = {
       status: 'not_run',
     },
   },
-  negative_controls_made_executable: executableControls,
+  negative_controls_named_in_test_source: {
+    measurement: CONTROL_MEASUREMENT,
+    controls: executableControls,
+  },
 };
 
 const numberedTestCount = executableControls.length;
@@ -336,21 +359,25 @@ const conformance = `# Conformance
 > **Boundary:** The Super Bundle owns Process and Organism. Registry remains the source of Identity, Office/Occupancy, Brand, Store and exact artifact lineage; engines do not define PowerFarm meaning.
 <!-- POWERFARM-MAP:END -->
 
-The negative controls, executable.
+The negative controls, and exactly what this page measures.
 
-Document 1 currently contains **${controls} negative controls**. **${numberedTestCount} numbered controls** are executable today.
+This page is derived by reading source. It counts declarations; it does not run
+anything. Execution results — real exit codes and reported pass/fail counts per
+suite — live in \`evidence/organism-verification/verification.json\`.
 
-Document 2 currently contains **${doc2Controls} capability-learning controls**. **${learningNumberedTestCount} learning controls** are executable today.
+Document 1 currently contains **${controls} negative controls**. **${numberedTestCount} numbered controls** are named by at least one test declaration.
 
-The repository carries ${totalTests} deterministic tests for Heartime, canonical Cards, roster, attention circulation, capability learning, private settings, and vertical seams. A control is listed only when a test names it explicitly.
+Document 2 currently contains **${doc2Controls} capability-learning controls**. **${learningNumberedTestCount} learning controls** are named by at least one test declaration.
 
-The Heartime migrations pass ${migrationCheckCount} structural checks without touching a database. The First Seam contract passes ${contractChecks.first_seam.checks} source/contract checks. The Capability Learning contract passes ${contractChecks.capability_learning.checks}. The canonical Card contract passes ${contractChecks.card.checks}. The Epistemic Continuity contract passes ${contractChecks.epistemic_continuity.checks}. The Energy + Cost contract passes ${contractChecks.energy_cost.checks}. Production Circulation passes ${contractChecks.production_circulation.checks}. Legacy Removal passes ${contractChecks.legacy_removal.checks}.
+The repository declares ${totalTests} deterministic test cases for Heartime, canonical Cards, roster, attention circulation, capability learning, private settings, and vertical seams. A control is listed only when a test names it explicitly. Naming a control is evidence that a test refers to it, not proof that the control is enforced; read the named test to see what it actually asserts.
 
-Document 1 executable controls: \`${executableControls.join(', ')}\`.
+The Heartime migrations pass ${migrationCheckCount} structural checks without touching a database. The First Seam contract passes ${contractChecks.first_seam.checks} source/contract checks. The Capability Learning contract passes ${contractChecks.capability_learning.checks}. The canonical Card contract passes ${contractChecks.card.checks}. The Epistemic Continuity contract passes ${contractChecks.epistemic_continuity.checks}. The Energy + Cost contract passes ${contractChecks.energy_cost.checks}. Production Circulation passes ${contractChecks.production_circulation.checks}. Legacy Removal passes ${contractChecks.legacy_removal.checks}. These validators mix executed behaviour with source-shape inspection; a passing source-shape check proves the shape, not the interface.
 
-Document 2 executable controls: \`${executableLearningControls.map((value) => `L${value}`).join(', ')}\`.
+Document 1 controls named in test source: \`${executableControls.join(', ')}\`.
 
-A control moves here only when it can run against real behavior or against a deterministic contract whose mutation is observable. \`NOT RUN\` is never reported as \`PASS\`.
+Document 2 controls named in test source: \`${executableLearningControls.map((value) => `L${value}`).join(', ')}\`.
+
+A control moves here only when it can run against real behavior or against a deterministic contract whose mutation is observable. \`NOT RUN\` is never reported as \`PASS\`, and a declaration count is never reported as a pass count.
 
 This file is derived by \`scripts/derive-repository.mjs\`.
 

@@ -88,6 +88,7 @@ test('operational trace is persisted through the Heartime schema without Card bo
   });
   assert.match(calls[0].url, /record_trace_event_v1$/);
   assert.equal(calls[0].body.p_trace_ref, 'pf.trace.card.market');
+  assert.equal(calls[0].body.p_component_ref, 'pf.runtime.heartime');
   assert.equal(calls[0].body.p_card_ref, 'pf.card.market');
   assert.equal('card_body' in calls[0].body, false);
 });

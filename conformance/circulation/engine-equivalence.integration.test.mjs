@@ -175,6 +175,7 @@ test('golden engine equivalence: one ExecutionSlice has one institutional meanin
     toolName: 'search',
     kind: 'tool.invoke.search',
     subject: 'tool:search',
+    evaluatedAt: T2,
   });
   const rawInput = 'RAW-ENGINE-EQUIVALENCE-INPUT';
   const rawOutput = 'RAW-ENGINE-EQUIVALENCE-OUTPUT';

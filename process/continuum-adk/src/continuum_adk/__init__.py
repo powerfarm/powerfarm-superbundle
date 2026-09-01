@@ -9,6 +9,7 @@ from .execution_slice import (
     ExecutionSliceError,
     ExecutionSliceFromContext,
     ExecutionSliceResolver,
+    assert_execution_slice_temporally_executable,
     execution_refs_from_slice,
     validate_execution_slice,
     verify_execution_slice_seal,
@@ -45,6 +46,7 @@ __all__ = [
     "EvidencePolicy", "DigestOnlyEvidence", "AllowlistedEvidence",
     "EXECUTION_SLICE_CONTRACT_VERSION", "ExecutionSliceError", "ExecutionSliceResolver",
     "ExecutionSliceFromContext", "ExecutionRefs", "validate_execution_slice",
-    "verify_execution_slice_seal", "execution_refs_from_slice",
+    "verify_execution_slice_seal", "assert_execution_slice_temporally_executable",
+    "execution_refs_from_slice",
     "RefusalRenderer", "StructuredRefusal", "TerseRefusal",
 ]

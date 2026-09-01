@@ -50,8 +50,10 @@ check('normal Heartime emission debits a beat', /recordHeartimeBeat/.test(gateSo
 check('recovery reissue also debits a beat', /recordHeartimeBeat/.test(recoverySource));
 check('observed overdraw remains visible and blocks future execution', /energy_overdrawn/.test(resourceSource) && /cost_overdrawn/.test(resourceSource));
 check('Homeostasis projects circulatory debt', /circulatoryDebt/.test(resourceSource) && /cost_per_evidence_micros/.test(resourceSource));
-check('ExecutionSlice v3 is the current boundary', EXECUTION_SLICE_CONTRACT_VERSION === 'powerfarm.execution-slice.v3' && manifest.execution_slice === EXECUTION_SLICE_CONTRACT_VERSION);
+check('ExecutionSlice v4 is the current boundary', EXECUTION_SLICE_CONTRACT_VERSION === 'powerfarm.execution-slice.v4' && manifest.execution_slice === EXECUTION_SLICE_CONTRACT_VERSION);
 check('ExecutionSlice seals remaining resources', /resources: executionResourceBudget/.test(sliceSource));
+check('ExecutionSlice never infers resource evaluation from Card.updated_at', !/executionResourceBudget\(card, \{ now: card\.updated_at \}\)/.test(sliceSource));
+check('engine Settings revalidate authorization windows immediately before execution', /assertExecutionSliceTemporallyExecutable/.test(aiWrapper) && /assert_execution_slice_temporally_executable/.test(mafController));
 check('AI SDK passes resource budget to local tool context', /resourceBudget: identity\.executionSlice\?\.resources/.test(aiWrapper));
 check('Process validates the shared resource budget shape', /ExecutionSlice\.resources\.energy_remaining/.test(processSlice) && /remaining_micros/.test(processSlice));
 check('ADK consumes Process-owned ExecutionSlice validation', /from powerfarm\.execution_slice import \*/.test(adkSlice));

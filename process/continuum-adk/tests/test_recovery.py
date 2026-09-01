@@ -34,7 +34,7 @@ def seal_slice(value: dict) -> dict:
 
 def make_slice(*, actor: str, occupancy_ref: str, beat_ref: str, run_ref: str | None = None) -> dict:
     base = {
-        "contract_version": "powerfarm.execution-slice.v3",
+        "contract_version": "powerfarm.execution-slice.v4",
         "card": {
             "ref": "pf.card.adk-recovery",
             "generation": 1,
@@ -56,6 +56,19 @@ def make_slice(*, actor: str, occupancy_ref: str, beat_ref: str, run_ref: str | 
         "circulation": {"beat_ref": beat_ref, "attempt_ref": "pf.attempt.adk-recovery"},
         "capability": {"tool_name": "search", "kind": "tool.invoke.search", "subject": "tool:search"},
         "resources": {
+            "evaluated_at": "2026-08-30T00:00:00.000Z",
+            "authorization_window": {
+                "energy": {
+                    "authorization_ref": "pf.energy-authorization.adk-recovery",
+                    "effective_at": "2026-08-30T00:00:00.000Z",
+                    "expires_at": None,
+                },
+                "cost": {
+                    "authorization_ref": "pf.cost-authorization.adk-recovery",
+                    "effective_at": "2026-08-30T00:00:00.000Z",
+                    "expires_at": None,
+                },
+            },
             "energy_remaining": {
                 "beats": 2, "model_tokens": 100000, "tool_calls": 20, "network_calls": 20,
                 "compute_ms": 600000, "sandbox_ms": 600000, "wall_ms": 900000, "human_attention_ms": 600000,

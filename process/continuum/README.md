@@ -62,7 +62,45 @@ Python 3.11+ is required.
 python3 -m pip install -e .
 export POWERFARM_REGISTRY_SUPABASE_URL=https://your-registry.supabase.co
 export POWERFARM_REGISTRY_PUBLISHABLE_KEY=your-publishable-key
-powerfarm --db ./powerfarm.db init --director pf.identity.director
+```
+
+### Genesis creates an institution; recovery never does
+
+`init` is the genesis ceremony. It founds one institution, once, and prints the
+anchor. Keep the anchor: it is what every later invocation presents in order to
+open *that* institution and no other.
+
+```bash
+powerfarm --db ./powerfarm.db init \
+  --director pf.identity.director --create-new-institution > anchor.json
+```
+
+Every operational invocation should pin it:
+
+```bash
+powerfarm --db ./powerfarm.db --expect-institution anchor.json audit
+```
+
+Pinned, an empty or foreign store is refused instead of bootstrapped, and the
+same handle cannot fall back to founding an institution. Unpinned, the command
+opens whatever it is pointed at — which is how a lost store becomes a second
+institution.
+
+To rebuild an institution that already exists, restore it. Restore never runs
+genesis. Pass a checkpoint taken before the loss and the restored copy must
+demonstrate continuity with it, not merely carry the same name:
+
+```bash
+powerfarm --db ./rebuilt.db restore \
+  --bundle ./institution-bundle.json \
+  --expect-institution anchor.json \
+  --witness ./last-checkpoint.json
+```
+
+Print the anchor of a store you already have:
+
+```bash
+powerfarm --db ./powerfarm.db anchor
 ```
 
 For an existing v0.2 database, run the explicit writable upgrade once before read-only commands:

@@ -1,0 +1,647 @@
+{
+  "kind": "powerfarm.process.canonical-commit-experiment.v1",
+  "adr": "process/continuum/docs/adr/0014-canonical-commit-is-decided-by-falsification.md",
+  "generated_at": "2026-09-01T11:51:40.111Z",
+  "node_version": "v24.18.0",
+  "invariant": "ADMITTED => a canonical durable commit exists",
+  "invariants": {
+    "ADMITTED_IMPLIES_DURABLE": "no state exists in which the caller was told ADMITTED and the canonical durable commit does not exist",
+    "ATOMICITY": "a batch commits entirely or not at all",
+    "IDEMPOTENCY": "one request id yields one act; a different body under the same request id is refused, not overwritten",
+    "HEAD_CORRECTNESS": "no lost update and no divergent head",
+    "DETERMINISTIC_REPLAY": "replaying the canonical record reproduces the same state",
+    "UNAMBIGUOUS_RECOVERY": "after a crash every act is unambiguously committed or unambiguously absent, never indeterminate"
+  },
+  "cross_checked_against_the_real_kernel": [
+    "The refusal that scenario 12 depends on was verified against the real Continuum kernel, not only against this model: opening a Kernel on a missing store creates the file, and `append` then fails closed with InstitutionalError \"Institution is not initialized\".",
+    "The fork that scenario 13 originally reported was verified against the real kernel before it was fixed: `Kernel.init()` on a substitute store succeeded and produced a second institution. It is now closed in the kernel by the CREATE / OPEN / RESTORE split, with negative controls in process/continuum/tests/test_institution_identity.py, and the scenarios here prove the same design holds for both candidate commit shapes."
+  ],
+  "fidelity_limits": [
+    "Both engines are embedded and single-connection. Real multi-connection contention — cross-session row locks, serialization failures, pool behaviour — is NOT exercised. Scenario 07 tests application-level CAS only.",
+    "A crash is a self-inflicted SIGKILL in a dedicated child process. Nothing is caught, flushed or unwound, so the crash is faithful; the storage layer beneath it is still a local filesystem, not a networked volume.",
+    "Network partition between Process and a remote canonical store is NOT modelled. That failure mode is specific to Shape B and must be tested against a hosted PostgreSQL before this ADR is promoted.",
+    "This harness models admission commit semantics only. Authority, Occupancy, signatures and bitemporality are deliberately absent."
+  ],
+  "shapes": {
+    "A": {
+      "name": "embedded canonical (SQLite) + PostgreSQL projection via outbox",
+      "checks": 31,
+      "held": 30,
+      "violated": 0,
+      "not_exercised": 1,
+      "costs": [
+        {
+          "scenario": "02-kill-after-canonical-commit",
+          "invariant": "ADMITTED_IMPLIES_DURABLE",
+          "cost": "the commit is durable but the caller never learned its outcome; the caller must retry to find out"
+        },
+        {
+          "scenario": "03-kill-between-commit-and-projection",
+          "invariant": "DETERMINISTIC_REPLAY",
+          "cost": "the projection was behind until a projector ran again; readers of the projection saw stale state in the meantime"
+        },
+        {
+          "scenario": "10-corrupted-downstream-projection",
+          "invariant": "DETERMINISTIC_REPLAY",
+          "cost": "nothing in either shape detects the corruption on its own; repair here was triggered by the harness, not by the system"
+        },
+        {
+          "scenario": "11-projection-unavailable",
+          "invariant": "DETERMINISTIC_REPLAY",
+          "cost": "while the projection was away, any reader of the projection saw a stale institution with no signal that it was stale"
+        },
+        {
+          "scenario": "12-canonical-store-unavailable",
+          "invariant": "ADMITTED_IMPLIES_DURABLE",
+          "cost": "the institution cannot admit anything while its canonical store is unreachable; the question is whether it says so or invents a new institution"
+        }
+      ]
+    },
+    "B": {
+      "name": "PostgreSQL canonical + embedded projection",
+      "checks": 31,
+      "held": 30,
+      "violated": 0,
+      "not_exercised": 1,
+      "costs": [
+        {
+          "scenario": "02-kill-after-canonical-commit",
+          "invariant": "ADMITTED_IMPLIES_DURABLE",
+          "cost": "the commit is durable but the caller never learned its outcome; the caller must retry to find out"
+        },
+        {
+          "scenario": "03-kill-between-commit-and-projection",
+          "invariant": "DETERMINISTIC_REPLAY",
+          "cost": "the projection was behind until a projector ran again; readers of the projection saw stale state in the meantime"
+        },
+        {
+          "scenario": "10-corrupted-downstream-projection",
+          "invariant": "DETERMINISTIC_REPLAY",
+          "cost": "nothing in either shape detects the corruption on its own; repair here was triggered by the harness, not by the system"
+        },
+        {
+          "scenario": "11-projection-unavailable",
+          "invariant": "DETERMINISTIC_REPLAY",
+          "cost": "while the projection was away, any reader of the projection saw a stale institution with no signal that it was stale"
+        },
+        {
+          "scenario": "12-canonical-store-unavailable",
+          "invariant": "ADMITTED_IMPLIES_DURABLE",
+          "cost": "the institution cannot admit anything while its canonical store is unreachable; the question is whether it says so or invents a new institution"
+        }
+      ]
+    }
+  },
+  "harness_negative_control": {
+    "purpose": "prove the harness can report VIOLATED. Two controls: a forbidden shape that answers ADMITTED before the canonical commit returns, and an unguarded startup that still reproduces the original substitute-store fork once the stated expectation is removed.",
+    "findings": [
+      {
+        "shape": "CONTROL-FORBIDDEN",
+        "scenario": "01-kill-before-canonical-commit",
+        "invariant": "ADMITTED_IMPLIES_DURABLE",
+        "verdict": "VIOLATED",
+        "detail": "caller saw ADMITTED; canonical holds 0 act(s)",
+        "cost": null
+      },
+      {
+        "shape": "CONTROL-FORBIDDEN",
+        "scenario": "harness-self-check",
+        "invariant": "HARNESS_CAN_DETECT_A_VIOLATION",
+        "verdict": "HELD",
+        "detail": "the harness reported the forbidden premature-acknowledgement shape as violating the invariant, so a HELD verdict elsewhere means something",
+        "cost": null
+      },
+      {
+        "shape": "CONTROL-LEGACY-STARTUP",
+        "scenario": "13-substitute-store-cannot-become-the-institution",
+        "invariant": "ADMITTED_IMPLIES_DURABLE",
+        "verdict": "VIOLATED",
+        "detail": "an unguarded startup bootstrapped the substitute store and admitted into it; head evt_17fe2ef60276d400d4225f06ffe2cba4 never existed in the real institution, whose head is evt_5228499e7303d6b089499c649ce2dfca",
+        "cost": null
+      },
+      {
+        "shape": "CONTROL-LEGACY-STARTUP",
+        "scenario": "harness-self-check",
+        "invariant": "HARNESS_STILL_REPRODUCES_THE_ORIGINAL_FORK",
+        "verdict": "HELD",
+        "detail": "removing the stated expectation still forks the institution, so scenario 13 passing is the refusal working rather than the harness losing the ability to see it",
+        "cost": null
+      }
+    ],
+    "harness_is_trustworthy": true
+  },
+  "discrimination": {
+    "question": "does the failure schedule separate Shape A from Shape B?",
+    "discriminating_findings": [],
+    "separated": false,
+    "note": "the schedule does NOT separate the shapes. Both preserve every invariant under every scenario that this harness can reach. The invariant set is therefore not sufficient on its own to decide, and the decision must rest on the architectural costs recorded per shape and on the failure modes listed under fidelity_limits, which this harness cannot reach.",
+    "shape_independent_requirements_discovered": [
+      "Refusing to admit into an uninitialized store is load-bearing, not hygiene. The real Continuum kernel already does this — opening a missing store creates the file, but append fails closed with \"Institution is not initialized\" — and scenario 12 depends entirely on that refusal. Any candidate shape must preserve it; a store driver that admits on open turns a lost disk into a silent second institution.",
+      "Bootstrap WAS the residual fork hazard, and the fix is shape-independent. Startup must name the institution it expects; an empty or foreign store then produces a refusal instead of a second institution, and the same handle cannot fall back to genesis. Scenarios 13 and 14 hold identically for both shapes, and the CONTROL-LEGACY-STARTUP finding shows the fork still reproduces the moment the stated expectation is removed — so the scenarios pass because the refusal works, not because the harness stopped seeing it. Implemented in the kernel as Kernel.create_institution / open_institution / restore_institution."
+    ],
+    "known_asymmetries_not_measurable_here": [
+      "Shape B places a network between Process and its canonical commit. Every admission then depends on remote availability, and scenario 12 shows the institution admits nothing while the canonical store is unreachable — for Shape B that is a network outage, for Shape A it is local disk loss, which is already correlated with the process dying.",
+      "Shape A is single-writer by construction, so multi-writer contention cannot arise. Shape B must define and test it against a hosted server.",
+      "Shape B needs a dedicated transactional admission principal, transport authentication that establishes rather than accepts the caller, and a request digest recomputed at the trusted boundary. Shape A needs none of those to hold the invariants, but also cannot serve more than one writer."
+    ]
+  },
+  "findings": [
+    {
+      "shape": "A",
+      "scenario": "01-kill-before-canonical-commit",
+      "invariant": "ADMITTED_IMPLIES_DURABLE",
+      "verdict": "HELD",
+      "detail": "caller saw nothing (process died); canonical holds 0 act(s)",
+      "cost": null
+    },
+    {
+      "shape": "A",
+      "scenario": "01-kill-before-canonical-commit",
+      "invariant": "UNAMBIGUOUS_RECOVERY",
+      "verdict": "HELD",
+      "detail": "after reopening from disk: 0 act(s), head null",
+      "cost": null
+    },
+    {
+      "shape": "A",
+      "scenario": "01-kill-before-canonical-commit",
+      "invariant": "ATOMICITY",
+      "verdict": "HELD",
+      "detail": "the uncommitted transaction left nothing behind",
+      "cost": null
+    },
+    {
+      "shape": "A",
+      "scenario": "02-kill-after-canonical-commit",
+      "invariant": "ADMITTED_IMPLIES_DURABLE",
+      "verdict": "HELD",
+      "detail": "caller saw nothing (process died); canonical durably holds 1 act(s)",
+      "cost": "the commit is durable but the caller never learned its outcome; the caller must retry to find out"
+    },
+    {
+      "shape": "A",
+      "scenario": "02-kill-after-canonical-commit",
+      "invariant": "UNAMBIGUOUS_RECOVERY",
+      "verdict": "HELD",
+      "detail": "head evt_5228499e7303d6b089499c649ce2dfca matches the single committed act",
+      "cost": null
+    },
+    {
+      "shape": "A",
+      "scenario": "02-kill-after-canonical-commit",
+      "invariant": "ATOMICITY",
+      "verdict": "HELD",
+      "detail": "the committed batch is present exactly once",
+      "cost": null
+    },
+    {
+      "shape": "A",
+      "scenario": "03-kill-between-commit-and-projection",
+      "invariant": "ADMITTED_IMPLIES_DURABLE",
+      "verdict": "HELD",
+      "detail": "canonical holds 1 act(s) while the projection holds 0",
+      "cost": null
+    },
+    {
+      "shape": "A",
+      "scenario": "03-kill-between-commit-and-projection",
+      "invariant": "DETERMINISTIC_REPLAY",
+      "verdict": "HELD",
+      "detail": "re-running projection from the canonical record delivered 1 act(s) and made the projection identical",
+      "cost": "the projection was behind until a projector ran again; readers of the projection saw stale state in the meantime"
+    },
+    {
+      "shape": "A",
+      "scenario": "04-lost-acknowledgement",
+      "invariant": "IDEMPOTENCY",
+      "verdict": "HELD",
+      "detail": "retry saw DUPLICATE; canonical holds 1 act(s)",
+      "cost": null
+    },
+    {
+      "shape": "A",
+      "scenario": "04-lost-acknowledgement",
+      "invariant": "UNAMBIGUOUS_RECOVERY",
+      "verdict": "HELD",
+      "detail": "the retry told the caller the act already existed rather than leaving the outcome unknown",
+      "cost": null
+    },
+    {
+      "shape": "A",
+      "scenario": "05-duplicate-request-same-body",
+      "invariant": "IDEMPOTENCY",
+      "verdict": "HELD",
+      "detail": "first ADMITTED, second DUPLICATE, canonical holds 1 act(s)",
+      "cost": null
+    },
+    {
+      "shape": "A",
+      "scenario": "05-duplicate-request-same-body",
+      "invariant": "HEAD_CORRECTNESS",
+      "verdict": "HELD",
+      "detail": "head is evt_5228499e7303d6b089499c649ce2dfca at seq 1",
+      "cost": null
+    },
+    {
+      "shape": "A",
+      "scenario": "06-duplicate-request-different-body",
+      "invariant": "IDEMPOTENCY",
+      "verdict": "HELD",
+      "detail": "second attempt saw CONFLICT_DIFFERENT_BODY; the stored body digest is still the original",
+      "cost": null
+    },
+    {
+      "shape": "A",
+      "scenario": "07-concurrent-head-cas",
+      "invariant": "HEAD_CORRECTNESS",
+      "verdict": "HELD",
+      "detail": "first ADMITTED, second HEAD_CONFLICT; canonical holds 1 act(s)",
+      "cost": null
+    },
+    {
+      "shape": "A",
+      "scenario": "07-concurrent-head-cas",
+      "invariant": "ATOMICITY",
+      "verdict": "NOT_EXERCISED",
+      "detail": "true multi-connection contention is not exercised: both admissions run in separate processes but the stores are embedded single-connection engines. Real lock and serialization behaviour needs a hosted PostgreSQL server.",
+      "cost": null
+    },
+    {
+      "shape": "A",
+      "scenario": "08-atomic-batch-failure",
+      "invariant": "ATOMICITY",
+      "verdict": "HELD",
+      "detail": "caller saw REJECTED; canonical holds 0 act(s) from the failed batch",
+      "cost": null
+    },
+    {
+      "shape": "A",
+      "scenario": "08-atomic-batch-failure",
+      "invariant": "HEAD_CORRECTNESS",
+      "verdict": "HELD",
+      "detail": "head is null after the rejected batch",
+      "cost": null
+    },
+    {
+      "shape": "A",
+      "scenario": "09-restart-and-replay",
+      "invariant": "DETERMINISTIC_REPLAY",
+      "verdict": "HELD",
+      "detail": "replaying 3 canonical act(s) reproduced the identical sequence",
+      "cost": null
+    },
+    {
+      "shape": "A",
+      "scenario": "09-restart-and-replay",
+      "invariant": "HEAD_CORRECTNESS",
+      "verdict": "HELD",
+      "detail": "each act causes its predecessor and the chain reconstructs from the record alone",
+      "cost": null
+    },
+    {
+      "shape": "A",
+      "scenario": "10-corrupted-downstream-projection",
+      "invariant": "ADMITTED_IMPLIES_DURABLE",
+      "verdict": "HELD",
+      "detail": "corrupting the projection did not change the canonical record",
+      "cost": null
+    },
+    {
+      "shape": "A",
+      "scenario": "10-corrupted-downstream-projection",
+      "invariant": "DETERMINISTIC_REPLAY",
+      "verdict": "HELD",
+      "detail": "the projection was fully rebuilt from the canonical record",
+      "cost": "nothing in either shape detects the corruption on its own; repair here was triggered by the harness, not by the system"
+    },
+    {
+      "shape": "A",
+      "scenario": "11-projection-unavailable",
+      "invariant": "ADMITTED_IMPLIES_DURABLE",
+      "verdict": "HELD",
+      "detail": "4 act(s) were admitted and are durable while the projection held 0",
+      "cost": null
+    },
+    {
+      "shape": "A",
+      "scenario": "11-projection-unavailable",
+      "invariant": "DETERMINISTIC_REPLAY",
+      "verdict": "HELD",
+      "detail": "when the projection returned it caught up to exactly the canonical sequence",
+      "cost": "while the projection was away, any reader of the projection saw a stale institution with no signal that it was stale"
+    },
+    {
+      "shape": "A",
+      "scenario": "12-canonical-store-unavailable",
+      "invariant": "ADMITTED_IMPLIES_DURABLE",
+      "verdict": "HELD",
+      "detail": "the caller saw REJECTED while the canonical store was unreachable; the canonical record after restore is intact",
+      "cost": "the institution cannot admit anything while its canonical store is unreachable; the question is whether it says so or invents a new institution"
+    },
+    {
+      "shape": "A",
+      "scenario": "12-canonical-store-unavailable",
+      "invariant": "UNAMBIGUOUS_RECOVERY",
+      "verdict": "HELD",
+      "detail": "no substitute canonical store accepted an admission",
+      "cost": null
+    },
+    {
+      "shape": "A",
+      "scenario": "12-canonical-store-unavailable",
+      "invariant": "HEAD_CORRECTNESS",
+      "verdict": "HELD",
+      "detail": "head is evt_5228499e7303d6b089499c649ce2dfca and no divergent head was reported",
+      "cost": null
+    },
+    {
+      "shape": "A",
+      "scenario": "13-substitute-store-cannot-become-the-institution",
+      "invariant": "ADMITTED_IMPLIES_DURABLE",
+      "verdict": "HELD",
+      "detail": "OPEN against the substitute saw REFUSED_WRONG_INSTITUTION; genesis on that handle saw REFUSED_GENESIS_ON_AN_OPEN_HANDLE",
+      "cost": null
+    },
+    {
+      "shape": "A",
+      "scenario": "13-substitute-store-cannot-become-the-institution",
+      "invariant": "UNAMBIGUOUS_RECOVERY",
+      "verdict": "HELD",
+      "detail": "empty substitute store refused OPEN (empty store is not authorization to bootstrap) and refused genesis on the same handle",
+      "cost": null
+    },
+    {
+      "shape": "A",
+      "scenario": "13-substitute-store-cannot-become-the-institution",
+      "invariant": "HEAD_CORRECTNESS",
+      "verdict": "HELD",
+      "detail": "head is evt_5228499e7303d6b089499c649ce2dfca; no fork occurred",
+      "cost": null
+    },
+    {
+      "shape": "A",
+      "scenario": "14-foreign-institution-in-the-expected-location",
+      "invariant": "ADMITTED_IMPLIES_DURABLE",
+      "verdict": "HELD",
+      "detail": "the substitute held institution inst_274061bebecca88262ff8a54457e6432; OPEN saw REFUSED_WRONG_INSTITUTION (institution_ref differs; genesis_ref differs; genesis_digest differs)",
+      "cost": null
+    },
+    {
+      "shape": "A",
+      "scenario": "14-foreign-institution-in-the-expected-location",
+      "invariant": "UNAMBIGUOUS_RECOVERY",
+      "verdict": "HELD",
+      "detail": "the real institution is untouched: 1 act(s)",
+      "cost": null
+    },
+    {
+      "shape": "B",
+      "scenario": "01-kill-before-canonical-commit",
+      "invariant": "ADMITTED_IMPLIES_DURABLE",
+      "verdict": "HELD",
+      "detail": "caller saw nothing (process died); canonical holds 0 act(s)",
+      "cost": null
+    },
+    {
+      "shape": "B",
+      "scenario": "01-kill-before-canonical-commit",
+      "invariant": "UNAMBIGUOUS_RECOVERY",
+      "verdict": "HELD",
+      "detail": "after reopening from disk: 0 act(s), head null",
+      "cost": null
+    },
+    {
+      "shape": "B",
+      "scenario": "01-kill-before-canonical-commit",
+      "invariant": "ATOMICITY",
+      "verdict": "HELD",
+      "detail": "the uncommitted transaction left nothing behind",
+      "cost": null
+    },
+    {
+      "shape": "B",
+      "scenario": "02-kill-after-canonical-commit",
+      "invariant": "ADMITTED_IMPLIES_DURABLE",
+      "verdict": "HELD",
+      "detail": "caller saw nothing (process died); canonical durably holds 1 act(s)",
+      "cost": "the commit is durable but the caller never learned its outcome; the caller must retry to find out"
+    },
+    {
+      "shape": "B",
+      "scenario": "02-kill-after-canonical-commit",
+      "invariant": "UNAMBIGUOUS_RECOVERY",
+      "verdict": "HELD",
+      "detail": "head evt_5228499e7303d6b089499c649ce2dfca matches the single committed act",
+      "cost": null
+    },
+    {
+      "shape": "B",
+      "scenario": "02-kill-after-canonical-commit",
+      "invariant": "ATOMICITY",
+      "verdict": "HELD",
+      "detail": "the committed batch is present exactly once",
+      "cost": null
+    },
+    {
+      "shape": "B",
+      "scenario": "03-kill-between-commit-and-projection",
+      "invariant": "ADMITTED_IMPLIES_DURABLE",
+      "verdict": "HELD",
+      "detail": "canonical holds 1 act(s) while the projection holds 0",
+      "cost": null
+    },
+    {
+      "shape": "B",
+      "scenario": "03-kill-between-commit-and-projection",
+      "invariant": "DETERMINISTIC_REPLAY",
+      "verdict": "HELD",
+      "detail": "re-running projection from the canonical record delivered 1 act(s) and made the projection identical",
+      "cost": "the projection was behind until a projector ran again; readers of the projection saw stale state in the meantime"
+    },
+    {
+      "shape": "B",
+      "scenario": "04-lost-acknowledgement",
+      "invariant": "IDEMPOTENCY",
+      "verdict": "HELD",
+      "detail": "retry saw DUPLICATE; canonical holds 1 act(s)",
+      "cost": null
+    },
+    {
+      "shape": "B",
+      "scenario": "04-lost-acknowledgement",
+      "invariant": "UNAMBIGUOUS_RECOVERY",
+      "verdict": "HELD",
+      "detail": "the retry told the caller the act already existed rather than leaving the outcome unknown",
+      "cost": null
+    },
+    {
+      "shape": "B",
+      "scenario": "05-duplicate-request-same-body",
+      "invariant": "IDEMPOTENCY",
+      "verdict": "HELD",
+      "detail": "first ADMITTED, second DUPLICATE, canonical holds 1 act(s)",
+      "cost": null
+    },
+    {
+      "shape": "B",
+      "scenario": "05-duplicate-request-same-body",
+      "invariant": "HEAD_CORRECTNESS",
+      "verdict": "HELD",
+      "detail": "head is evt_5228499e7303d6b089499c649ce2dfca at seq 1",
+      "cost": null
+    },
+    {
+      "shape": "B",
+      "scenario": "06-duplicate-request-different-body",
+      "invariant": "IDEMPOTENCY",
+      "verdict": "HELD",
+      "detail": "second attempt saw CONFLICT_DIFFERENT_BODY; the stored body digest is still the original",
+      "cost": null
+    },
+    {
+      "shape": "B",
+      "scenario": "07-concurrent-head-cas",
+      "invariant": "HEAD_CORRECTNESS",
+      "verdict": "HELD",
+      "detail": "first ADMITTED, second HEAD_CONFLICT; canonical holds 1 act(s)",
+      "cost": null
+    },
+    {
+      "shape": "B",
+      "scenario": "07-concurrent-head-cas",
+      "invariant": "ATOMICITY",
+      "verdict": "NOT_EXERCISED",
+      "detail": "true multi-connection contention is not exercised: both admissions run in separate processes but the stores are embedded single-connection engines. Real lock and serialization behaviour needs a hosted PostgreSQL server.",
+      "cost": null
+    },
+    {
+      "shape": "B",
+      "scenario": "08-atomic-batch-failure",
+      "invariant": "ATOMICITY",
+      "verdict": "HELD",
+      "detail": "caller saw REJECTED; canonical holds 0 act(s) from the failed batch",
+      "cost": null
+    },
+    {
+      "shape": "B",
+      "scenario": "08-atomic-batch-failure",
+      "invariant": "HEAD_CORRECTNESS",
+      "verdict": "HELD",
+      "detail": "head is null after the rejected batch",
+      "cost": null
+    },
+    {
+      "shape": "B",
+      "scenario": "09-restart-and-replay",
+      "invariant": "DETERMINISTIC_REPLAY",
+      "verdict": "HELD",
+      "detail": "replaying 3 canonical act(s) reproduced the identical sequence",
+      "cost": null
+    },
+    {
+      "shape": "B",
+      "scenario": "09-restart-and-replay",
+      "invariant": "HEAD_CORRECTNESS",
+      "verdict": "HELD",
+      "detail": "each act causes its predecessor and the chain reconstructs from the record alone",
+      "cost": null
+    },
+    {
+      "shape": "B",
+      "scenario": "10-corrupted-downstream-projection",
+      "invariant": "ADMITTED_IMPLIES_DURABLE",
+      "verdict": "HELD",
+      "detail": "corrupting the projection did not change the canonical record",
+      "cost": null
+    },
+    {
+      "shape": "B",
+      "scenario": "10-corrupted-downstream-projection",
+      "invariant": "DETERMINISTIC_REPLAY",
+      "verdict": "HELD",
+      "detail": "the projection was fully rebuilt from the canonical record",
+      "cost": "nothing in either shape detects the corruption on its own; repair here was triggered by the harness, not by the system"
+    },
+    {
+      "shape": "B",
+      "scenario": "11-projection-unavailable",
+      "invariant": "ADMITTED_IMPLIES_DURABLE",
+      "verdict": "HELD",
+      "detail": "4 act(s) were admitted and are durable while the projection held 0",
+      "cost": null
+    },
+    {
+      "shape": "B",
+      "scenario": "11-projection-unavailable",
+      "invariant": "DETERMINISTIC_REPLAY",
+      "verdict": "HELD",
+      "detail": "when the projection returned it caught up to exactly the canonical sequence",
+      "cost": "while the projection was away, any reader of the projection saw a stale institution with no signal that it was stale"
+    },
+    {
+      "shape": "B",
+      "scenario": "12-canonical-store-unavailable",
+      "invariant": "ADMITTED_IMPLIES_DURABLE",
+      "verdict": "HELD",
+      "detail": "the caller saw REJECTED while the canonical store was unreachable; the canonical record after restore is intact",
+      "cost": "the institution cannot admit anything while its canonical store is unreachable; the question is whether it says so or invents a new institution"
+    },
+    {
+      "shape": "B",
+      "scenario": "12-canonical-store-unavailable",
+      "invariant": "UNAMBIGUOUS_RECOVERY",
+      "verdict": "HELD",
+      "detail": "no substitute canonical store accepted an admission",
+      "cost": null
+    },
+    {
+      "shape": "B",
+      "scenario": "12-canonical-store-unavailable",
+      "invariant": "HEAD_CORRECTNESS",
+      "verdict": "HELD",
+      "detail": "head is evt_5228499e7303d6b089499c649ce2dfca and no divergent head was reported",
+      "cost": null
+    },
+    {
+      "shape": "B",
+      "scenario": "13-substitute-store-cannot-become-the-institution",
+      "invariant": "ADMITTED_IMPLIES_DURABLE",
+      "verdict": "HELD",
+      "detail": "OPEN against the substitute saw REFUSED_WRONG_INSTITUTION; genesis on that handle saw REFUSED_GENESIS_ON_AN_OPEN_HANDLE",
+      "cost": null
+    },
+    {
+      "shape": "B",
+      "scenario": "13-substitute-store-cannot-become-the-institution",
+      "invariant": "UNAMBIGUOUS_RECOVERY",
+      "verdict": "HELD",
+      "detail": "empty substitute store refused OPEN (empty store is not authorization to bootstrap) and refused genesis on the same handle",
+      "cost": null
+    },
+    {
+      "shape": "B",
+      "scenario": "13-substitute-store-cannot-become-the-institution",
+      "invariant": "HEAD_CORRECTNESS",
+      "verdict": "HELD",
+      "detail": "head is evt_5228499e7303d6b089499c649ce2dfca; no fork occurred",
+      "cost": null
+    },
+    {
+      "shape": "B",
+      "scenario": "14-foreign-institution-in-the-expected-location",
+      "invariant": "ADMITTED_IMPLIES_DURABLE",
+      "verdict": "HELD",
+      "detail": "the substitute held institution inst_fbf5e20a26c7d583e594b9e4c44d8a2a; OPEN saw REFUSED_WRONG_INSTITUTION (institution_ref differs; genesis_ref differs; genesis_digest differs)",
+      "cost": null
+    },
+    {
+      "shape": "B",
+      "scenario": "14-foreign-institution-in-the-expected-location",
+      "invariant": "UNAMBIGUOUS_RECOVERY",
+      "verdict": "HELD",
+      "detail": "the real institution is untouched: 1 act(s)",
+      "cost": null
+    }
+  ],
+  "conclusion": "PENDING — see ADR 0014 promotion criteria. This report is evidence for the decision, not the decision."
+}

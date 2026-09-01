@@ -103,7 +103,7 @@ Continuum owns institutional admission and durable consequence. Production writa
 
 ## ExecutionSlice v3
 
-Engines receive a sealed `powerfarm.execution-slice.v3`, derived from an executing Card.
+Engines receive a sealed `powerfarm.execution-slice.v4`, derived from an executing Card.
 
 It binds:
 

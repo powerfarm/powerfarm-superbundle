@@ -28,7 +28,7 @@ The existing attention Card contract remains a species/projection of this broade
 
 ## ExecutionSlice
 
-`lib/execution-slice.mjs` projects an `executing` Card into `powerfarm.execution-slice.v3`. The slice is sealed, contains no engine identity or raw tool data, and carries the exact Card, beat, attempt, institutional refs and capability mapping that Process must admit.
+`lib/execution-slice.mjs` projects an `executing` Card into `powerfarm.execution-slice.v4`. Derivation requires an explicit `evaluatedAt` boundary instant; it is never inferred from `Card.updated_at`. The slice is sealed, contains no engine identity or raw tool data, and carries the exact Card, beat, attempt, institutional refs and capability mapping that Process must admit.
 
 The institutional run identity is derived from Card semantic generation + attempt + capability mapping. `beat_ref` is deliberately excluded: it identifies one Heartime emission, while `attempt_ref` identifies the institutional attempt. `lib/recovery.mjs` moves stale/interrupted Cards through `orphaned -> reconciling`, refreshes Registry-owned occupancy refs, and lets Heartime reissue a new beat while preserving the same attempt and run.
 

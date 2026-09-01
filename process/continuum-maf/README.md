@@ -25,7 +25,7 @@ Card -> ExecutionSlice -> Continuum -> continuum-maf -> Microsoft Agent Framewor
 
 Microsoft Agent Framework is an execution engine. It may run agents, maintain an `AgentSession`, use ContextProviders, middleware, workflows and tools. None of those facilities become PowerFarm institutional semantics.
 
-Every institutional function invocation must carry a sealed `powerfarm.execution-slice.v3` derived from the circulating Card. The Setting validates the exact tool mapping and asks Continuum to admit the intent and `run.start` before the function executes. A refusal sets the MAF function result and the underlying function is never called.
+Every institutional function invocation must carry a sealed `powerfarm.execution-slice.v4` derived from the circulating Card. The Setting validates the exact tool mapping and asks Continuum to admit the intent and `run.start` before the function executes. A refusal sets the MAF function result and the underlying function is never called.
 
 The engine cannot create Office, Occupancy, Direction, Authority, RunGrant, institutional evidence or consequence. Engine-local session/invocation identifiers are provenance only and never participate in `run_ref` derivation.
 

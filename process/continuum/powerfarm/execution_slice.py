@@ -13,7 +13,9 @@ import re
 from dataclasses import dataclass
 from typing import Any, Mapping, Protocol, runtime_checkable
 
-EXECUTION_SLICE_CONTRACT_VERSION = "powerfarm.execution-slice.v3"
+from powerfarm.core.time import parse_utc
+
+EXECUTION_SLICE_CONTRACT_VERSION = "powerfarm.execution-slice.v4"
 _PF_REF = re.compile(r"^pf(?:\.[a-z0-9][a-z0-9-]*)+$")
 
 
@@ -121,6 +123,26 @@ def _sha(value: Any, label: str) -> str:
     return text
 
 
+def _timestamp(value: Any, label: str):
+    text = _nonempty(value, label)
+    try:
+        return parse_utc(text)
+    except (TypeError, ValueError) as exc:
+        raise ExecutionSliceError(f"{label} must be an ISO timestamp with timezone") from exc
+
+
+def _authorization_window(value: Any, label: str) -> Mapping[str, Any]:
+    window = _exact(value, {"authorization_ref", "effective_at", "expires_at"}, label)
+    _nonempty(window.get("authorization_ref"), f"{label}.authorization_ref")
+    effective = _timestamp(window.get("effective_at"), f"{label}.effective_at")
+    expires_value = window.get("expires_at")
+    if expires_value is not None:
+        expires = _timestamp(expires_value, f"{label}.expires_at")
+        if expires <= effective:
+            raise ExecutionSliceError(f"{label}.expires_at must follow effective_at")
+    return window
+
+
 def _canonical(value: Any) -> str:
     return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
 
@@ -177,7 +199,11 @@ def validate_execution_slice(slice_value: Mapping[str, Any], *, require_seal: bo
     for field in ("tool_name", "kind", "subject"):
         _nonempty(capability.get(field), f"ExecutionSlice.capability.{field}")
 
-    resources = _exact(root.get("resources"), {"energy_remaining", "cost"}, "ExecutionSlice.resources")
+    resources = _exact(root.get("resources"), {"evaluated_at", "authorization_window", "energy_remaining", "cost"}, "ExecutionSlice.resources")
+    _timestamp(resources.get("evaluated_at"), "ExecutionSlice.resources.evaluated_at")
+    windows = _exact(resources.get("authorization_window"), {"energy", "cost"}, "ExecutionSlice.resources.authorization_window")
+    _authorization_window(windows.get("energy"), "ExecutionSlice.resources.authorization_window.energy")
+    _authorization_window(windows.get("cost"), "ExecutionSlice.resources.authorization_window.cost")
     meters = {"beats", "model_tokens", "tool_calls", "network_calls", "compute_ms", "sandbox_ms", "wall_ms", "human_attention_ms"}
     energy = _exact(resources.get("energy_remaining"), meters, "ExecutionSlice.resources.energy_remaining")
     for field in meters:
@@ -203,6 +229,34 @@ def verify_execution_slice_seal(slice_value: Mapping[str, Any]) -> bool:
     validate_execution_slice(slice_value, require_seal=True)
     digest = hashlib.sha256(_canonical(_unsealed(slice_value)).encode("utf-8")).hexdigest()
     return slice_value["slice_sha256"] == f"sha256:{digest}"
+
+
+def assert_execution_slice_temporally_executable(
+    slice_value: Mapping[str, Any], *, at: str
+) -> Mapping[str, Any]:
+    validate_execution_slice(slice_value, require_seal=True)
+    current = _timestamp(at, "ExecutionSlice execution at")
+    evaluated = _timestamp(
+        slice_value["resources"]["evaluated_at"],
+        "ExecutionSlice.resources.evaluated_at",
+    )
+    if current < evaluated:
+        raise ExecutionSliceError(
+            "ExecutionSlice resource budget was evaluated after execution time"
+        )
+    for resource in ("energy", "cost"):
+        window = slice_value["resources"]["authorization_window"][resource]
+        effective = _timestamp(window["effective_at"], f"{resource} authorization effective_at")
+        if current < effective:
+            raise ExecutionSliceError(
+                f"{resource} authorization is not effective at execution time"
+            )
+        expires_value = window.get("expires_at")
+        if expires_value is not None and current >= _timestamp(
+            expires_value, f"{resource} authorization expires_at"
+        ):
+            raise ExecutionSliceError(f"{resource} authorization expired before execution")
+    return slice_value
 
 
 def execution_refs_from_slice(slice_value: Mapping[str, Any]) -> ExecutionRefs:
@@ -259,5 +313,6 @@ def slice_provenance(slice_value: Mapping[str, Any]) -> dict[str, Any]:
 __all__ = [
     "EXECUTION_SLICE_CONTRACT_VERSION", "ExecutionSliceError", "ExecutionSliceResolver",
     "ExecutionSliceFromContext", "ExecutionRefs", "validate_execution_slice",
-    "verify_execution_slice_seal", "execution_refs_from_slice", "slice_provenance",
+    "verify_execution_slice_seal", "assert_execution_slice_temporally_executable",
+    "execution_refs_from_slice", "slice_provenance",
 ]

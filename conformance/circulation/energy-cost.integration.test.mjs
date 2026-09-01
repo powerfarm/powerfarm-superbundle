@@ -63,6 +63,7 @@ test('golden energy/cost: Process authorizes, Heartime meters, Platform reports,
   card = (await transitionCard(card, { to: 'executing', at: T2, attemptRef: 'pf.attempt.energy-cost-1', nextExpected: T3 })).card;
   const slice = await deriveExecutionSlice(card, {
     actor: 'agent-1', office: 'operations', toolName: 'search', kind: 'tool.invoke.search', subject: 'tool:search',
+    evaluatedAt: T2,
   });
   assert.equal(slice.resources.energy_remaining.beats, 1);
   assert.equal(slice.resources.cost.remaining_micros, 5000);

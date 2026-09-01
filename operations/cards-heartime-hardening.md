@@ -52,7 +52,7 @@ pinned cross-engine golden
 Implemented:
 
 ```text
-powerfarm.execution-slice.v3
+powerfarm.execution-slice.v4
 pf.contract.card-recovery.v1
 attempt_ref = institutional attempt
 beat_ref = one Heartime delivery
