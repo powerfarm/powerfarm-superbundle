@@ -9,6 +9,8 @@ import {
   validateReconcilerResult,
 } from '../src/alarm-core.mjs';
 
+const INSTITUTION_REF = `inst_${'1'.repeat(32)}`;
+
 const storage = () => ({
   alarm: null,
   values: new Map(),
@@ -60,6 +62,7 @@ test('alarm invokes reconciler from canonical cycle and arms the next wake', asy
   const store = storage();
   const calls = [];
   const stateApi = {
+    assertInstitution: async () => ({ institution_ref: INSTITUTION_REF }),
     prepareCycle: async () => cycle({
       beats: [{ ref: 'pf.beat.1', reconciler_ref: 'pf.reconciler.attention', reason: 'overdue', resource_hint: 'pf.office.research' }],
       next_wake: '2026-08-23T12:15:00.000Z',
@@ -91,6 +94,7 @@ test('alarm persists compact operational trace without making trace storage a li
   const store = storage();
   const traces = [];
   const stateApi = {
+    assertInstitution: async () => ({ institution_ref: INSTITUTION_REF }),
     prepareCycle: async () => cycle({ beats: [{ ref: 'pf.beat.trace', reconciler_ref: 'pf.reconciler.attention', trace_ref: 'pf.trace.beat.trace' }] }),
     finishCycle: async () => cycle(),
     deferFailure: async () => cycle(),
@@ -129,6 +133,7 @@ test('physical clock is re-armed before an organ boundary is crossed', async () 
     async delete(key) { this.values.delete(key); },
   };
   const stateApi = {
+    assertInstitution: async () => ({ institution_ref: INSTITUTION_REF }),
     prepareCycle: async () => cycle({
       beats: [{ ref: 'pf.beat.1', reconciler_ref: 'pf.reconciler.attention' }],
       next_wake: '2026-08-23T12:00:01.000Z',
@@ -154,6 +159,7 @@ test('downstream failure is durably deferred with exact BeatRef and alarm is re-
   const store = storage();
   const deferred = [];
   const stateApi = {
+    assertInstitution: async () => ({ institution_ref: INSTITUTION_REF }),
     prepareCycle: async () => cycle({ beats: [{ ref: 'pf.beat.1', reconciler_ref: 'pf.reconciler.attention' }] }),
     finishCycle: async () => cycle(),
     deferFailure: async (input) => {
@@ -174,6 +180,7 @@ test('completed beats remain committed when a later beat fails', async () => {
   const finished = [];
   const deferred = [];
   const stateApi = {
+    assertInstitution: async () => ({ institution_ref: INSTITUTION_REF }),
     prepareCycle: async () => cycle({ beats: [
       { ref: 'pf.beat.1', reconciler_ref: 'pf.reconciler.attention', resource_hint: 'pf.office.research' },
       { ref: 'pf.beat.2', reconciler_ref: 'pf.reconciler.attention', resource_hint: 'pf.office.finance' },
@@ -210,6 +217,7 @@ test('completed beats remain committed when a later beat fails', async () => {
 test('finish failure leaves beat open and schedules provider-local look-again energy', async () => {
   const store = storage();
   const stateApi = {
+    assertInstitution: async () => ({ institution_ref: INSTITUTION_REF }),
     prepareCycle: async () => cycle({ beats: [{ ref: 'pf.beat.1', reconciler_ref: 'pf.reconciler.attention' }] }),
     finishCycle: async () => { throw new Error('Postgres commit unavailable'); },
     deferFailure: async () => cycle(),
@@ -230,6 +238,7 @@ test('finish failure leaves beat open and schedules provider-local look-again en
 test('canonical state outage leaves payload-free provider fallback and compounds locally', async () => {
   const store = storage();
   const stateApi = {
+    assertInstitution: async () => ({ institution_ref: INSTITUTION_REF }),
     prepareCycle: async () => { throw new Error('Postgres unavailable'); },
     finishCycle: async () => { throw new Error('not reached'); },
     deferFailure: async () => { throw new Error('not reached'); },
@@ -262,6 +271,7 @@ test('successful pass clears provider-local outage counter', async () => {
   const store = storage();
   store.values.set('heartime:provider-fallback-count', 4);
   const stateApi = {
+    assertInstitution: async () => ({ institution_ref: INSTITUTION_REF }),
     prepareCycle: async () => cycle(),
     finishCycle: async () => cycle(),
     deferFailure: async () => cycle(),
@@ -274,7 +284,7 @@ test('successful pass clears provider-local outage counter', async () => {
 
 test('scheduler storage can evaporate and alarm is reconstructed from canonical state', async () => {
   const store = storage();
-  const stateApi = { nextWake: async () => '2026-08-23T13:00:00.000Z' };
+  const stateApi = { assertInstitution: async () => ({ institution_ref: INSTITUTION_REF }), nextWake: async () => '2026-08-23T13:00:00.000Z' };
   const armed = await armFromCanonicalState({ stateApi, storage: store, now: new Date('2026-08-23T12:00:00Z') });
   assert.equal(armed, Date.parse('2026-08-23T13:00:00.000Z'));
   assert.equal(store.alarm, armed);
@@ -283,7 +293,7 @@ test('scheduler storage can evaporate and alarm is reconstructed from canonical 
 test('a due-now canonical deadline is lowered to a future provider alarm', async () => {
   const store = storage();
   const armed = await armFromCanonicalState({
-    stateApi: { nextWake: async () => '2026-08-23T12:00:00.000Z' },
+    stateApi: { assertInstitution: async () => ({ institution_ref: INSTITUTION_REF }), nextWake: async () => '2026-08-23T12:00:00.000Z' },
     storage: store,
     now: new Date('2026-08-23T12:00:00.000Z'),
   });
@@ -293,7 +303,7 @@ test('a due-now canonical deadline is lowered to a future provider alarm', async
 test('invalid next wake fails closed rather than arming a corrupt timer', async () => {
   const store = storage();
   await assert.rejects(() => armFromCanonicalState({
-    stateApi: { nextWake: async () => 'not-a-time' },
+    stateApi: { assertInstitution: async () => ({ institution_ref: INSTITUTION_REF }), nextWake: async () => 'not-a-time' },
     storage: store,
   }), /invalid next wake/);
 });
@@ -301,6 +311,7 @@ test('invalid next wake fails closed rather than arming a corrupt timer', async 
 test('cycle contract mismatch is treated as canonical-state outage, not accepted state', async () => {
   const store = storage();
   const stateApi = {
+    assertInstitution: async () => ({ institution_ref: INSTITUTION_REF }),
     prepareCycle: async () => ({ contract_version: 'wrong', beats: [], next_wake: null }),
     finishCycle: async () => cycle(),
     deferFailure: async () => cycle(),

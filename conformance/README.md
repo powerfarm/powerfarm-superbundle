@@ -16,7 +16,7 @@ Document 1 currently contains **68 negative controls**. **16 numbered controls**
 
 Document 2 currently contains **30 capability-learning controls**. **30 learning controls** are named by at least one test declaration.
 
-The repository declares 172 deterministic test cases for Heartime, canonical Cards, roster, attention circulation, capability learning, private settings, and vertical seams. A control is listed only when a test names it explicitly. Naming a control is evidence that a test refers to it, not proof that the control is enforced; read the named test to see what it actually asserts.
+The repository declares 183 deterministic test cases for Heartime, canonical Cards, roster, attention circulation, capability learning, private settings, and vertical seams. A control is listed only when a test names it explicitly. Naming a control is evidence that a test refers to it, not proof that the control is enforced; read the named test to see what it actually asserts.
 
 The Heartime migrations pass 80 structural checks without touching a database. The First Seam contract passes 42 source/contract checks. The Capability Learning contract passes 58. The canonical Card contract passes 27. The Epistemic Continuity contract passes 21. The Energy + Cost contract passes 32. Production Circulation passes 27. Legacy Removal passes 32. These validators mix executed behaviour with source-shape inspection; a passing source-shape check proves the shape, not the interface.
 

@@ -92,6 +92,7 @@ def make_kernel(tmp_path) -> Kernel:
 def plugin(kernel: Kernel, *, now: str) -> ContinuumPlugin:
     return ContinuumPlugin(
         kernel=kernel,
+        expect_institution=kernel.anchor(),
         office=StaticOffice("research"),
         actor=ActorFromAgent(),
         execution_slice=ExecutionSliceFromContext(),

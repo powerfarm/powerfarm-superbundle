@@ -53,6 +53,7 @@ class Context:
 def controller(kernel, *, now: str):
     return ContinuumFunctionController(
         kernel=kernel,
+        expect_institution=kernel.anchor(),
         policy=DottedToolPolicy({"search": ToolMapping(kind="tool.invoke.search", subject="tool:search")}),
         revision_ref=PINNED_MAF_REVISION_REF,
         clock=lambda: now,

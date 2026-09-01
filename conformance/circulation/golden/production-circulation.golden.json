@@ -16,6 +16,7 @@
   },
   "registry_calls": [
     "registry.occupancy",
+    "registry.runtime-token",
     "registry.runtime-token"
   ],
   "authority_created_by_runtime_token": false

@@ -26,7 +26,8 @@
       "20260823190000_heartime_first_seam.sql",
       "20260824120000_heartime_capability_learning.sql",
       "20260830012500_heartime_writer_hardening.sql",
-      "20260830074000_heartime_operational_projections.sql"
+      "20260830074000_heartime_operational_projections.sql",
+      "20260901120000_heartime_institution_identity.sql"
     ],
     "contract_sha256": {
       "first_seam": "6e9b0fe7b4218cc340899b5040007730ed4115c0eca410e1179553842dcbc3d0",
@@ -42,13 +43,13 @@
     "deterministic_logic_tests": {
       "status": "declared_not_executed_here",
       "measurement": "structural source count of test(...) declarations; not an execution result",
-      "declared_test_cases": 16,
+      "declared_test_cases": 21,
       "executed_by": "evidence/organism-verification/verification.json"
     },
     "physical_and_state_setting_tests": {
       "status": "declared_not_executed_here",
       "measurement": "structural source count of test(...) declarations; not an execution result",
-      "declared_test_cases": 33,
+      "declared_test_cases": 39,
       "executed_by": "evidence/organism-verification/verification.json"
     },
     "migration_structure": {

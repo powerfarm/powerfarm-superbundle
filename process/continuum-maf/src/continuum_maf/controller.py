@@ -16,6 +16,7 @@ from powerfarm.execution_slice import (
     validate_execution_slice,
     verify_execution_slice_seal,
 )
+from powerfarm.institution_identity import assert_serving_expected_institution
 from powerfarm.kernel import InstitutionalError, Kernel
 from powerfarm.runtime.receipt import RuntimeReceipt, receipt_to_act
 from powerfarm.validation import ValidationError
@@ -60,6 +61,7 @@ class ContinuumFunctionController:
         self,
         *,
         kernel: Kernel,
+        expect_institution: Any = None,
         policy: MappingPolicy | None = None,
         ledger_branch: str = "main",
         runtime_name: str = DEFAULT_RUNTIME,
@@ -67,6 +69,11 @@ class ContinuumFunctionController:
         strict: bool = True,
         clock: Callable[[], str] | None = None,
     ) -> None:
+        # Which institution is this Setting serving? Answered before anything
+        # else, because an engine Setting can admit acts and cause effects.
+        self.institution = assert_serving_expected_institution(
+            kernel, expect_institution, component="ContinuumFunctionController"
+        )
         if strict and policy is None:
             raise ValueError("strict Microsoft Agent Framework Setting requires an explicit tool mapping policy")
         if strict and isinstance(policy, DottedToolPolicy) and not policy.strict:

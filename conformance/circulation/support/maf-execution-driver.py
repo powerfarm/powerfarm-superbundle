@@ -83,6 +83,7 @@ async def run(request: dict[str, Any]) -> dict[str, Any]:
             bootstrap(kernel)
             controller = ContinuumFunctionController(
                 kernel=kernel,
+                expect_institution=kernel.anchor(),
                 policy=DottedToolPolicy({"search": ToolMapping(kind="tool.invoke.search", subject="tool:search")}),
                 revision_ref=str(request["revision_ref"]),
                 strict=True,

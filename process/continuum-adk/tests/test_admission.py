@@ -82,6 +82,7 @@ POLICY = DottedToolPolicy(
 def make_plugin(kernel, **kwargs) -> ContinuumPlugin:
     return ContinuumPlugin(
         kernel=kernel,
+        expect_institution=kernel.anchor(),
         office=StaticOffice("research"),
         actor=ActorFromAgent(),
         execution_slice=ExecutionSliceFromContext(),

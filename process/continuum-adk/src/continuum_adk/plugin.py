@@ -16,6 +16,7 @@ from typing import Any, Callable, Optional
 from google.adk.plugins.base_plugin import BasePlugin
 from google.adk.tools.base_tool import BaseTool
 from powerfarm.core.time import utcnow
+from powerfarm.institution_identity import assert_serving_expected_institution
 from powerfarm.kernel import InstitutionalError, Kernel
 from powerfarm.validation import ValidationError
 
@@ -85,6 +86,7 @@ class ContinuumPlugin(BasePlugin):
         kernel: Kernel,
         office: OfficeResolver,
         actor: ActorResolver,
+        expect_institution: Any = None,
         execution_slice: ExecutionSliceResolver | None = None,
         policy: MappingPolicy | None = None,
         evidence: EvidencePolicy | None = None,
@@ -98,6 +100,11 @@ class ContinuumPlugin(BasePlugin):
         name: str = "continuum_admission",
     ) -> None:
         super().__init__(name=name)
+        # Which institution is this Setting serving? Answered before anything
+        # else, because an engine Setting can admit acts and cause effects.
+        self.institution = assert_serving_expected_institution(
+            kernel, expect_institution, component="ContinuumPlugin"
+        )
         if execution_slice is None:
             raise ValueError("ContinuumPlugin requires an ExecutionSlice resolver; ADK engine-local context is not institutional identity")
         if strict and policy is None:

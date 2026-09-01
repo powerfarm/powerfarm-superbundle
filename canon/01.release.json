@@ -61,15 +61,15 @@
   "declared_test_inventory": {
     "measurement": "structural source count of test(...) declarations; not an execution result",
     "executed_by": "evidence/organism-verification/verification.json",
-    "declared_test_cases": 172,
+    "declared_test_cases": 183,
     "test_suites": {
       "heartime_logic": {
         "files": 3,
-        "declared_test_cases": 16
+        "declared_test_cases": 21
       },
       "heartime_setting": {
         "files": 5,
-        "declared_test_cases": 33
+        "declared_test_cases": 39
       },
       "roster": {
         "files": 1,

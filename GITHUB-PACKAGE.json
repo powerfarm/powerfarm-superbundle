@@ -1,13 +1,13 @@
 {
   "format": "powerfarm.github-package/v1",
   "repository": "powerfarm-superbundle",
-  "version": "0.13.0",
+  "version": "0.14.0",
   "prepared_from": "Cards + Heartime Milestone 7 + Microsoft Agent Framework first-class Setting",
   "paired_repository": "powerfarm-registry",
   "registry_profile": "Milestone 6 / Production Directory",
   "institutional_rule": "No sealed Card and ExecutionSlice means no institutional execution.",
   "ci": ".github/workflows/verify.yml",
-  "copyright": "Copyright \u00a9 2026 PowerFarm. All rights reserved.",
+  "copyright": "Copyright © 2026 PowerFarm. All rights reserved.",
   "engine_pins": {
     "vercel-ai-sdk": {
       "version": "7.0.84",

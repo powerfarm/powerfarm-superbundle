@@ -51,6 +51,7 @@ POLICY = DottedToolPolicy(
 def plugin(kernel: Kernel, **kwargs) -> ContinuumPlugin:
     return ContinuumPlugin(
         kernel=kernel,
+        expect_institution=kernel.anchor(),
         office=StaticOffice("research"),
         actor=ActorFromAgent(),
         execution_slice=ExecutionSliceFromContext(),
@@ -117,6 +118,7 @@ async def test_plugin_passes_projected_act_to_execution_slice_resolver(tmp_path)
     resolver = RecordingResolver()
     p = ContinuumPlugin(
         kernel=k,
+        expect_institution=k.anchor(),
         office=StaticOffice("research"),
         actor=ActorFromAgent(),
         execution_slice=resolver,
@@ -136,11 +138,11 @@ async def test_plugin_passes_projected_act_to_execution_slice_resolver(tmp_path)
 def test_strict_plugin_requires_explicit_policy_and_revision(tmp_path):
     k = Kernel(str(tmp_path / "x.db"), identity_mode="embedded-test"); k.init("director-human")
     with pytest.raises(ValueError, match="ExecutionSlice"):
-        ContinuumPlugin(kernel=k, office=StaticOffice("director"), actor=ActorFromAgent(), policy=POLICY, revision_ref="r")
+        ContinuumPlugin(kernel=k, expect_institution=k.anchor(), office=StaticOffice("director"), actor=ActorFromAgent(), policy=POLICY, revision_ref="r")
     with pytest.raises(ValueError):
-        ContinuumPlugin(kernel=k, office=StaticOffice("director"), actor=ActorFromAgent(), execution_slice=ExecutionSliceFromContext(), revision_ref="r")
+        ContinuumPlugin(kernel=k, expect_institution=k.anchor(), office=StaticOffice("director"), actor=ActorFromAgent(), execution_slice=ExecutionSliceFromContext(), revision_ref="r")
     with pytest.raises(ValueError):
-        ContinuumPlugin(kernel=k, office=StaticOffice("director"), actor=ActorFromAgent(), execution_slice=ExecutionSliceFromContext(), policy=POLICY)
+        ContinuumPlugin(kernel=k, expect_institution=k.anchor(), office=StaticOffice("director"), actor=ActorFromAgent(), execution_slice=ExecutionSliceFromContext(), policy=POLICY)
     k.close()
 
 
@@ -302,7 +304,8 @@ async def test_restarted_plugin_uses_revision_that_opened_run(tmp_path):
     ctx = Context()
     await plugin(k).before_tool_callback(tool=Tool("search"), tool_args={}, tool_context=ctx)
     newer = ContinuumPlugin(
-        kernel=k, office=StaticOffice("research"), actor=ActorFromAgent(),
+        kernel=k,
+        expect_institution=k.anchor(), office=StaticOffice("research"), actor=ActorFromAgent(),
         execution_slice=ExecutionSliceFromContext(), policy=POLICY, revision_ref="build:newer",
     )
     await newer.after_tool_callback(tool=Tool("search"), tool_args={}, tool_context=ctx, result={"ok": True})
