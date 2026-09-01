@@ -40,6 +40,7 @@ async def test_real_maf_function_tool_runs_through_powerfarm_middleware(kernel):
     )
     controller = ContinuumFunctionController(
         kernel=kernel,
+        expect_institution=kernel.anchor(),
         policy=DottedToolPolicy({"search": ToolMapping(kind="tool.invoke.search", subject="tool:search")}),
         revision_ref=PINNED_MAF_REVISION_REF,
     )

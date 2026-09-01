@@ -98,6 +98,7 @@ class Context:
 def plugin(kernel: Kernel, actor: str) -> ContinuumPlugin:
     return ContinuumPlugin(
         kernel=kernel,
+        expect_institution=kernel.anchor(),
         office=StaticOffice("operations"),
         actor=StaticActor(actor),
         execution_slice=ExecutionSliceFromContext(),

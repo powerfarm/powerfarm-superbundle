@@ -4,6 +4,9 @@ import path from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 
+const PRODUCTION_INSTITUTION_REF = `inst_${'1'.repeat(32)}`;
+const PRODUCTION_ANCHOR_DIGEST = 'c'.repeat(64);
+
 import { createCardV1 } from '../../circulation/cards/lib/index.mjs';
 import { createOccupanciesRpcPort } from '../../circulation/attention/lib/rpc-ports.mjs';
 import { traceRefForCard } from '../../circulation/lib/trace.mjs';
@@ -59,6 +62,10 @@ test('golden production circulation: Registry identity reality, private runtime 
   const env = {
     SUPABASE_URL: 'https://process.example.test', SUPABASE_PUBLISHABLE_KEY: 'publishable',
     PROCESS_WRITER_CALLERS: 'pf.runtime.process-writer', REGISTRY_IDENTITY: registry,
+    // Which institution is this writer serving? Declared before anything is
+    // persisted on that institution's behalf.
+    PROCESS_EXPECTED_INSTITUTION: PRODUCTION_INSTITUTION_REF,
+    PROCESS_EXPECTED_ANCHOR_DIGEST: PRODUCTION_ANCHOR_DIGEST,
   };
   const writer = await persistAdmittedBatch({
     request: {
@@ -68,6 +75,12 @@ test('golden production circulation: Registry identity reality, private runtime 
     },
     env,
     fetchImpl: async (url, init) => {
+      if (String(url).includes('assert_institution_v1')) {
+        return new Response(JSON.stringify({
+          contract_version: 'powerfarm.process.institution-assert.v1',
+          data: { institution_ref: PRODUCTION_INSTITUTION_REF, anchor_digest: PRODUCTION_ANCHOR_DIGEST },
+        }), { status: 200 });
+      }
       postgrest = { url, headers: init.headers, body: JSON.parse(init.body) };
       return new Response(JSON.stringify({ contract_version: 'powerfarm.process.admission-write.v2', data: { request_id: admission.data.request_id, replayed: false } }), { status: 200 });
     },

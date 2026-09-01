@@ -37,6 +37,12 @@ class CanonicalHeartimeState {
     this.observations = [];
   }
 
+  // Which institution is this waking? The alarm establishes it before any cycle
+  // work, so a canonical state double must be able to answer.
+  async assertInstitution() {
+    return { institution_ref: `inst_${'1'.repeat(32)}` };
+  }
+
   envelope(data = {}) {
     return { contract_version: HEARTIME_CYCLE_VERSION, next_wake: this.nextWakeValue(), ...data };
   }

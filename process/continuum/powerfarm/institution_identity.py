@@ -125,3 +125,38 @@ def coerce_expectation(value: Any) -> InstitutionAnchor | str | None:
             raise InstitutionIdentityError("expected institution reference is empty")
         return text
     raise InstitutionIdentityError("expected institution must be an anchor, a mapping, or an institution_ref")
+
+
+def assert_serving_expected_institution(kernel: Any, expect: Any, *, component: str) -> InstitutionAnchor:
+    """Refuse to serve an institution this component did not declare.
+
+    Every mutable component states which institution it serves before it may act
+    on that institution's behalf. Inheriting an already-open handle is not
+    enough: a configuration that validated once must not be able to pass an
+    unverified store down to a child, so each component re-derives the anchor
+    from the store it was actually handed and compares it to its own
+    expectation.
+
+    This is continuity of institutional identity. It is not authentication and
+    it is not Authority — it comes before both. Knowing *which* institution you
+    are serving is prior to any question of who you are or what you may do.
+    """
+    expected = coerce_expectation(expect)
+    if expected is None:
+        raise InstitutionIdentityError(
+            f"{component} requires the institution it expects to serve. "
+            "Normal startup opens an existing institution; it never accepts whatever store is present."
+        )
+    actual = kernel.anchor()
+    if isinstance(expected, str):
+        if actual.institution_ref != expected:
+            raise InstitutionIdentityError(
+                f"{component} expects institution {expected} but the store holds {actual.institution_ref}"
+            )
+        return actual
+    reasons = expected.differences(actual)
+    if reasons:
+        raise InstitutionIdentityError(
+            f"{component} was given a store that is not the expected institution: " + "; ".join(reasons)
+        )
+    return actual

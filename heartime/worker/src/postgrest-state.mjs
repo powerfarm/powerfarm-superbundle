@@ -7,6 +7,7 @@ import { ATTENTION_RECONCILER_REF } from '../../../circulation/attention/lib/con
 import { createHeartimeTokenProviderFromEnv } from './token-provider.mjs';
 
 const CYCLE_CONTRACT = HEARTIME_CYCLE_VERSION;
+const INSTITUTION_ASSERT_CONTRACT = 'powerfarm.heartime.institution-assert.v1';
 
 function requiredString(value, label) {
   if (typeof value !== 'string' || value.trim() === '') throw new TypeError(`${label} is required`);
@@ -45,6 +46,8 @@ export class PostgrestHeartimeState {
     allowInsecure = false,
     reconcilerRef = ATTENTION_RECONCILER_REF,
     componentRef = HEARTIME_RUNTIME_REF,
+    expectedInstitutionRef = null,
+    expectedAnchorDigest = null,
   }) {
     this.baseUrl = normalizeBaseUrl(baseUrl, { allowInsecure });
     this.publishableKey = requiredString(publishableKey, 'SUPABASE_PUBLISHABLE_KEY');
@@ -60,6 +63,50 @@ export class PostgrestHeartimeState {
     if (!Number.isFinite(this.requestTimeoutMs) || this.requestTimeoutMs < 100 || this.requestTimeoutMs > 60_000) {
       throw new TypeError('requestTimeoutMs must be between 100 and 60000');
     }
+    // Which institution is this Heartime serving?
+    //
+    //   Genesis creates an institution. Recovery must never create one.
+    //
+    // Heartime carried no institutional identity, so a worker pointed at the
+    // wrong database — a restored snapshot, a second project, a copied
+    // connection string — would have beaten on someone else's circulation
+    // without noticing. It must now declare which institution it serves, and the
+    // database refuses if it serves a different one, or none.
+    if (typeof expectedInstitutionRef !== 'string' || !/^inst_[0-9a-f]{32}$/.test(expectedInstitutionRef)) {
+      throw new TypeError(
+        'HEARTIME_EXPECTED_INSTITUTION is required: Heartime must declare which institution it serves '
+        + 'before it may wake anything on that institution\'s behalf',
+      );
+    }
+    if (expectedAnchorDigest != null && !/^[0-9a-f]{64}$/.test(expectedAnchorDigest)) {
+      throw new TypeError('HEARTIME_EXPECTED_ANCHOR_DIGEST is not a sha256 digest');
+    }
+    this.expectedInstitutionRef = expectedInstitutionRef;
+    this.expectedAnchorDigest = expectedAnchorDigest;
+    this.institution = null;
+  }
+
+  /**
+   * Establish that this database serves the institution this worker declared.
+   *
+   * Read-only and fail-closed. Called before any cycle work, and memoized for the
+   * life of the handle: the answer cannot change without a new deployment.
+   */
+  async assertInstitution() {
+    if (this.institution !== null) return this.institution;
+    const value = await this.rpc('assert_institution_v1', {
+      p_institution_ref: this.expectedInstitutionRef,
+      p_anchor_digest: this.expectedAnchorDigest,
+    });
+    const data = value?.data;
+    if (value?.contract_version !== INSTITUTION_ASSERT_CONTRACT || !data) {
+      throw new Error('Heartime institution assertion contract mismatch');
+    }
+    if (data.institution_ref !== this.expectedInstitutionRef) {
+      throw new Error('Heartime institution assertion returned a different institution');
+    }
+    this.institution = data;
+    return data;
   }
 
   async request(name, params, { forceRefresh = false } = {}) {
@@ -173,6 +220,8 @@ export function createHeartimeStateFromEnv(env, fetchImpl = globalThis.fetch) {
     allowInsecure: env.HEARTIME_ALLOW_INSECURE_POSTGREST === 'true',
     reconcilerRef: env.HEARTIME_RECONCILER_REF ?? ATTENTION_RECONCILER_REF,
     componentRef: env.HEARTIME_COMPONENT_REF ?? HEARTIME_RUNTIME_REF,
+    expectedInstitutionRef: env.HEARTIME_EXPECTED_INSTITUTION ?? null,
+    expectedAnchorDigest: env.HEARTIME_EXPECTED_ANCHOR_DIGEST ?? null,
   });
 }
 

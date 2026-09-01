@@ -133,6 +133,7 @@ async def run(request: dict[str, Any]) -> dict[str, Any]:
             bootstrap(kernel)
             plugin = ContinuumPlugin(
                 kernel=kernel,
+                expect_institution=kernel.anchor(),
                 office=StaticOffice("operations"),
                 actor=StaticActor("agent-1"),
                 execution_slice=ExecutionSliceFromContext(),

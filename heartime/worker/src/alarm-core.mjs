@@ -165,6 +165,9 @@ async function armNext({ storage, nextWake, now }) {
 
 export async function armFromCanonicalState({ stateApi, storage, now = new Date() }) {
   requireMethod(stateApi, 'nextWake', 'stateApi');
+  requireMethod(stateApi, 'assertInstitution', 'stateApi');
+  // Which institution is this waking? Answered before the first alarm is armed.
+  await stateApi.assertInstitution();
   const currentTime = normalizeNow(now);
   const next = await stateApi.nextWake({ now: currentTime.toISOString() });
   const armed = await armNext({ storage, nextWake: next, now: currentTime });
@@ -205,7 +208,11 @@ export async function runHeartimeAlarm({
   requireMethod(stateApi, 'finishCycle', 'stateApi');
   requireMethod(stateApi, 'deferFailure', 'stateApi');
   requireMethod(stateApi, 'nextWake', 'stateApi');
+  requireMethod(stateApi, 'assertInstitution', 'stateApi');
   if (typeof reconcilerFor !== 'function') throw new TypeError('reconcilerFor is required');
+  // Nothing in this cycle may cause a wake or an effect until it is established
+  // that this database serves the institution this worker declared.
+  await stateApi.assertInstitution();
   requireMethod(storage, 'setAlarm', 'storage');
 
   const currentTime = normalizeNow(now);

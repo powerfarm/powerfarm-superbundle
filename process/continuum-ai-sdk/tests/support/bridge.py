@@ -97,7 +97,7 @@ def bootstrap(kernel: Kernel, request: dict[str, Any]) -> dict[str, Any]:
             request_id=f"golden-grant-{grantee}-{index}-{action}-{subject}",
         )
         admitted.append(event_public(event))
-    return {"ok": True, "initialized": True, "grants": admitted}
+    return {"ok": True, "initialized": True, "grants": admitted, "anchor": kernel.anchor().public()}
 
 
 def latest_run_event(kernel: Kernel, branch: str, subject: str, kinds: set[str], *, actor: str | None = None, office: str | None = None):
@@ -328,7 +328,34 @@ def main() -> int:
     request = json.load(sys.stdin)
     action = str(request.get("action", ""))
     directory = registry_from(request.get("registry", {}))
-    kernel = Kernel(Path(request["db_path"]), registry=directory)
+
+    # Genesis creates an institution. Recovery must never create one.
+    #
+    # This bridge is a child process: the Node side owns the database path and
+    # spawns this. A parent that validated the anchor once must not be able to
+    # hand a child an unverified store, so the child re-derives it here from
+    # whatever it was actually pointed at. `bootstrap` is the one action allowed
+    # to found an institution, and it is an explicit ceremony, not a fallback.
+    expect = request.get("expect_institution")
+    if action == "bootstrap":
+        kernel = Kernel(Path(request["db_path"]), registry=directory, allow_genesis=True)
+    else:
+        if expect is None:
+            reason = (
+                "POWERFARM_INSTITUTION_UNDECLARED: this bridge must be told which "
+                "institution it is serving; opening whatever store is present is not permitted"
+            )
+            emit({"ok": False, "code": "POWERFARM_INSTITUTION_UNDECLARED", "reason": reason})
+            # A startup refusal must reach the operator, not only the caller that
+            # may or may not read the response body.
+            sys.stderr.write(reason)
+            return 1
+        try:
+            kernel = Kernel(Path(request["db_path"]), registry=directory, expect=expect)
+        except InstitutionalError as exc:
+            emit({"ok": False, "code": "POWERFARM_WRONG_INSTITUTION", "reason": str(exc)})
+            sys.stderr.write(str(exc))
+            return 1
     try:
         if action == "bootstrap":
             response = bootstrap(kernel, request)

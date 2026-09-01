@@ -2,6 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { CYCLE_CONTRACT, PostgrestHeartimeState } from '../src/postgrest-state.mjs';
 
+const INSTITUTION_REF = `inst_${'1'.repeat(32)}`;
+
 const response = (body, status = 200) => new Response(JSON.stringify(body), {
   status,
   headers: { 'content-type': 'application/json' },
@@ -19,6 +21,7 @@ function client(replies, tokenProvider = null, reconcilerRef = 'pf.reconciler.at
     publishableKey: 'sb_publishable_test',
     tokenProvider: tokens,
     reconcilerRef,
+    expectedInstitutionRef: INSTITUTION_REF,
     fetchImpl: async (url, init) => {
       calls.push({ url, init, body: JSON.parse(init.body) });
       const reply = replies.shift();
@@ -116,9 +119,9 @@ test('contract mismatch and HTTP failure fail closed', async () => {
 
 test('missing project credentials and token provider are rejected before network access', () => {
   const tokenProvider = { getToken: async () => 'token' };
-  assert.throws(() => new PostgrestHeartimeState({ baseUrl: '', publishableKey: 'x', tokenProvider }), /SUPABASE_URL/);
-  assert.throws(() => new PostgrestHeartimeState({ baseUrl: 'https://x', publishableKey: '', tokenProvider }), /SUPABASE_PUBLISHABLE_KEY/);
-  assert.throws(() => new PostgrestHeartimeState({ baseUrl: 'https://x', publishableKey: 'a' }), /tokenProvider/);
+  assert.throws(() => new PostgrestHeartimeState({ baseUrl: '', publishableKey: 'x', tokenProvider, expectedInstitutionRef: INSTITUTION_REF }), /SUPABASE_URL/);
+  assert.throws(() => new PostgrestHeartimeState({ baseUrl: 'https://x', publishableKey: '', tokenProvider, expectedInstitutionRef: INSTITUTION_REF }), /SUPABASE_PUBLISHABLE_KEY/);
+  assert.throws(() => new PostgrestHeartimeState({ baseUrl: 'https://x', publishableKey: 'a', expectedInstitutionRef: INSTITUTION_REF }), /tokenProvider/);
 });
 
 
@@ -128,12 +131,14 @@ test('production PostgREST URL requires HTTPS and local HTTP needs explicit opt-
     baseUrl: 'http://example.com',
     publishableKey: 'x',
     tokenProvider,
+    expectedInstitutionRef: INSTITUTION_REF,
   }), /must use HTTPS/);
   assert.doesNotThrow(() => new PostgrestHeartimeState({
     baseUrl: 'http://localhost:54321',
     publishableKey: 'x',
     tokenProvider,
     allowInsecure: true,
+    expectedInstitutionRef: INSTITUTION_REF,
   }));
   assert.throws(() => new PostgrestHeartimeState({
     baseUrl: 'https://example.com',
@@ -141,4 +146,112 @@ test('production PostgREST URL requires HTTPS and local HTTP needs explicit opt-
     tokenProvider,
     requestTimeoutMs: 10,
   }), /requestTimeoutMs/);
+});
+
+// --- which institution is this Heartime serving? ---------------------------
+//
+//   Genesis creates an institution. Recovery must never create one.
+//
+// Heartime carried no institutional identity at all, so a worker pointed at the
+// wrong database had nothing to check and would have beaten on someone else's
+// circulation without noticing.
+
+const ANCHOR_DIGEST = 'c'.repeat(64);
+
+function institutionState({ replies, expectedInstitutionRef = INSTITUTION_REF, expectedAnchorDigest = ANCHOR_DIGEST }) {
+  const calls = [];
+  const state = new PostgrestHeartimeState({
+    baseUrl: 'https://example.supabase.co/',
+    publishableKey: 'sb_publishable_test',
+    tokenProvider: { getToken: async () => 'token' },
+    expectedInstitutionRef,
+    expectedAnchorDigest,
+    fetchImpl: async (url, init) => {
+      calls.push({ rpc: String(url).split('/rpc/')[1], body: JSON.parse(init.body) });
+      const reply = replies.shift();
+      return new Response(JSON.stringify(reply.body), {
+        status: reply.status ?? 200,
+        headers: { 'content-type': 'application/json' },
+      });
+    },
+  });
+  return { state, calls };
+}
+
+test('Heartime refuses to start without a declared institution', () => {
+  const tokenProvider = { getToken: async () => 'token' };
+  assert.throws(
+    () => new PostgrestHeartimeState({
+      baseUrl: 'https://example.supabase.co/',
+      publishableKey: 'x',
+      tokenProvider,
+    }),
+    /HEARTIME_EXPECTED_INSTITUTION is required/,
+  );
+});
+
+test('Heartime asserts its institution and carries the exact anchor to the database', async () => {
+  const { state, calls } = institutionState({
+    replies: [{
+      body: {
+        contract_version: 'powerfarm.heartime.institution-assert.v1',
+        data: { institution_ref: INSTITUTION_REF, genesis_ref: `evt_${'2'.repeat(32)}`, anchor_digest: ANCHOR_DIGEST, protocol_version: 'powerfarm-continuum/v3' },
+      },
+    }],
+  });
+  const served = await state.assertInstitution();
+  assert.equal(served.institution_ref, INSTITUTION_REF);
+  assert.equal(calls[0].rpc, 'assert_institution_v1');
+  assert.deepEqual(calls[0].body, { p_institution_ref: INSTITUTION_REF, p_anchor_digest: ANCHOR_DIGEST });
+
+  // Memoized: the answer cannot change without a new deployment.
+  await state.assertInstitution();
+  assert.equal(calls.length, 1);
+});
+
+test('an undeclared Heartime database refuses the worker', async () => {
+  const { state } = institutionState({
+    replies: [{ status: 400, body: { message: 'heartime_institution_undeclared: this database serves no institution' } }],
+  });
+  await assert.rejects(() => state.assertInstitution(), /heartime_institution_undeclared/);
+});
+
+test('a Heartime database serving another institution refuses the worker', async () => {
+  const { state } = institutionState({
+    replies: [{ status: 400, body: { message: 'heartime_institution_mismatch: this database serves inst_other' } }],
+  });
+  await assert.rejects(() => state.assertInstitution(), /heartime_institution_mismatch/);
+});
+
+test('a database answering with a different institution is refused by the worker itself', async () => {
+  const { state } = institutionState({
+    replies: [{
+      body: {
+        contract_version: 'powerfarm.heartime.institution-assert.v1',
+        data: { institution_ref: `inst_${'9'.repeat(32)}`, anchor_digest: ANCHOR_DIGEST },
+      },
+    }],
+  });
+  await assert.rejects(() => state.assertInstitution(), /returned a different institution/);
+});
+
+test('no cycle work happens before the institution is established', async () => {
+  const { state, calls } = institutionState({
+    replies: [{ status: 400, body: { message: 'heartime_institution_mismatch' } }],
+  });
+  const { runHeartimeAlarm } = await import('../src/alarm-core.mjs');
+  const store = new Map();
+  const storage = {
+    async get(key) { return store.get(key); },
+    async put(key, value) { store.set(key, value); },
+    async delete(key) { store.delete(key); },
+    async setAlarm(value) { store.set('alarm', value); },
+    async getAlarm() { return store.get('alarm') ?? null; },
+    async deleteAlarm() { store.delete('alarm'); },
+  };
+  await assert.rejects(
+    () => runHeartimeAlarm({ stateApi: state, reconcilerFor: () => { throw new Error('must not reconcile'); }, storage }),
+    /heartime_institution_mismatch/,
+  );
+  assert.deepEqual(calls.map((c) => c.rpc), ['assert_institution_v1'], 'the cycle never reached prepare_cycle_v1');
 });

@@ -121,8 +121,8 @@ if (!/SUBSTRATES = Object\.freeze\(\['inference', 'configuration', 'fixed'\]\)/.
 } else ok('substrate succession is explicit and entirely digital');
 
 const migrations = walk(path.join(root, 'heartime/migrations')).filter((file) => file.endsWith('.sql'));
-if (migrations.length < 5) fail('Heartime hardening/capability learning/production migrations are incomplete');
-else ok('Heartime evolves through five timestamped migrations');
+if (migrations.length < 6) fail('Heartime hardening/capability learning/production/identity migrations are incomplete');
+else ok('Heartime evolves through six timestamped migrations');
 const migrationNames = migrations.map((file) => path.basename(file)).sort();
 const nonCanonicalMigrationNames = migrationNames.filter((name) => !/^\d{14}_[a-z][a-z0-9_]*\.sql$/.test(name));
 if (nonCanonicalMigrationNames.length) fail(`Heartime migration names do not use full timestamps: ${nonCanonicalMigrationNames.join(', ')}`);
@@ -133,6 +133,9 @@ const expectedMigrationOrder = [
   '20260824120000_heartime_capability_learning.sql',
   '20260830012500_heartime_writer_hardening.sql',
   '20260830074000_heartime_operational_projections.sql',
+  // Which institution does this Heartime database serve? Genesis creates an
+  // institution; recovery never does.
+  '20260901120000_heartime_institution_identity.sql',
 ];
 if (JSON.stringify(migrationNames) !== JSON.stringify(expectedMigrationOrder)) {
   fail(`Heartime migration set/order differs from the admitted permanent sequence: ${migrationNames.join(', ')}`);

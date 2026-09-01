@@ -47,11 +47,19 @@ reported as `PASS`.
       expects an institution can never found one. Seventeen negative controls in
       `process/continuum/tests/test_institution_identity.py`; the ADR 0014
       harness proves the design holds for both candidate commit shapes.*
-- [ ] Every operational startup path opens with a pinned institution anchor.
-      *The kernel now supports it and the negative controls cover it, but the
-      server, CLI, workers and engine Settings still open whatever store they are
-      pointed at. Until they pin an anchor, the refusal exists but is not
-      universally reached.*
+- [x] Every operational startup path opens with a pinned institution anchor.
+      *Twelve paths inventoried in
+      [operations/institutional-startup-paths.md](./institutional-startup-paths.md),
+      each with `wrong anchor -> refuses before work` and
+      `correct anchor -> starts` as executable negative controls. Heartime
+      required a new seam because its schema carried no institutional identity
+      at all. Workers are stateless, so the assertion runs per request, and the
+      wire order is pinned. One exception remains and is recorded below.*
+- [ ] The Kernel constructor itself refuses an unstated expectation.
+      *`Kernel(path)` with no declared institution can still found one; that is
+      what `create_institution()` and the disposable test fixtures use. No
+      operational path reaches it, but the constructor is not sealed. Closing it
+      means making `expect` mandatory and giving genesis its own constructor.*
 - [ ] Restore demonstrates continuity, not only identity, wherever a witness
       exists.
       *`assert_continuity()` refuses a stale restore against a later checkpoint,

@@ -6,7 +6,7 @@ const DEFAULT_BRIDGE = fileURLToPath(new URL('./bridge.py', import.meta.url));
 const CONTINUUM_ROOT = fileURLToPath(new URL('../../../continuum', import.meta.url));
 
 export class PythonContinuumPort {
-  constructor({ dbPath, registry, python = 'python', bridgePath = DEFAULT_BRIDGE, branch = 'main', env = {} } = {}) {
+  constructor({ dbPath, registry, python = 'python', bridgePath = DEFAULT_BRIDGE, branch = 'main', env = {}, expectInstitution = null } = {}) {
     if (!dbPath) throw new Error('dbPath is required');
     if (!registry) throw new Error('registry snapshot is required');
     this.dbPath = dbPath;
@@ -15,6 +15,11 @@ export class PythonContinuumPort {
     this.bridgePath = bridgePath;
     this.branch = branch;
     this.env = env;
+    // Which institution is this port serving? Learned once from bootstrap, then
+    // carried into every child process. The child re-verifies it against the
+    // store it is actually pointed at, so this value is a declaration rather
+    // than a permission: if the two disagree, the child refuses.
+    this.institution = expectInstitution ?? null;
   }
 
   async request(action, body = {}) {
@@ -23,12 +28,19 @@ export class PythonContinuumPort {
       db_path: this.dbPath,
       branch: this.branch,
       registry: this.registry,
+      ...(this.institution ? { expect_institution: this.institution } : {}),
       ...body,
     };
     return runJsonProcess(this.python, [this.bridgePath], payload, this.env);
   }
 
-  bootstrap(body) { return this.request('bootstrap', body); }
+  async bootstrap(body) {
+    const result = await this.request('bootstrap', body);
+    // Genesis is the only action that may found an institution. From here on the
+    // port knows which institution it serves and every child carries it.
+    if (result?.anchor) this.institution = result.anchor;
+    return result;
+  }
   takeoverRun(body) { return this.request('takeover_run', body); }
   admitToolCall(body) { return this.request('admit_tool', body); }
   completeToolCall(body) { return this.request('finish_tool', body); }

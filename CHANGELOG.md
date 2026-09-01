@@ -18,6 +18,17 @@
 > **Boundary:** The Super Bundle owns Process and Organism. Registry remains the source of Identity, Office/Occupancy, Brand, Store and exact artifact lineage; engines do not define PowerFarm meaning.
 <!-- POWERFARM-MAP:END -->
 
+## 0.14.0 — Every process knows which institution it is serving
+
+- **ADR 0016 is now mandatory on every operational startup path.** Twelve paths are inventoried in `operations/institutional-startup-paths.md`, each with `wrong anchor -> refuses before work` and `correct anchor -> starts` as executable negative controls. The operational rule is `normal startup = OPEN EXISTING INSTITUTION`, never `init whatever is there`; CREATE stays reachable only by explicit genesis ceremony and RESTORE only by explicit recovery.
+- The ADK and MAF Settings require `expect_institution` and re-derive the anchor from the Kernel they were handed. A configuration that validated once cannot vouch for what it passes down: an inherited handle is re-verified, not trusted.
+- The AI SDK Setting reaches Continuum through a Python child process, which is exactly where a parent-side check proves nothing. `PythonContinuumPort` learns the anchor at genesis and carries it into every child; the child refuses when it is undeclared, when the store is empty, when the store is a different institution, and when the anchor it was handed disagrees with the store.
+- **Heartime carried no institutional identity at all.** Its tables key on ReconcilerRef, organ and component, none of which say whose circulation this is, so a worker pointed at a restored snapshot or a copied connection string had nothing to check. Added `heartime.institution` as a singleton plus `declare_institution_v1` and `assert_institution_v1`; a Heartime deployment serves one institution, so this needed no column on any existing table and no RPC signature changed.
+- Added `continuum.assert_institution_v1` and `continuum.bootstrap_institution_v3`, which records the anchor and refuses to re-found the same id under a different one. The Process worker declares `PROCESS_EXPECTED_INSTITUTION` and asserts before any persist; the Heartime worker declares `HEARTIME_EXPECTED_INSTITUTION` and asserts before arming or cycling.
+- Workers are stateless request handlers, so every request is a startup: the assertion runs per persist and per alarm, and the wire order is pinned by test — `assert_institution_v1` precedes `admit_card_batch_v2`, and no cycle work happens before the assertion resolves. The cost is one extra authenticated RPC per persist, visible in the production circulation golden as a second runtime-token spend and recorded rather than hidden.
+- CI installs Node dependencies before the verification gates. `verify:organism` and `verify:process` both run the disposable PostgreSQL suites, which need the pinned `@electric-sql/pglite`; neither job installed anything, so both would have failed on any runner.
+- One exception remains and is recorded as an open gate line: `Kernel(path)` with no declared expectation can still found an institution, which is what `create_institution()` and the disposable test fixtures use. No operational path reaches it, but the constructor is not sealed.
+
 ## 0.13.0 — Timed authorization boundary and honest evidence semantics
 
 - Promoted the engine boundary to `powerfarm.execution-slice.v4`. `deriveExecutionSlice()` now requires an explicit `evaluatedAt` and never infers the authorization instant from `Card.updated_at` (B04).

@@ -2,7 +2,7 @@
   "format": "powerfarm.superbundle-release/v1",
   "name": "powerfarm-superbundle",
   "version": "0.13.0",
-  "built_at": "2026-09-01T11:57:51.043Z",
+  "built_at": "2026-09-01T15:02:28.548Z",
   "deployment_claim": "BUILT_AND_VERIFIED_LOCALLY_NOT_DEPLOYED",
   "pairing": "standalone PowerFarm Registry",
   "process": {
@@ -21,9 +21,9 @@
   },
   "verification": {
     "full_verify": "passed",
-    "source_tree_sha256": "b9dff4a8870d55f722d93d2d13063cad98c0b2078f64af97cfef28cafca11a4e",
+    "source_tree_sha256": "93bfb22bc1c9bb997921094a974671ad656ef99890a53d576ec3c96f6b1c9155",
     "evidence_file": "evidence/organism-verification/verification.json",
-    "evidence_sha256": "098b89052a5abac746a57f1d635283252cbe2e9c5daaa8356766b13090f77f9a",
+    "evidence_sha256": "df5f17714e1a52d58bb4977b96cedb454b4f65277bee444b20ae8d8137a8c27f",
     "verified_commands": 38
   },
   "golden_properties": [
